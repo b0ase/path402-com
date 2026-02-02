@@ -53,7 +53,7 @@ export default function TokenPage() {
   const { wallet, connectYours, connectHandCash, disconnect, isYoursAvailable } = useWallet();
   const [stats, setStats] = useState<HolderStats | null>(null);
   const [holding, setHolding] = useState<UserHolding | null>(null);
-  const [spendAmount, setSpendAmount] = useState('100000000'); // 1 BSV default
+  const [spendAmount, setSpendAmount] = useState('1'); // 1 BSV default
   const [spendUnit, setSpendUnit] = useState<'sats' | 'bsv'>('bsv');
   const [preview, setPreview] = useState<PurchasePreview | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
