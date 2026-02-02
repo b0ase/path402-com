@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useWallet } from '@/components/WalletProvider';
 import { TOKEN_CONFIG } from '@/lib/types';
+import PriceCurveChart from '@/components/PriceCurveChart';
 
 interface HolderStats {
   totalHolders: number;
@@ -63,6 +64,9 @@ export default function TokenPage() {
   const [withdrawAddress, setWithdrawAddress] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [bsvUsdPrice, setBsvUsdPrice] = useState<number>(45); // Default fallback
+  const [showUsd, setShowUsd] = useState(false);
+  const [priceLoading, setPriceLoading] = useState(true);
 
   useEffect(() => {
     fetch('/api/token/stats')
@@ -116,6 +120,28 @@ export default function TokenPage() {
       setHolding(null);
     }
   }, [wallet]);
+
+  // Fetch BSV/USD price
+  useEffect(() => {
+    const fetchPrice = async () => {
+      try {
+        const res = await fetch('/api/price/bsv');
+        const data = await res.json();
+        if (data.bsv_usd) {
+          setBsvUsdPrice(data.bsv_usd);
+        }
+      } catch (err) {
+        console.error('Failed to fetch BSV price:', err);
+      } finally {
+        setPriceLoading(false);
+      }
+    };
+
+    fetchPrice();
+    // Refresh price every 60 seconds
+    const interval = setInterval(fetchPrice, 60_000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleBuy = async () => {
     if (!wallet.connected) {
@@ -540,12 +566,39 @@ export default function TokenPage() {
             variants={scaleIn}
             whileHover={{ borderColor: 'rgba(255,255,255,0.2)' }}
           >
-            <h2 className="text-xl font-bold text-white mb-4">Buy Tokens</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-white">Buy Tokens</h2>
+              {/* BSV/USD Toggle */}
+              <div className="flex items-center gap-2">
+                <span className={`text-xs ${!showUsd ? 'text-white' : 'text-gray-500'}`}>BSV</span>
+                <button
+                  onClick={() => setShowUsd(!showUsd)}
+                  className={`relative w-10 h-5 rounded-full transition-colors ${showUsd ? 'bg-green-600' : 'bg-gray-700'}`}
+                >
+                  <span
+                    className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform ${
+                      showUsd ? 'translate-x-5' : 'translate-x-0.5'
+                    }`}
+                  />
+                </button>
+                <span className={`text-xs ${showUsd ? 'text-white' : 'text-gray-500'}`}>USD</span>
+              </div>
+            </div>
             <p className="text-gray-400 text-sm mb-4">
               sqrt_decay pricing: price increases as treasury depletes. Early buyers win.
               {stats?.currentPrice && (
                 <span className="block mt-1 text-green-400">
                   Current price: {stats.currentPrice.toLocaleString()} sats/token
+                  {showUsd && !priceLoading && (
+                    <span className="text-gray-400 ml-2">
+                      (${((stats.currentPrice / 100_000_000) * bsvUsdPrice).toFixed(4)} USD)
+                    </span>
+                  )}
+                </span>
+              )}
+              {!priceLoading && (
+                <span className="block mt-1 text-gray-500 text-xs">
+                  BSV/USD: ${bsvUsdPrice.toFixed(2)}
                 </span>
               )}
             </p>
@@ -606,16 +659,31 @@ export default function TokenPage() {
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-400">Avg price:</span>
-                      <span className="text-gray-300">{preview.avgPrice.toLocaleString()} sats/token</span>
+                      <span className="text-gray-300">
+                        {showUsd
+                          ? `$${((preview.avgPrice / 100_000_000) * bsvUsdPrice).toFixed(4)}`
+                          : `${preview.avgPrice.toLocaleString()} sats`
+                        }/token
+                      </span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-400">Total cost:</span>
-                      <span className="text-gray-300">{(preview.totalCost / 100_000_000).toFixed(4)} BSV</span>
+                      <span className="text-gray-300">
+                        {showUsd
+                          ? `$${((preview.totalCost / 100_000_000) * bsvUsdPrice).toFixed(2)} USD`
+                          : `${(preview.totalCost / 100_000_000).toFixed(4)} BSV`
+                        }
+                      </span>
                     </div>
                     {preview.remainingSats > 0 && (
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-500">Remainder (not spent):</span>
-                        <span className="text-gray-500">{preview.remainingSats.toLocaleString()} sats</span>
+                        <span className="text-gray-500">
+                          {showUsd
+                            ? `$${((preview.remainingSats / 100_000_000) * bsvUsdPrice).toFixed(4)}`
+                            : `${preview.remainingSats.toLocaleString()} sats`
+                          }
+                        </span>
                       </div>
                     )}
                   </motion.div>
@@ -700,6 +768,24 @@ export default function TokenPage() {
             </div>
           </motion.div>
         </motion.div>
+
+        {/* Price Curve Chart */}
+        {stats && (
+          <motion.div
+            className="mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <PriceCurveChart
+              treasuryRemaining={stats.treasuryBalance}
+              currentPrice={stats.currentPrice}
+              tokensToBuy={preview?.tokenCount || 0}
+              bsvUsdPrice={bsvUsdPrice}
+              showUsd={showUsd}
+            />
+          </motion.div>
+        )}
 
         {/* Withdraw Tokens */}
         <AnimatePresence>
