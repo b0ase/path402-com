@@ -1,108 +1,19 @@
-'use client';
-
-import { useRef, useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
 export default function WhitepaperPage() {
-  const contentRef = useRef<HTMLDivElement>(null);
-  const searchParams = useSearchParams();
-  const [downloading, setDownloading] = useState(false);
-
-  const downloadPDF = async () => {
-    if (typeof window === 'undefined') return;
-    setDownloading(true);
-
-    try {
-      const html2pdf = (await import('html2pdf.js')).default;
-      const element = contentRef.current;
-      if (!element) return;
-
-      const opt = {
-        margin: [15, 15, 15, 15] as [number, number, number, number],
-        filename: 'path402-token-standard.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-      };
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (html2pdf() as any).set(opt).from(element).save();
-    } finally {
-      setDownloading(false);
-    }
-  };
-
-  // Auto-download if ?download=true is in the URL (from payment flow)
-  useEffect(() => {
-    if (searchParams.get('download') === 'true') {
-      // Small delay to ensure content is rendered
-      const timer = setTimeout(() => {
-        downloadPDF();
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [searchParams]);
-
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 pt-20 pb-16">
-      {/* Download Button - Fixed */}
-      <div className="fixed top-24 right-6 z-40 print:hidden">
-        <button
-          onClick={downloadPDF}
-          disabled={downloading}
-          className="flex items-center gap-2 px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-black text-sm font-medium rounded-lg hover:bg-gray-700 dark:hover:bg-gray-200 disabled:opacity-50 transition-colors shadow-lg"
-        >
-          {downloading ? (
-            <>
-              <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-              </svg>
-              Generating PDF...
-            </>
-          ) : (
-            <>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              Download PDF
-            </>
-          )}
-        </button>
-      </div>
-
-      {/* Auto-download notification */}
-      {searchParams.get('download') === 'true' && (
-        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-50 print:hidden">
-          <div className="bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200 px-6 py-3 rounded-lg shadow-lg border border-green-300 dark:border-green-700 flex items-center gap-3">
-            <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-            </svg>
-            <span>Payment received! Generating your PDF...</span>
-          </div>
-        </div>
-      )}
-
       {/* Navigation */}
       <div className="max-w-[800px] mx-auto px-8 pt-8 print:hidden">
-        <div className="flex items-center justify-between mb-8">
+        <div className="mb-8">
           <Link href="/" className="text-gray-500 hover:text-gray-900 dark:hover:text-white text-sm">
             ← Back to Home
-          </Link>
-          <Link
-            href="/402"
-            className="text-sm px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-          >
-            Support This Work ($0.01)
           </Link>
         </div>
       </div>
 
       {/* Whitepaper Content */}
-      <div ref={contentRef} className="max-w-[800px] mx-auto px-8 font-serif text-gray-900 dark:text-gray-100">
+      <div className="max-w-[800px] mx-auto px-8 font-serif text-gray-900 dark:text-gray-100">
 
         {/* Title */}
         <header className="text-center mb-12">
@@ -616,11 +527,6 @@ X-402-Token: $example.com
           </p>
           <p className="mt-2">
             Version 1.0.0 · February 2026 · <a href="https://path402.com" className="text-blue-600 dark:text-blue-400 hover:underline">path402.com</a>
-          </p>
-          <p className="mt-4 print:hidden">
-            <Link href="/402" className="text-green-600 dark:text-green-400 hover:underline font-medium">
-              Support this work for $0.01 and receive $PATH402 tokens →
-            </Link>
           </p>
         </footer>
 

@@ -77,7 +77,7 @@ export async function listTokens(options?: {
     return [];
   }
 
-  return (data || []).map(token => ({
+  return (data || []).map((token: Token) => ({
     ...token,
     current_price_sats: calculatePrice(
       token.pricing_model as PricingModel,
@@ -106,17 +106,18 @@ export async function getToken(address: string): Promise<TokenWithPrice | null> 
     return null;
   }
 
+  const token = data as Token;
   return {
-    ...data,
+    ...token,
     current_price_sats: calculatePrice(
-      data.pricing_model as PricingModel,
-      data.base_price_sats,
-      data.treasury_balance || DEFAULT_TREASURY
+      token.pricing_model as PricingModel,
+      token.base_price_sats,
+      token.treasury_balance || DEFAULT_TREASURY
     ),
-    market_cap_sats: data.total_supply * calculatePrice(
-      data.pricing_model as PricingModel,
-      data.base_price_sats,
-      data.treasury_balance || DEFAULT_TREASURY
+    market_cap_sats: token.total_supply * calculatePrice(
+      token.pricing_model as PricingModel,
+      token.base_price_sats,
+      token.treasury_balance || DEFAULT_TREASURY
     ),
   };
 }
