@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getTokenStats } from '@/lib/store';
 
 // sqrt_decay pricing: price = BASE / sqrt(supply_sold + 1)
-const BASE_PRICE_SATS = 500;
+const BASE_PRICE_SATS = 100_000_000; // 1 BSV for first token (~$17)
 const INITIAL_TREASURY = 500_000_000;
 
 function calculateSqrtDecayPrice(supplySold: number): number {
