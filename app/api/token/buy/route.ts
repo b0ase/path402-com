@@ -163,7 +163,7 @@ export async function POST(request: NextRequest) {
             denominationCurrencyCode: 'USD',
             receivers: [{
               sendAmount: usdAmount,
-              destination: TREASURY_PAYMAIL, // HandCash paymail, not raw address
+              destination: PAYMENT_ADDRESS, // Treasury BSV address
             }],
             note: `PATH402 token purchase: ${tokenAmount} tokens`,
           }
