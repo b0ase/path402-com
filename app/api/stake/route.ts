@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
     const address = request.headers.get('x-wallet-address');
     const handle = request.headers.get('x-wallet-handle');
 
-    const holder = getHolder(address || undefined, handle || undefined);
+    const holder = await getHolder(address || undefined, handle || undefined);
 
     if (!holder) {
       return NextResponse.json({ error: 'Wallet not connected or no tokens held' }, { status: 401 });
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Insufficient available balance' }, { status: 400 });
       }
 
-      const stake = stakeTokens(holder.id, amount);
+      const stake = await stakeTokens(holder.id, amount);
       if (!stake) {
         return NextResponse.json({ error: 'Staking failed' }, { status: 500 });
       }
@@ -34,14 +34,14 @@ export async function POST(request: NextRequest) {
         success: true,
         stakeId: stake.id,
         stakedAmount: amount,
-        newStakedBalance: holder.stakedBalance,
+        newStakedBalance: holder.stakedBalance + amount,
       });
     } else if (action === 'unstake') {
       if (amount > holder.stakedBalance) {
         return NextResponse.json({ error: 'Insufficient staked balance' }, { status: 400 });
       }
 
-      const success = unstakeTokens(holder.id, amount);
+      const success = await unstakeTokens(holder.id, amount);
       if (!success) {
         return NextResponse.json({ error: 'Unstaking failed' }, { status: 500 });
       }
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         unstakedAmount: amount,
-        newStakedBalance: holder.stakedBalance,
+        newStakedBalance: holder.stakedBalance - amount,
       });
     }
 

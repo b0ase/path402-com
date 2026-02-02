@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check treasury has enough tokens
-    const stats = getTokenStats();
+    const stats = await getTokenStats();
     if (stats.treasuryBalance < amount) {
       return NextResponse.json({ error: 'Insufficient tokens available' }, { status: 400 });
     }
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     const totalSats = amount * TOKEN_PRICE_SATS;
 
     // Get or create holder
-    const holder = getOrCreateHolder(
+    const holder = await getOrCreateHolder(
       address || '',
       provider,
       address || undefined,
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
 
     if (provider === 'yours') {
       // For Yours Wallet, create pending purchase and return payment details
-      const purchase = createPurchase(holder.id, amount, TOKEN_PRICE_SATS);
+      const purchase = await createPurchase(holder.id, amount, TOKEN_PRICE_SATS);
 
       return NextResponse.json({
         purchaseId: purchase.id,
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     } else if (provider === 'handcash') {
       // For HandCash, the payment was already made via their flow
       // This is called after successful HandCash payment
-      const purchase = processPurchaseImmediate(holder.id, amount, TOKEN_PRICE_SATS);
+      const purchase = await processPurchaseImmediate(holder.id, amount, TOKEN_PRICE_SATS);
 
       return NextResponse.json({
         purchaseId: purchase.id,

@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get or create the holder
-    const holder = getOrCreateHolder(
+    const holder = await getOrCreateHolder(
       address || '',
       provider,
       ordinalsAddress || address,
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'No wallet identifier provided' }, { status: 400 });
     }
 
-    const holder = getHolder(address || undefined, handle || undefined);
+    const holder = await getHolder(address || undefined, handle || undefined);
 
     if (!holder) {
       return NextResponse.json({ registered: false });

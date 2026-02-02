@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     const handle = request.headers.get('x-wallet-handle');
     const provider = request.headers.get('x-wallet-provider');
 
-    const holder = getHolder(address || undefined, handle || undefined);
+    const holder = await getHolder(address || undefined, handle || undefined);
 
     if (!holder) {
       return NextResponse.json({ error: 'Wallet not connected or no tokens held' }, { status: 401 });

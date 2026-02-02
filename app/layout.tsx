@@ -7,18 +7,18 @@ import { WalletProvider } from "@/components/WalletProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "$PATH402 — Tokenised Content Protocol",
+  title: "$PATH402.com — Tokenised Content Protocol",
   description: "Turn any URL into a priced, tokenised market. The protocol for AI-native micropayments.",
   openGraph: {
-    title: "$PATH402 — Tokenised Content Protocol",
+    title: "$PATH402.com — Tokenised Content Protocol",
     description: "Turn any URL into a priced, tokenised market. The protocol for AI-native micropayments.",
     url: "https://path402.com",
-    siteName: "$PATH402",
+    siteName: "$PATH402.com",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "$PATH402 — Tokenised Content Protocol",
+    title: "$PATH402.com — Tokenised Content Protocol",
     description: "Turn any URL into a priced, tokenised market.",
   },
 };

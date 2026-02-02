@@ -1,41 +1,97 @@
-// Simple in-memory store for development
-// Replace with Supabase or PostgreSQL for production
+// Token store with Supabase persistence
+// Falls back to in-memory if database not configured
 
 import type { TokenHolder, TokenPurchase, Stake, Dividend, DividendClaim } from './types';
 import { TOKEN_CONFIG } from './types';
+import { supabase, isDbConnected } from './supabase';
 
-// In-memory storage (will reset on server restart)
-const holders = new Map<string, TokenHolder>();
-const purchases: TokenPurchase[] = [];
-const stakes: Stake[] = [];
-const dividends: Dividend[] = [];
-
-// Treasury wallet (holds tokens for sale)
-const TREASURY = {
-  balance: TOKEN_CONFIG.totalSupply,
-  address: process.env.TREASURY_ADDRESS || '1BrbnQon4uZPSxNwt19ozwtgHPDbgvaeD1',
-  totalSold: 0,
-  totalRevenue: 0,
+// In-memory fallback storage
+const memoryStore = {
+  holders: new Map<string, TokenHolder>(),
+  purchases: [] as TokenPurchase[],
+  stakes: [] as Stake[],
+  dividends: [] as Dividend[],
 };
 
-// Payment address for token purchases (same as treasury)
-export const PAYMENT_ADDRESS = process.env.TREASURY_ADDRESS || '1BrbnQon4uZPSxNwt19ozwtgHPDbgvaeD1';
+// Treasury config
+const TREASURY_ADDRESS = process.env.TREASURY_ADDRESS || '1BrbnQon4uZPSxNwt19ozwtgHPDbgvaeD1';
+export const PAYMENT_ADDRESS = TREASURY_ADDRESS;
 
 // Helper to generate IDs
 function generateId(): string {
   return `${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
 }
 
-// Get or create holder
-export function getOrCreateHolder(
+// ============================================================================
+// HOLDER OPERATIONS
+// ============================================================================
+
+export async function getOrCreateHolder(
   address: string,
   provider: 'yours' | 'handcash',
   ordinalsAddress?: string,
   handle?: string
-): TokenHolder {
+): Promise<TokenHolder> {
+  if (isDbConnected() && supabase) {
+    // Try to find existing holder
+    const { data: existing } = await supabase
+      .from('path402_holders')
+      .select('*')
+      .eq('provider', provider)
+      .eq(provider === 'handcash' ? 'handle' : 'address', provider === 'handcash' ? handle : address)
+      .single();
+
+    if (existing) {
+      return {
+        id: existing.id,
+        address: existing.address || '',
+        ordinalsAddress: existing.ordinals_address,
+        handle: existing.handle,
+        provider: existing.provider,
+        balance: existing.balance,
+        stakedBalance: existing.staked_balance,
+        totalPurchased: existing.total_purchased,
+        totalWithdrawn: existing.total_withdrawn,
+        totalDividends: existing.total_dividends,
+        createdAt: existing.created_at,
+        updatedAt: existing.updated_at,
+      };
+    }
+
+    // Create new holder
+    const { data: newHolder, error } = await supabase
+      .from('path402_holders')
+      .insert({
+        address,
+        ordinals_address: ordinalsAddress,
+        handle,
+        provider,
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return {
+      id: newHolder.id,
+      address: newHolder.address || '',
+      ordinalsAddress: newHolder.ordinals_address,
+      handle: newHolder.handle,
+      provider: newHolder.provider,
+      balance: newHolder.balance,
+      stakedBalance: newHolder.staked_balance,
+      totalPurchased: newHolder.total_purchased,
+      totalWithdrawn: newHolder.total_withdrawn,
+      totalDividends: newHolder.total_dividends,
+      createdAt: newHolder.created_at,
+      updatedAt: newHolder.updated_at,
+    };
+  }
+
+  // In-memory fallback
   const key = provider === 'handcash' ? `handcash:${handle}` : `ord:${address}`;
 
-  if (!holders.has(key)) {
+  if (!memoryStore.holders.has(key)) {
     const holder: TokenHolder = {
       id: generateId(),
       address,
@@ -50,50 +106,132 @@ export function getOrCreateHolder(
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    holders.set(key, holder);
+    memoryStore.holders.set(key, holder);
   }
 
-  return holders.get(key)!;
+  return memoryStore.holders.get(key)!;
 }
 
-// Get holder by address or handle
-export function getHolder(address?: string, handle?: string): TokenHolder | null {
+export async function getHolder(address?: string, handle?: string): Promise<TokenHolder | null> {
+  if (isDbConnected() && supabase) {
+    let query = supabase.from('path402_holders').select('*');
+
+    if (handle) {
+      query = query.eq('handle', handle);
+    } else if (address) {
+      query = query.eq('address', address);
+    } else {
+      return null;
+    }
+
+    const { data } = await query.single();
+
+    if (!data) return null;
+
+    return {
+      id: data.id,
+      address: data.address || '',
+      ordinalsAddress: data.ordinals_address,
+      handle: data.handle,
+      provider: data.provider,
+      balance: data.balance,
+      stakedBalance: data.staked_balance,
+      totalPurchased: data.total_purchased,
+      totalWithdrawn: data.total_withdrawn,
+      totalDividends: data.total_dividends,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
+    };
+  }
+
+  // In-memory fallback
   if (handle) {
-    return holders.get(`handcash:${handle}`) || null;
+    return memoryStore.holders.get(`handcash:${handle}`) || null;
   }
   if (address) {
-    return holders.get(`ord:${address}`) || null;
+    return memoryStore.holders.get(`ord:${address}`) || null;
   }
   return null;
 }
 
-// Get all holders
-export function getAllHolders(): TokenHolder[] {
-  return Array.from(holders.values());
+export async function getAllHolders(): Promise<TokenHolder[]> {
+  if (isDbConnected() && supabase) {
+    const { data } = await supabase
+      .from('path402_holders')
+      .select('*')
+      .gt('balance', 0)
+      .order('balance', { ascending: false });
+
+    return (data || []).map((h) => ({
+      id: h.id,
+      address: h.address || '',
+      ordinalsAddress: h.ordinals_address,
+      handle: h.handle,
+      provider: h.provider,
+      balance: h.balance,
+      stakedBalance: h.staked_balance,
+      totalPurchased: h.total_purchased,
+      totalWithdrawn: h.total_withdrawn,
+      totalDividends: h.total_dividends,
+      createdAt: h.created_at,
+      updatedAt: h.updated_at,
+    }));
+  }
+
+  return Array.from(memoryStore.holders.values());
 }
 
-// Get token stats
-export function getTokenStats() {
-  const allHolders = getAllHolders();
+// ============================================================================
+// TOKEN STATS
+// ============================================================================
+
+export async function getTokenStats() {
+  if (isDbConnected() && supabase) {
+    const [holdersResult, treasuryResult] = await Promise.all([
+      supabase.from('path402_holders').select('balance, staked_balance'),
+      supabase.from('path402_treasury').select('*').single(),
+    ]);
+
+    const holders = holdersResult.data || [];
+    const treasury = treasuryResult.data;
+
+    const totalStaked = holders.reduce((sum, h) => sum + (h.staked_balance || 0), 0);
+    const totalCirculating = holders.reduce((sum, h) => sum + (h.balance || 0), 0);
+
+    return {
+      totalHolders: holders.filter((h) => h.balance > 0).length,
+      totalStaked,
+      totalCirculating,
+      treasuryBalance: treasury?.balance || TOKEN_CONFIG.totalSupply,
+      totalSold: treasury?.total_sold || 0,
+      totalRevenue: treasury?.total_revenue_sats || 0,
+    };
+  }
+
+  // In-memory fallback
+  const allHolders = Array.from(memoryStore.holders.values());
   const totalStaked = allHolders.reduce((sum, h) => sum + h.stakedBalance, 0);
   const totalCirculating = allHolders.reduce((sum, h) => sum + h.balance, 0);
 
   return {
-    totalHolders: allHolders.filter(h => h.balance > 0).length,
+    totalHolders: allHolders.filter((h) => h.balance > 0).length,
     totalStaked,
     totalCirculating,
-    treasuryBalance: TREASURY.balance,
-    totalSold: TREASURY.totalSold,
-    totalRevenue: TREASURY.totalRevenue,
+    treasuryBalance: TOKEN_CONFIG.totalSupply - totalCirculating,
+    totalSold: totalCirculating,
+    totalRevenue: totalCirculating, // 1 sat per token
   };
 }
 
-// Create a purchase
-export function createPurchase(
+// ============================================================================
+// PURCHASE OPERATIONS
+// ============================================================================
+
+export async function createPurchase(
   holderId: string,
   amount: number,
   priceSats: number
-): TokenPurchase {
+): Promise<TokenPurchase> {
   const purchase: TokenPurchase = {
     id: generateId(),
     holderId,
@@ -104,66 +242,222 @@ export function createPurchase(
     createdAt: new Date().toISOString(),
   };
 
-  purchases.push(purchase);
+  if (isDbConnected() && supabase) {
+    const { data, error } = await supabase
+      .from('path402_purchases')
+      .insert({
+        holder_id: holderId,
+        amount,
+        price_sats: priceSats,
+        total_paid_sats: amount * priceSats,
+        status: 'pending',
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return {
+      id: data.id,
+      holderId: data.holder_id,
+      amount: data.amount,
+      priceSats: data.price_sats,
+      totalPaidSats: data.total_paid_sats,
+      status: data.status,
+      txId: data.tx_id,
+      createdAt: data.created_at,
+    };
+  }
+
+  memoryStore.purchases.push(purchase);
   return purchase;
 }
 
-// Confirm a purchase
-export function confirmPurchase(purchaseId: string, txId: string): boolean {
-  const purchase = purchases.find(p => p.id === purchaseId);
+export async function confirmPurchase(purchaseId: string, txId: string): Promise<boolean> {
+  if (isDbConnected() && supabase) {
+    // Get purchase
+    const { data: purchase } = await supabase
+      .from('path402_purchases')
+      .select('*')
+      .eq('id', purchaseId)
+      .eq('status', 'pending')
+      .single();
+
+    if (!purchase) return false;
+
+    // Update purchase status
+    await supabase
+      .from('path402_purchases')
+      .update({ status: 'confirmed', tx_id: txId, confirmed_at: new Date().toISOString() })
+      .eq('id', purchaseId);
+
+    // Update holder balance
+    const { data: holder } = await supabase
+      .from('path402_holders')
+      .select('balance, total_purchased')
+      .eq('id', purchase.holder_id)
+      .single();
+
+    if (holder) {
+      await supabase
+        .from('path402_holders')
+        .update({
+          balance: holder.balance + purchase.amount,
+          total_purchased: holder.total_purchased + purchase.amount,
+        })
+        .eq('id', purchase.holder_id);
+    }
+
+    // Update treasury
+    const { data: treasury } = await supabase
+      .from('path402_treasury')
+      .select('*')
+      .single();
+
+    if (treasury) {
+      await supabase
+        .from('path402_treasury')
+        .update({
+          balance: treasury.balance - purchase.amount,
+          total_sold: treasury.total_sold + purchase.amount,
+          total_revenue_sats: treasury.total_revenue_sats + purchase.total_paid_sats,
+        })
+        .eq('id', treasury.id);
+    }
+
+    return true;
+  }
+
+  // In-memory fallback
+  const purchase = memoryStore.purchases.find((p) => p.id === purchaseId);
   if (!purchase || purchase.status !== 'pending') return false;
 
   purchase.status = 'confirmed';
   purchase.txId = txId;
 
-  // Update holder balance
-  const holder = Array.from(holders.values()).find(h => h.id === purchase.holderId);
+  const holder = Array.from(memoryStore.holders.values()).find((h) => h.id === purchase.holderId);
   if (holder) {
     holder.balance += purchase.amount;
     holder.totalPurchased += purchase.amount;
     holder.updatedAt = new Date().toISOString();
   }
 
-  // Update treasury
-  TREASURY.balance -= purchase.amount;
-  TREASURY.totalSold += purchase.amount;
-  TREASURY.totalRevenue += purchase.totalPaidSats;
-
   return true;
 }
 
-// For HandCash purchases (auto-confirm since payment is verified)
-export function processPurchaseImmediate(
+export async function processPurchaseImmediate(
   holderId: string,
   amount: number,
   priceSats: number,
   txId?: string
-): TokenPurchase {
-  const purchase = createPurchase(holderId, amount, priceSats);
+): Promise<TokenPurchase> {
+  const purchase = await createPurchase(holderId, amount, priceSats);
 
-  // Auto-confirm for verified payments
+  if (isDbConnected() && supabase) {
+    // Update purchase to confirmed
+    await supabase
+      .from('path402_purchases')
+      .update({ status: 'confirmed', tx_id: txId, confirmed_at: new Date().toISOString() })
+      .eq('id', purchase.id);
+
+    // Update holder
+    const { data: holder } = await supabase
+      .from('path402_holders')
+      .select('balance, total_purchased')
+      .eq('id', holderId)
+      .single();
+
+    if (holder) {
+      await supabase
+        .from('path402_holders')
+        .update({
+          balance: holder.balance + amount,
+          total_purchased: holder.total_purchased + amount,
+        })
+        .eq('id', holderId);
+    }
+
+    // Update treasury
+    const { data: treasury } = await supabase
+      .from('path402_treasury')
+      .select('*')
+      .single();
+
+    if (treasury) {
+      await supabase
+        .from('path402_treasury')
+        .update({
+          balance: treasury.balance - amount,
+          total_sold: treasury.total_sold + amount,
+          total_revenue_sats: treasury.total_revenue_sats + (amount * priceSats),
+        })
+        .eq('id', treasury.id);
+    }
+
+    purchase.status = 'confirmed';
+    purchase.txId = txId;
+    return purchase;
+  }
+
+  // In-memory fallback
   purchase.status = 'confirmed';
   purchase.txId = txId;
 
-  // Update holder balance
-  const holder = Array.from(holders.values()).find(h => h.id === holderId);
+  const holder = Array.from(memoryStore.holders.values()).find((h) => h.id === holderId);
   if (holder) {
     holder.balance += amount;
     holder.totalPurchased += amount;
     holder.updatedAt = new Date().toISOString();
   }
 
-  // Update treasury
-  TREASURY.balance -= amount;
-  TREASURY.totalSold += amount;
-  TREASURY.totalRevenue += amount * priceSats;
-
   return purchase;
 }
 
-// Stake tokens
-export function stakeTokens(holderId: string, amount: number): Stake | null {
-  const holder = Array.from(holders.values()).find(h => h.id === holderId);
+// ============================================================================
+// STAKING OPERATIONS
+// ============================================================================
+
+export async function stakeTokens(holderId: string, amount: number): Promise<Stake | null> {
+  if (isDbConnected() && supabase) {
+    // Get holder
+    const { data: holder } = await supabase
+      .from('path402_holders')
+      .select('balance, staked_balance')
+      .eq('id', holderId)
+      .single();
+
+    if (!holder || holder.balance - holder.staked_balance < amount) return null;
+
+    // Create stake record
+    const { data: stake, error } = await supabase
+      .from('path402_stakes')
+      .insert({
+        holder_id: holderId,
+        amount,
+        status: 'active',
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    // Update holder staked balance
+    await supabase
+      .from('path402_holders')
+      .update({ staked_balance: holder.staked_balance + amount })
+      .eq('id', holderId);
+
+    return {
+      id: stake.id,
+      holderId: stake.holder_id,
+      amount: stake.amount,
+      stakedAt: stake.staked_at,
+      status: stake.status,
+    };
+  }
+
+  // In-memory fallback
+  const holder = Array.from(memoryStore.holders.values()).find((h) => h.id === holderId);
   if (!holder || holder.balance - holder.stakedBalance < amount) return null;
 
   const stake: Stake = {
@@ -174,29 +468,73 @@ export function stakeTokens(holderId: string, amount: number): Stake | null {
     status: 'active',
   };
 
-  stakes.push(stake);
+  memoryStore.stakes.push(stake);
   holder.stakedBalance += amount;
   holder.updatedAt = new Date().toISOString();
 
   return stake;
 }
 
-// Unstake tokens
-export function unstakeTokens(holderId: string, amount: number): boolean {
-  const holder = Array.from(holders.values()).find(h => h.id === holderId);
+export async function unstakeTokens(holderId: string, amount: number): Promise<boolean> {
+  if (isDbConnected() && supabase) {
+    const { data: holder } = await supabase
+      .from('path402_holders')
+      .select('staked_balance')
+      .eq('id', holderId)
+      .single();
+
+    if (!holder || holder.staked_balance < amount) return false;
+
+    // Mark stakes as unstaked (LIFO)
+    const { data: activeStakes } = await supabase
+      .from('path402_stakes')
+      .select('*')
+      .eq('holder_id', holderId)
+      .eq('status', 'active')
+      .order('staked_at', { ascending: false });
+
+    let remaining = amount;
+    for (const stake of activeStakes || []) {
+      if (remaining <= 0) break;
+
+      if (stake.amount <= remaining) {
+        await supabase
+          .from('path402_stakes')
+          .update({ status: 'unstaked', unstaked_at: new Date().toISOString() })
+          .eq('id', stake.id);
+        remaining -= stake.amount;
+      } else {
+        // Partial unstake - update amount
+        await supabase
+          .from('path402_stakes')
+          .update({ amount: stake.amount - remaining })
+          .eq('id', stake.id);
+        remaining = 0;
+      }
+    }
+
+    // Update holder
+    await supabase
+      .from('path402_holders')
+      .update({ staked_balance: holder.staked_balance - amount })
+      .eq('id', holderId);
+
+    return true;
+  }
+
+  // In-memory fallback
+  const holder = Array.from(memoryStore.holders.values()).find((h) => h.id === holderId);
   if (!holder || holder.stakedBalance < amount) return false;
 
-  // Mark stakes as unstaked (LIFO)
   let remaining = amount;
-  for (let i = stakes.length - 1; i >= 0 && remaining > 0; i--) {
-    const stake = stakes[i];
+  for (let i = memoryStore.stakes.length - 1; i >= 0 && remaining > 0; i--) {
+    const stake = memoryStore.stakes[i];
     if (stake.holderId === holderId && stake.status === 'active') {
       if (stake.amount <= remaining) {
         stake.status = 'unstaked';
         stake.unstakedAt = new Date().toISOString();
         remaining -= stake.amount;
       } else {
-        // Partial unstake - create new stake for remainder
         stake.amount -= remaining;
         remaining = 0;
       }
@@ -209,14 +547,33 @@ export function unstakeTokens(holderId: string, amount: number): boolean {
   return true;
 }
 
-// Get holder's active stakes
-export function getHolderStakes(holderId: string): Stake[] {
-  return stakes.filter(s => s.holderId === holderId && s.status === 'active');
+export async function getHolderStakes(holderId: string): Promise<Stake[]> {
+  if (isDbConnected() && supabase) {
+    const { data } = await supabase
+      .from('path402_stakes')
+      .select('*')
+      .eq('holder_id', holderId)
+      .eq('status', 'active');
+
+    return (data || []).map((s) => ({
+      id: s.id,
+      holderId: s.holder_id,
+      amount: s.amount,
+      stakedAt: s.staked_at,
+      status: s.status,
+      unstakedAt: s.unstaked_at,
+    }));
+  }
+
+  return memoryStore.stakes.filter((s) => s.holderId === holderId && s.status === 'active');
 }
 
-// Distribute dividends (called by $PATH402 protocol)
-export function distributeDividends(totalAmount: number, sourceTxId?: string): Dividend {
-  const allHolders = getAllHolders();
+// ============================================================================
+// DIVIDEND OPERATIONS
+// ============================================================================
+
+export async function distributeDividends(totalAmount: number, sourceTxId?: string): Promise<Dividend> {
+  const allHolders = await getAllHolders();
   const totalStaked = allHolders.reduce((sum, h) => sum + h.stakedBalance, 0);
 
   if (totalStaked === 0) {
@@ -250,14 +607,52 @@ export function distributeDividends(totalAmount: number, sourceTxId?: string): D
     }
   }
 
-  dividends.push(dividend);
+  if (isDbConnected() && supabase) {
+    const { data: divData } = await supabase
+      .from('path402_dividends')
+      .insert({
+        total_amount: totalAmount,
+        per_token_amount: perTokenAmount,
+        total_staked: totalStaked,
+        source_tx_id: sourceTxId,
+      })
+      .select()
+      .single();
+
+    if (divData) {
+      dividend.id = divData.id;
+
+      // Insert claims
+      const claimsToInsert = dividend.claims.map((c) => ({
+        dividend_id: divData.id,
+        holder_id: c.holderId,
+        amount: c.amount,
+        staked_at_time: c.stakedAtTime,
+        status: 'pending',
+      }));
+
+      await supabase.from('path402_dividend_claims').insert(claimsToInsert);
+    }
+  } else {
+    memoryStore.dividends.push(dividend);
+  }
+
   return dividend;
 }
 
-// Get pending dividends for a holder
-export function getPendingDividends(holderId: string): number {
+export async function getPendingDividends(holderId: string): Promise<number> {
+  if (isDbConnected() && supabase) {
+    const { data } = await supabase
+      .from('path402_dividend_claims')
+      .select('amount')
+      .eq('holder_id', holderId)
+      .eq('status', 'pending');
+
+    return (data || []).reduce((sum, c) => sum + c.amount, 0);
+  }
+
   let total = 0;
-  for (const dividend of dividends) {
+  for (const dividend of memoryStore.dividends) {
     for (const claim of dividend.claims) {
       if (claim.holderId === holderId && claim.status === 'pending') {
         total += claim.amount;
@@ -267,12 +662,47 @@ export function getPendingDividends(holderId: string): number {
   return total;
 }
 
-// Claim dividends
-export function claimDividends(holderId: string): number {
-  let total = 0;
-  const holder = Array.from(holders.values()).find(h => h.id === holderId);
+export async function claimDividends(holderId: string): Promise<number> {
+  if (isDbConnected() && supabase) {
+    const { data: claims } = await supabase
+      .from('path402_dividend_claims')
+      .select('id, amount')
+      .eq('holder_id', holderId)
+      .eq('status', 'pending');
 
-  for (const dividend of dividends) {
+    if (!claims || claims.length === 0) return 0;
+
+    const total = claims.reduce((sum, c) => sum + c.amount, 0);
+    const claimIds = claims.map((c) => c.id);
+
+    // Mark as claimed
+    await supabase
+      .from('path402_dividend_claims')
+      .update({ status: 'claimed', claimed_at: new Date().toISOString() })
+      .in('id', claimIds);
+
+    // Update holder total dividends
+    const { data: holder } = await supabase
+      .from('path402_holders')
+      .select('total_dividends')
+      .eq('id', holderId)
+      .single();
+
+    if (holder) {
+      await supabase
+        .from('path402_holders')
+        .update({ total_dividends: holder.total_dividends + total })
+        .eq('id', holderId);
+    }
+
+    return total;
+  }
+
+  // In-memory fallback
+  let total = 0;
+  const holder = Array.from(memoryStore.holders.values()).find((h) => h.id === holderId);
+
+  for (const dividend of memoryStore.dividends) {
     for (const claim of dividend.claims) {
       if (claim.holderId === holderId && claim.status === 'pending') {
         claim.status = 'claimed';
@@ -290,22 +720,35 @@ export function claimDividends(holderId: string): number {
   return total;
 }
 
-// Get total dividends earned by a holder
-export function getTotalDividendsEarned(holderId: string): number {
-  const holder = Array.from(holders.values()).find(h => h.id === holderId);
+export async function getTotalDividendsEarned(holderId: string): Promise<number> {
+  if (isDbConnected() && supabase) {
+    const { data } = await supabase
+      .from('path402_holders')
+      .select('total_dividends')
+      .eq('id', holderId)
+      .single();
+
+    return data?.total_dividends || 0;
+  }
+
+  const holder = Array.from(memoryStore.holders.values()).find((h) => h.id === holderId);
   return holder?.totalDividends || 0;
 }
 
-// Cap table
-export function getCapTable(): Array<{ address: string; handle?: string; balance: number; percentage: number }> {
-  const allHolders = getAllHolders()
-    .filter(h => h.balance > 0)
-    .sort((a, b) => b.balance - a.balance);
+// ============================================================================
+// CAP TABLE
+// ============================================================================
 
-  return allHolders.map(h => ({
-    address: h.address,
-    handle: h.handle,
-    balance: h.balance,
-    percentage: (h.balance / TOKEN_CONFIG.totalSupply) * 100,
-  }));
+export async function getCapTable(): Promise<Array<{ address: string; handle?: string; balance: number; percentage: number }>> {
+  const allHolders = await getAllHolders();
+
+  return allHolders
+    .filter((h) => h.balance > 0)
+    .sort((a, b) => b.balance - a.balance)
+    .map((h) => ({
+      address: h.address,
+      handle: h.handle,
+      balance: h.balance,
+      percentage: (h.balance / TOKEN_CONFIG.totalSupply) * 100,
+    }));
 }

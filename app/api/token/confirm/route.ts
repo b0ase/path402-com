@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing purchaseId or txId' }, { status: 400 });
     }
 
-    const success = confirmPurchase(purchaseId, txId);
+    const success = await confirmPurchase(purchaseId, txId);
 
     if (!success) {
       return NextResponse.json({ error: 'Purchase not found or already confirmed' }, { status: 400 });

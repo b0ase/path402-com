@@ -3,7 +3,7 @@ import { getTokenStats } from '@/lib/store';
 
 export async function GET() {
   try {
-    const stats = getTokenStats();
+    const stats = await getTokenStats();
     return NextResponse.json(stats);
   } catch (error) {
     console.error('Error getting token stats:', error);

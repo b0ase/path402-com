@@ -3,8 +3,8 @@ import { getCapTable, getTokenStats } from '@/lib/store';
 
 export async function GET() {
   try {
-    const capTable = getCapTable();
-    const stats = getTokenStats();
+    const capTable = await getCapTable();
+    const stats = await getTokenStats();
 
     return NextResponse.json({
       holders: capTable,

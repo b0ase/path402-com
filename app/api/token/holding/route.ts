@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
     const provider = request.headers.get('x-wallet-provider');
     const handle = request.headers.get('x-wallet-handle');
 
-    const holder = getHolder(address || undefined, handle || undefined);
+    const holder = await getHolder(address || undefined, handle || undefined);
 
     if (!holder) {
       return NextResponse.json({
@@ -23,8 +23,8 @@ export async function GET(request: NextRequest) {
       balance: holder.balance,
       stakedBalance: holder.stakedBalance,
       availableBalance: holder.balance - holder.stakedBalance,
-      pendingDividends: getPendingDividends(holder.id),
-      totalDividendsEarned: getTotalDividendsEarned(holder.id),
+      pendingDividends: await getPendingDividends(holder.id),
+      totalDividendsEarned: await getTotalDividendsEarned(holder.id),
     });
   } catch (error) {
     console.error('Error getting holding:', error);
