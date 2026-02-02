@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
+import { WalletProvider } from "@/components/WalletProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,6 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <WalletProvider>
         {/* Navigation */}
         <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm border-b border-gray-800">
           <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -42,6 +44,12 @@ export default function RootLayout({
               </Link>
               <Link href="/exchange" className="text-gray-400 hover:text-white transition-colors text-sm">
                 Exchange
+              </Link>
+              <Link href="/token" className="text-gray-400 hover:text-white transition-colors text-sm">
+                Token
+              </Link>
+              <Link href="/registry" className="text-gray-400 hover:text-white transition-colors text-sm">
+                Registry
               </Link>
               <a
                 href="https://github.com/b0ase/path402-mcp-server"
@@ -87,6 +95,8 @@ export default function RootLayout({
                 <h4 className="text-sm font-medium text-gray-400 mb-4 uppercase tracking-wider">Ecosystem</h4>
                 <ul className="space-y-2 text-sm">
                   <li><Link href="/exchange" className="text-gray-400 hover:text-white">Exchange</Link></li>
+                  <li><Link href="/token" className="text-gray-400 hover:text-white">Token</Link></li>
+                  <li><Link href="/registry" className="text-gray-400 hover:text-white">Registry</Link></li>
                   <li><a href="https://b0ase.com/exchange" className="text-gray-400 hover:text-white">b0ase.com/exchange</a></li>
                 </ul>
               </div>
@@ -103,6 +113,7 @@ export default function RootLayout({
             </div>
           </div>
         </footer>
+        </WalletProvider>
       </body>
     </html>
   );
