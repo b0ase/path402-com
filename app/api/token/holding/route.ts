@@ -3,9 +3,14 @@ import { getHolder, getPendingDividends, getTotalDividendsEarned } from '@/lib/s
 
 export async function GET(request: NextRequest) {
   try {
-    const address = request.headers.get('x-wallet-address');
-    const provider = request.headers.get('x-wallet-provider');
-    const handle = request.headers.get('x-wallet-handle');
+    // Check headers first (for Yours wallet)
+    let address = request.headers.get('x-wallet-address');
+    let handle = request.headers.get('x-wallet-handle');
+
+    // Then check cookies (for HandCash)
+    if (!address && !handle) {
+      handle = request.cookies.get('hc_handle')?.value || null;
+    }
 
     const holder = await getHolder(address || undefined, handle || undefined);
 

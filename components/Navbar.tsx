@@ -41,6 +41,13 @@ export function Navbar() {
             GitHub
           </a>
 
+          {/* Account link when connected */}
+          {wallet.connected && (
+            <Link href="/account" className="text-gray-400 hover:text-white transition-colors text-sm">
+              Account
+            </Link>
+          )}
+
           {/* Wallet Connection */}
           {wallet.connected ? (
             <div className="relative">
