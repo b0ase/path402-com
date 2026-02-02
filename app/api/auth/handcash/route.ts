@@ -20,9 +20,10 @@ export async function GET(request: NextRequest) {
     const authUrl = new URL(`${HANDCASH_AUTH_URL}/authorize`);
     authUrl.searchParams.set('appId', HANDCASH_APP_ID);
 
-    // Get the base URL for the callback
+    // Get the base URL for the callback - MUST match HandCash dashboard exactly
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://path402.com';
-    const callbackUrl = `${baseUrl}/api/auth/handcash/callback?redirect=${encodeURIComponent(redirect)}`;
+    // Note: HandCash dashboard has this registered as the callback URL
+    const callbackUrl = `${baseUrl}/api/auth/callback/handcash`;
     authUrl.searchParams.set('redirectUrl', callbackUrl);
 
     return NextResponse.redirect(authUrl.toString());
