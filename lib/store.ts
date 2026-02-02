@@ -187,6 +187,9 @@ export async function getAllHolders(): Promise<TokenHolder[]> {
 // TOKEN STATS
 // ============================================================================
 
+// Only 500M tokens are for sale from treasury
+const TREASURY_FOR_SALE = 500_000_000;
+
 export async function getTokenStats() {
   if (isDbConnected() && supabase) {
     // Get all holders EXCEPT the treasury/operator (address = 'operator')
@@ -204,16 +207,16 @@ export async function getTokenStats() {
     const totalCirculating = regularHolders.reduce((sum, h) => sum + (h.balance || 0), 0);
     const totalStaked = regularHolders.reduce((sum, h) => sum + (h.staked_balance || 0), 0);
 
-    // Treasury = Total Supply - Circulating (derived, not stored)
-    const treasuryBalance = TOKEN_CONFIG.totalSupply - totalCirculating;
+    // Treasury balance = 500M for sale - what's been sold (circulating to non-treasury)
+    const treasuryBalance = Math.max(0, TREASURY_FOR_SALE - totalCirculating);
 
     return {
       totalHolders: regularHolders.filter((h) => h.balance > 0).length,
       totalStaked,
       totalCirculating,
       treasuryBalance,
-      totalSold: totalCirculating, // What's circulating was sold
-      totalRevenue: 0, // TODO: sum from purchases table
+      totalSold: totalCirculating,
+      totalRevenue: 0,
     };
   }
 

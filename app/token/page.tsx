@@ -542,7 +542,7 @@ export default function TokenPage() {
           >
             <h2 className="text-xl font-bold text-white mb-4">Buy Tokens</h2>
             <p className="text-gray-400 text-sm mb-4">
-              sqrt_decay pricing: price decreases as more tokens are sold.
+              sqrt_decay pricing: price increases as treasury depletes. Early buyers win.
               {stats?.currentPrice && (
                 <span className="block mt-1 text-green-400">
                   Current price: {stats.currentPrice.toLocaleString()} sats/token
