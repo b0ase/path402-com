@@ -58,7 +58,7 @@ export default function DocsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-black pt-20">
+    <div className="min-h-screen bg-white dark:bg-black pt-20">
       <div className="max-w-4xl mx-auto px-6 py-20">
         {/* Header */}
         <motion.div
@@ -68,7 +68,7 @@ export default function DocsPage() {
           variants={staggerContainer}
         >
           <motion.div variants={fadeIn}>
-            <Link href="/" className="text-gray-500 hover:text-white text-sm mb-4 inline-block">
+            <Link href="/" className="text-gray-500 hover:text-gray-900 dark:hover:text-white text-sm mb-4 inline-block">
               ← Back to Home
             </Link>
           </motion.div>
