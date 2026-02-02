@@ -36,7 +36,7 @@ export default function WhitepaperPage() {
             variants={fadeIn}
             className="text-5xl md:text-6xl font-bold mb-6"
           >
-            The $402 Path Token Standard
+            The Path $402 Token Standard
           </motion.h1>
           <motion.p
             variants={fadeIn}
@@ -116,7 +116,7 @@ export default function WhitepaperPage() {
               incentives with consumer value. The vision of native web payments never materialized—until now.
             </p>
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed mt-4">
-              The $402 Path Token Standard resolves this by defining a complete protocol for:
+              The Path $402 Token Standard resolves this by defining a complete protocol for:
             </p>
             <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mt-4">
               <li><strong>Discovery</strong> — Machine-readable pricing at any URL</li>
@@ -693,7 +693,7 @@ Example:
           <section id="conclusion" className="mb-16">
             <h2 className="text-3xl font-bold mb-6 border-b border-gray-200 dark:border-gray-800 pb-4">10. Conclusion</h2>
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-              The $402 Path Token Standard represents a fundamental shift in how the internet handles value
+              The Path $402 Token Standard represents a fundamental shift in how the internet handles value
               exchange. By combining HTTP 402, unilateral contract theory, and deterministic pricing, we
               create a system where:
             </p>
