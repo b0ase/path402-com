@@ -22,14 +22,17 @@ export function Navbar() {
           $402
         </Link>
         <div className="flex items-center gap-6">
-          <Link href="/docs" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm">
-            Docs
+          <Link href="/402" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm font-medium">
+            Whitepaper
+          </Link>
+          <Link href="/token" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm">
+            Token
           </Link>
           <Link href="/exchange" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm">
             Exchange
           </Link>
-          <Link href="/token" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm">
-            Token
+          <Link href="/docs" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm">
+            Docs
           </Link>
           <Link href="/registry" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm">
             Registry
