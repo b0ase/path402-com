@@ -195,7 +195,7 @@ export default function AccountPage() {
             className="text-gray-600 dark:text-gray-400"
             variants={fadeIn}
           >
-            Manage your $PATH402 holdings and wallet
+            Manage your $402 holdings and wallet
           </motion.p>
         </motion.div>
 
@@ -364,7 +364,7 @@ export default function AccountPage() {
           transition={{ delay: 0.3 }}
           whileHover={{ borderColor: "rgba(96, 165, 250, 0.5)" }}
         >
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">$PATH402 Holdings</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">$402 Holdings</h2>
 
           {loading ? (
             <div className="text-gray-600 dark:text-gray-400">Loading...</div>
@@ -394,7 +394,7 @@ export default function AccountPage() {
             </div>
           ) : (
             <div className="text-center py-8">
-              <div className="text-gray-600 dark:text-gray-400 mb-4">You don't hold any $PATH402 tokens yet.</div>
+              <div className="text-gray-600 dark:text-gray-400 mb-4">You don't hold any $402 tokens yet.</div>
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}

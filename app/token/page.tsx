@@ -720,7 +720,7 @@ export default function TokenPage() {
           >
             <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Stake Tokens</h2>
             <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
-              Stake your tokens to earn dividends from $PATH402 protocol fees.
+              Stake your tokens to earn dividends from $402 protocol fees.
             </p>
             <div className="space-y-4">
               <div>

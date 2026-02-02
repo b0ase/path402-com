@@ -73,7 +73,7 @@ export default function ExchangePage() {
             variants={fadeIn}
             transition={{ delay: 0.2 }}
           >
-            Discover and acquire $PATH402 tokens. View current prices, supply levels, and economics
+            Discover and acquire $402 tokens. View current prices, supply levels, and economics
             before making a purchase.
           </motion.p>
         </motion.div>

@@ -23,7 +23,7 @@ const scaleIn = {
 
 export default function DocsPage() {
   const tocItems = [
-    { id: "what-is-path402", label: "What is $PATH402?" },
+    { id: "what-is-path402", label: "What is $402?" },
     { id: "addresses", label: "$addresses" },
     { id: "pricing-models", label: "Pricing Models" },
     { id: "mcp-server", label: "MCP Server" },
@@ -84,7 +84,7 @@ export default function DocsPage() {
             variants={fadeIn}
             transition={{ delay: 0.2 }}
           >
-            Everything you need to know about the $PATH402 protocol.
+            Everything you need to know about the $402 protocol.
           </motion.p>
         </motion.div>
 
@@ -113,7 +113,7 @@ export default function DocsPage() {
           </ul>
         </motion.div>
 
-        {/* What is $PATH402 */}
+        {/* What is $402 */}
         <motion.section
           id="what-is-path402"
           className="mb-16"
@@ -123,9 +123,9 @@ export default function DocsPage() {
           variants={fadeIn}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">What is $PATH402?</h2>
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">What is $402?</h2>
           <p className="text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
-            $PATH402 is a protocol that turns any URL path into a priced, tokenised market. Put a{" "}
+            $402 is a protocol that turns any URL path into a priced, tokenised market. Put a{" "}
             <code className="text-gray-900 dark:text-white bg-gray-200 dark:bg-gray-900 px-2 py-1 rounded">$</code> in front of a path segment
             and it becomes an economic object with a price curve, a supply count, holders who serve
             the content, and revenue that flows to participants.
@@ -152,7 +152,7 @@ export default function DocsPage() {
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">$addresses</h2>
           <p className="text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
             Content behind <code className="text-gray-900 dark:text-white bg-gray-200 dark:bg-gray-900 px-2 py-1 rounded">$</code> path segments
-            is $PATH402-gated. Each segment is an independent market.
+            is $402-gated. Each segment is an independent market.
           </p>
           <motion.pre
             className="bg-gray-100 dark:bg-gray-900 p-6 font-mono text-sm text-gray-700 dark:text-gray-300 overflow-x-auto mb-4 rounded-lg"
@@ -217,7 +217,7 @@ $example.com/$blog/$my-post     → content token (the actual content)`}
         >
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">MCP Server</h2>
           <p className="text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
-            The path402-mcp-server enables AI agents to interact with $PATH402 content.
+            The path402-mcp-server enables AI agents to interact with $402 content.
           </p>
           <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Installation</h3>
           <motion.pre
