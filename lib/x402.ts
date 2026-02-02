@@ -216,6 +216,16 @@ export async function getInscriptionStats() {
   };
 }
 
+/**
+ * Get a single inscription by ID
+ */
+export async function getInscription(id: string) {
+  // TODO: Query database for real inscription
+  // For now return null (not found)
+  console.log('[x402] getInscription called with id:', id);
+  return null;
+}
+
 // Network-specific verification functions
 
 async function verifyBSVPayment(payload: VerifyRequest['payload']): Promise<VerificationResult> {
