@@ -5,7 +5,7 @@ import { executeTransfer } from '@/lib/bsv20-transfer';
 
 // sqrt_decay pricing: price = BASE / sqrt(remaining + 1)
 // Price INCREASES as treasury depletes - rewards early buyers
-const BASE_PRICE_SATS = 100_000_000; // 1 BSV when last token remains
+const BASE_PRICE_SATS = 223_610; // ~10 sats/token at 500M treasury, 1 BSV = 1% of supply
 const INITIAL_TREASURY = 500_000_000; // 500M for sale
 
 function calculateSqrtDecayPrice(treasuryRemaining: number): number {

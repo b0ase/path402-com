@@ -14,7 +14,7 @@ export async function GET() {
     const tokenStats = await getTokenStats();
 
     // Calculate current price using sqrt_decay
-    const BASE_PRICE_SATS = 100_000_000;
+    const BASE_PRICE_SATS = 223_610; // ~10 sats/token at 500M treasury, 1 BSV = 1% of supply
     const currentPrice = Math.ceil(BASE_PRICE_SATS / Math.sqrt(tokenStats.treasuryBalance + 1));
 
     return NextResponse.json({
@@ -74,7 +74,7 @@ export async function GET() {
       // Current Token Pricing (sqrt_decay)
       pricing: {
         model: 'sqrt_decay',
-        formula: 'price = 100,000,000 / sqrt(treasury_remaining + 1)',
+        formula: 'price = 223,610 / sqrt(treasury_remaining + 1)',
         basePriceSats: BASE_PRICE_SATS,
         currentPriceSats: currentPrice,
         treasuryRemaining: tokenStats.treasuryBalance,

@@ -21,7 +21,7 @@ interface PriceCurveChartProps {
   showUsd: boolean;
 }
 
-const BASE_PRICE_SATS = 100_000_000;
+const BASE_PRICE_SATS = 223_610; // ~10 sats/token at 500M treasury, 1 BSV = 1% of supply
 const TOTAL_TREASURY = 500_000_000;
 
 function calculatePrice(remaining: number): number {
@@ -286,8 +286,8 @@ export default function PriceCurveChart({
 
       {/* Curve explanation */}
       <div className="mt-4 text-xs text-gray-500 border-t border-gray-800 pt-4">
-        <strong className="text-gray-400">sqrt_decay pricing:</strong> price = 1 BSV / sqrt(remaining + 1).
-        Early buyers get cheap tokens. As treasury depletes, price increases exponentially.
+        <strong className="text-gray-400">sqrt_decay pricing:</strong> price = 223,610 / sqrt(remaining + 1).
+        At 500M treasury: ~10 sats/token. 1 BSV buys ~1% of supply. Early buyers win.
       </div>
     </motion.div>
   );
