@@ -1,27 +1,59 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getOrCreateHolder, createPurchase, processPurchaseImmediate, getTokenStats, PAYMENT_ADDRESS, TREASURY_PAYMAIL } from '@/lib/store';
+import { getOrCreateHolder, createPurchase, processPurchaseImmediate, getTokenStats, PAYMENT_ADDRESS, TREASURY_PAYMAIL, getHolder } from '@/lib/store';
 import { getInstance, Connect } from '@handcash/sdk';
+import { executeTransfer } from '@/lib/bsv20-transfer';
 
-// sqrt_decay pricing: price = BASE / sqrt(supply_sold + 1)
-// Early buyers pay more, price decreases as more tokens are sold
-const BASE_PRICE_SATS = 100_000_000; // 1 BSV for first token (~$17)
+// sqrt_decay pricing: price = BASE / sqrt(remaining + 1)
+// Price INCREASES as treasury depletes - rewards early buyers
+const BASE_PRICE_SATS = 100_000_000; // 1 BSV when last token remains
 const INITIAL_TREASURY = 500_000_000; // 500M for sale
 
-function calculateSqrtDecayPrice(supplySold: number): number {
-  // price = base / sqrt(supply_sold + 1)
-  return Math.ceil(BASE_PRICE_SATS / Math.sqrt(supplySold + 1));
+function calculateSqrtDecayPrice(treasuryRemaining: number): number {
+  // price = base / sqrt(remaining + 1)
+  // When 500M remain: price = 100M / sqrt(500M) ≈ 141 sats (cheap!)
+  // When 1 remains: price = 100M / sqrt(2) ≈ 70M sats (expensive!)
+  return Math.ceil(BASE_PRICE_SATS / Math.sqrt(treasuryRemaining + 1));
 }
 
-function calculateTotalCost(currentSupplySold: number, amount: number): { totalSats: number; avgPrice: number } {
+function calculateTotalCost(treasuryRemaining: number, amount: number): { totalSats: number; avgPrice: number } {
   // For bulk purchases, integrate the price curve
-  // Sum of prices from supply_sold to supply_sold + amount
+  // Each token purchased reduces treasury, increasing price for next
   let totalSats = 0;
   for (let i = 0; i < amount; i++) {
-    totalSats += calculateSqrtDecayPrice(currentSupplySold + i);
+    // Treasury shrinks by 1 for each token bought
+    totalSats += calculateSqrtDecayPrice(treasuryRemaining - i);
   }
   return {
     totalSats,
     avgPrice: Math.ceil(totalSats / amount),
+  };
+}
+
+// Reverse calculation: given spend amount, calculate how many tokens you get
+// Buys cheapest tokens first (highest treasury remaining = lowest price)
+function calculateTokensForSpend(treasuryRemaining: number, spendSats: number): {
+  tokenCount: number;
+  totalCost: number;
+  avgPrice: number;
+  remainingSats: number;
+} {
+  let tokenCount = 0;
+  let totalCost = 0;
+
+  while (treasuryRemaining - tokenCount > 0) {
+    const nextTokenPrice = calculateSqrtDecayPrice(treasuryRemaining - tokenCount);
+    if (totalCost + nextTokenPrice > spendSats) {
+      break; // Can't afford the next token
+    }
+    totalCost += nextTokenPrice;
+    tokenCount++;
+  }
+
+  return {
+    tokenCount,
+    totalCost,
+    avgPrice: tokenCount > 0 ? Math.ceil(totalCost / tokenCount) : 0,
+    remainingSats: spendSats - totalCost,
   };
 }
 
@@ -36,22 +68,44 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { amount } = body;
+    const { amount, spendSats } = body;
 
-    if (!amount || amount <= 0) {
-      return NextResponse.json({ error: 'Invalid amount' }, { status: 400 });
+    // Get current treasury state
+    const stats = await getTokenStats();
+    const treasuryRemaining = stats.treasuryBalance;
+    const currentPrice = calculateSqrtDecayPrice(treasuryRemaining);
+
+    let tokenAmount: number;
+    let totalSats: number;
+    let avgPrice: number;
+
+    if (spendSats && spendSats > 0) {
+      // New mode: user specifies how much to spend, we calculate tokens
+      const result = calculateTokensForSpend(treasuryRemaining, spendSats);
+      if (result.tokenCount === 0) {
+        return NextResponse.json({
+          error: 'Insufficient funds',
+          details: `Minimum purchase at current price is ${currentPrice.toLocaleString()} sats for 1 token`,
+          currentPrice,
+        }, { status: 400 });
+      }
+      tokenAmount = result.tokenCount;
+      totalSats = result.totalCost;
+      avgPrice = result.avgPrice;
+    } else if (amount && amount > 0) {
+      // Old mode: user specifies token count, we calculate cost
+      tokenAmount = amount;
+      const costResult = calculateTotalCost(treasuryRemaining, amount);
+      totalSats = costResult.totalSats;
+      avgPrice = costResult.avgPrice;
+    } else {
+      return NextResponse.json({ error: 'Specify either amount (tokens) or spendSats' }, { status: 400 });
     }
 
     // Check treasury has enough tokens
-    const stats = await getTokenStats();
-    if (stats.treasuryBalance < amount) {
+    if (stats.treasuryBalance < tokenAmount) {
       return NextResponse.json({ error: 'Insufficient tokens available' }, { status: 400 });
     }
-
-    // Calculate supply sold and price using sqrt_decay
-    const supplySold = INITIAL_TREASURY - stats.treasuryBalance;
-    const currentPrice = calculateSqrtDecayPrice(supplySold);
-    const { totalSats, avgPrice } = calculateTotalCost(supplySold, amount);
 
     // Get or create holder
     const holder = await getOrCreateHolder(
@@ -63,16 +117,16 @@ export async function POST(request: NextRequest) {
 
     if (provider === 'yours') {
       // For Yours Wallet, create pending purchase and return payment details
-      const purchase = await createPurchase(holder.id, amount, avgPrice);
+      const purchase = await createPurchase(holder.id, tokenAmount, avgPrice);
 
       return NextResponse.json({
         purchaseId: purchase.id,
-        amount,
+        amount: tokenAmount,
         pricingModel: 'sqrt_decay',
         currentPrice,
         avgPrice,
         totalSats,
-        supplySold,
+        treasuryRemaining,
         paymentAddress: PAYMENT_ADDRESS,
         status: 'pending_payment',
       });
@@ -124,20 +178,52 @@ export async function POST(request: NextRequest) {
           }, { status: 400 });
         }
 
-        // Payment succeeded, credit tokens
-        const purchase = await processPurchaseImmediate(holder.id, amount, avgPrice);
+        // Payment succeeded, credit tokens in database
+        const purchase = await processPurchaseImmediate(holder.id, tokenAmount, avgPrice);
+
+        // Attempt on-chain BSV-20 transfer if user has derived address
+        let onChainTransfer = null;
+        const userOnChainAddress = holder.ordinalsAddress;
+
+        if (userOnChainAddress) {
+          console.log(`Attempting on-chain transfer of ${tokenAmount} to ${userOnChainAddress}`);
+          const transferResult = await executeTransfer(tokenAmount, userOnChainAddress);
+
+          if (transferResult.success) {
+            onChainTransfer = {
+              success: true,
+              txId: transferResult.txId,
+              address: userOnChainAddress,
+            };
+            console.log(`On-chain transfer successful: ${transferResult.txId}`);
+          } else {
+            console.error(`On-chain transfer failed: ${transferResult.error}`);
+            onChainTransfer = {
+              success: false,
+              error: transferResult.error,
+              note: 'Tokens credited to database. On-chain transfer pending.',
+            };
+          }
+        } else {
+          onChainTransfer = {
+            success: false,
+            error: 'No derived address',
+            note: 'Derive your on-chain address in Account settings to receive tokens on-chain.',
+          };
+        }
 
         return NextResponse.json({
           purchaseId: purchase.id,
-          amount,
+          amount: tokenAmount,
           pricingModel: 'sqrt_decay',
           currentPrice,
           avgPrice,
           totalSats,
-          supplySold,
+          treasuryRemaining,
           status: 'confirmed',
           txId: paymentResult.data?.transactionId,
-          newBalance: holder.balance + amount,
+          newBalance: holder.balance + tokenAmount,
+          onChainTransfer,
         });
       } catch (paymentError) {
         console.error('HandCash payment exception:', paymentError);

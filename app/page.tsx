@@ -88,6 +88,17 @@ export default function Home() {
                 Read the Docs
               </Link>
             </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.02, boxShadow: "0 0 20px rgba(34,197,94,0.3)" }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Link
+                href="/token"
+                className="inline-block px-8 py-4 bg-green-600 text-white font-semibold text-lg hover:bg-green-700 transition-colors"
+              >
+                Support the Project
+              </Link>
+            </motion.div>
           </motion.div>
         </motion.div>
 

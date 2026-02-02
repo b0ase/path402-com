@@ -40,12 +40,40 @@ interface CapTableData {
   };
 }
 
+interface OnChainData {
+  onChain: {
+    treasuryAddress: string;
+    treasuryBalance: number;
+    circulatingSupply: number;
+    holders: Array<{ address: string; balance: number }>;
+    totalHolders: number;
+  };
+  database: {
+    holders: Array<{ address: string; balance: number }>;
+    totalHolders: number;
+    totalCirculating: number;
+  };
+  comparison: {
+    inSync: boolean;
+    discrepancies: Array<{
+      address: string;
+      onChain: number;
+      database: number;
+      difference: number;
+    }>;
+  };
+  warning: string | null;
+}
+
 export default function RegistryPage() {
   const [data, setData] = useState<CapTableData | null>(null);
+  const [onChainData, setOnChainData] = useState<OnChainData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showOnChain, setShowOnChain] = useState(false);
 
   useEffect(() => {
     fetchCapTable();
+    fetchOnChainData();
   }, []);
 
   const fetchCapTable = async () => {
@@ -59,6 +87,18 @@ export default function RegistryPage() {
       console.error('Failed to fetch cap table:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchOnChainData = async () => {
+    try {
+      const response = await fetch('/api/token/onchain');
+      if (response.ok) {
+        const result = await response.json();
+        setOnChainData(result);
+      }
+    } catch (error) {
+      console.error('Failed to fetch on-chain data:', error);
     }
   };
 
@@ -139,6 +179,25 @@ export default function RegistryPage() {
           ))}
         </motion.div>
 
+        {/* On-Chain Sync Status */}
+        {onChainData && !onChainData.comparison.inSync && (
+          <motion.div
+            className="border border-yellow-500/50 bg-yellow-500/10 p-4 mb-6"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div className="flex items-center gap-2 text-yellow-400 mb-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <span className="font-medium">Database out of sync with blockchain</span>
+            </div>
+            <p className="text-yellow-400/80 text-sm">
+              The on-chain BSV-20 token state differs from the database. On-chain is the source of truth.
+            </p>
+          </motion.div>
+        )}
+
         {/* Treasury Info */}
         <motion.div
           className="border border-gray-800 p-6 mb-12"
@@ -147,13 +206,23 @@ export default function RegistryPage() {
           transition={{ delay: 0.5 }}
           whileHover={{ borderColor: "rgba(255,255,255,0.2)" }}
         >
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-4">
             <div>
               <div className="text-gray-400 text-sm mb-1">Treasury</div>
               <div className="font-mono text-sm">{TOKEN_CONFIG.txId.slice(0, 20)}...</div>
             </div>
-            <div className="text-right">
-              <div className="text-gray-400 text-sm mb-1">Balance</div>
+            <button
+              onClick={() => setShowOnChain(!showOnChain)}
+              className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+            >
+              {showOnChain ? 'Hide' : 'Show'} On-Chain State
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Database State */}
+            <div>
+              <div className="text-gray-500 text-xs uppercase tracking-wider mb-2">Database (Off-Chain)</div>
               <div className="text-xl font-bold">
                 {loading ? '...' : formatNumber(data?.stats.treasuryBalance || TOKEN_CONFIG.totalSupply)}
               </div>
@@ -163,7 +232,67 @@ export default function RegistryPage() {
                   : `${(((data?.stats.treasuryBalance || TOKEN_CONFIG.totalSupply) / TOKEN_CONFIG.totalSupply) * 100).toFixed(2)}%`}
               </div>
             </div>
+
+            {/* On-Chain State */}
+            <div>
+              <div className="text-gray-500 text-xs uppercase tracking-wider mb-2 flex items-center gap-2">
+                On-Chain (BSV-20)
+                {onChainData?.comparison.inSync ? (
+                  <span className="text-green-400 text-xs">IN SYNC</span>
+                ) : (
+                  <span className="text-yellow-400 text-xs">OUT OF SYNC</span>
+                )}
+              </div>
+              <div className="text-xl font-bold">
+                {onChainData ? formatNumber(onChainData.onChain.treasuryBalance) : '...'}
+              </div>
+              <div className="text-gray-500 text-sm">
+                {onChainData
+                  ? `${((onChainData.onChain.treasuryBalance / TOKEN_CONFIG.totalSupply) * 100).toFixed(2)}%`
+                  : '...'}
+              </div>
+            </div>
           </div>
+
+          {/* Expanded On-Chain Details */}
+          <AnimatePresence>
+            {showOnChain && onChainData && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mt-6 pt-6 border-t border-gray-800"
+              >
+                <div className="text-sm text-gray-400 mb-4">
+                  <strong>On-Chain Holders:</strong> {onChainData.onChain.totalHolders}
+                </div>
+
+                {onChainData.onChain.holders.length > 0 ? (
+                  <div className="space-y-2">
+                    {onChainData.onChain.holders.map((holder, i) => (
+                      <div key={i} className="flex justify-between text-sm">
+                        <span className="font-mono text-gray-400">{truncateAddress(holder.address)}</span>
+                        <span className="text-white">{formatNumber(holder.balance)}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-gray-500 text-sm">All tokens in treasury (no transfers yet)</div>
+                )}
+
+                {onChainData.comparison.discrepancies.length > 0 && (
+                  <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/30">
+                    <div className="text-yellow-400 text-sm font-medium mb-2">Discrepancies:</div>
+                    {onChainData.comparison.discrepancies.map((d, i) => (
+                      <div key={i} className="text-xs text-yellow-400/80">
+                        {truncateAddress(d.address)}: DB={formatNumber(d.database)}, Chain={formatNumber(d.onChain)}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
 
         {/* Cap Table */}

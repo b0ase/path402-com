@@ -189,24 +189,31 @@ export async function getAllHolders(): Promise<TokenHolder[]> {
 
 export async function getTokenStats() {
   if (isDbConnected() && supabase) {
-    const [holdersResult, treasuryResult] = await Promise.all([
-      supabase.from('path402_holders').select('balance, staked_balance'),
-      supabase.from('path402_treasury').select('*').single(),
-    ]);
+    // Get all holders EXCEPT the treasury/operator (address = 'operator')
+    const { data: holders } = await supabase
+      .from('path402_holders')
+      .select('balance, staked_balance, address');
 
-    const holders = holdersResult.data || [];
-    const treasury = treasuryResult.data;
+    const allHolders = holders || [];
 
-    const totalStaked = holders.reduce((sum, h) => sum + (h.staked_balance || 0), 0);
-    const totalCirculating = holders.reduce((sum, h) => sum + (h.balance || 0), 0);
+    // Separate treasury holder from regular holders
+    const treasuryHolder = allHolders.find(h => h.address === 'operator');
+    const regularHolders = allHolders.filter(h => h.address !== 'operator');
+
+    // Calculate from holder balances (single source of truth)
+    const totalCirculating = regularHolders.reduce((sum, h) => sum + (h.balance || 0), 0);
+    const totalStaked = regularHolders.reduce((sum, h) => sum + (h.staked_balance || 0), 0);
+
+    // Treasury = Total Supply - Circulating (derived, not stored)
+    const treasuryBalance = TOKEN_CONFIG.totalSupply - totalCirculating;
 
     return {
-      totalHolders: holders.filter((h) => h.balance > 0).length,
+      totalHolders: regularHolders.filter((h) => h.balance > 0).length,
       totalStaked,
       totalCirculating,
-      treasuryBalance: treasury?.balance || TOKEN_CONFIG.totalSupply,
-      totalSold: treasury?.total_sold || 0,
-      totalRevenue: treasury?.total_revenue_sats || 0,
+      treasuryBalance,
+      totalSold: totalCirculating, // What's circulating was sold
+      totalRevenue: 0, // TODO: sum from purchases table
     };
   }
 

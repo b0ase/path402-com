@@ -11,6 +11,8 @@ interface HolderStats {
   totalStaked: number;
   totalCirculating: number;
   treasuryBalance: number;
+  currentPrice: number;
+  supplySold: number;
 }
 
 interface UserHolding {
@@ -19,6 +21,14 @@ interface UserHolding {
   availableBalance: number;
   pendingDividends: number;
   totalDividendsEarned: number;
+}
+
+interface PurchasePreview {
+  tokenCount: number;
+  totalCost: number;
+  avgPrice: number;
+  remainingSats: number;
+  currentPrice: number;
 }
 
 const fadeIn = {
@@ -43,7 +53,10 @@ export default function TokenPage() {
   const { wallet, connectYours, connectHandCash, disconnect, isYoursAvailable } = useWallet();
   const [stats, setStats] = useState<HolderStats | null>(null);
   const [holding, setHolding] = useState<UserHolding | null>(null);
-  const [buyAmount, setBuyAmount] = useState('1000000');
+  const [spendAmount, setSpendAmount] = useState('100000000'); // 1 BSV default
+  const [spendUnit, setSpendUnit] = useState<'sats' | 'bsv'>('bsv');
+  const [preview, setPreview] = useState<PurchasePreview | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
   const [stakeAmount, setStakeAmount] = useState('');
   const [unstakeAmount, setUnstakeAmount] = useState('');
   const [withdrawAmount, setWithdrawAmount] = useState('');
@@ -51,14 +64,41 @@ export default function TokenPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  const TOKEN_PRICE_SATS = 1;
-
   useEffect(() => {
     fetch('/api/token/stats')
       .then((res) => res.json())
       .then(setStats)
       .catch(console.error);
   }, []);
+
+  // Fetch preview when spend amount changes
+  useEffect(() => {
+    const spendSats = spendUnit === 'bsv'
+      ? Math.floor(parseFloat(spendAmount || '0') * 100_000_000)
+      : parseInt(spendAmount || '0');
+
+    if (!spendSats || spendSats <= 0) {
+      setPreview(null);
+      return;
+    }
+
+    setPreviewLoading(true);
+    const debounceTimeout = setTimeout(() => {
+      fetch(`/api/token/preview?spendSats=${spendSats}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (!data.error) {
+            setPreview(data);
+          } else {
+            setPreview(null);
+          }
+        })
+        .catch(() => setPreview(null))
+        .finally(() => setPreviewLoading(false));
+    }, 300);
+
+    return () => clearTimeout(debounceTimeout);
+  }, [spendAmount, spendUnit]);
 
   useEffect(() => {
     if (wallet.connected) {
@@ -83,9 +123,17 @@ export default function TokenPage() {
       return;
     }
 
-    const amount = parseInt(buyAmount);
-    if (isNaN(amount) || amount <= 0) {
+    const spendSats = spendUnit === 'bsv'
+      ? Math.floor(parseFloat(spendAmount || '0') * 100_000_000)
+      : parseInt(spendAmount || '0');
+
+    if (isNaN(spendSats) || spendSats <= 0) {
       setMessage({ type: 'error', text: 'Please enter a valid amount' });
+      return;
+    }
+
+    if (!preview || preview.tokenCount === 0) {
+      setMessage({ type: 'error', text: 'Amount too low to purchase any tokens at current price' });
       return;
     }
 
@@ -101,14 +149,23 @@ export default function TokenPage() {
           'x-wallet-provider': wallet.provider || '',
           'x-wallet-handle': wallet.handle || '',
         },
-        body: JSON.stringify({ amount }),
+        body: JSON.stringify({ spendSats }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        const errorMsg = data.details ? `${data.error}: ${data.details}` : data.error;
-        throw new Error(errorMsg || 'Purchase failed');
+        // User-friendly error messages
+        let errorText = data.error || 'Purchase failed';
+        if (data.details) {
+          // Check for common HandCash errors
+          if (data.details.includes('spending limit') || data.details.includes('INSUFFICIENT')) {
+            errorText = 'HandCash spending limit exceeded. Visit app.handcash.io to increase your limit.';
+          } else {
+            errorText = `${data.error}: ${data.details}`;
+          }
+        }
+        throw new Error(errorText);
       }
 
       if (wallet.provider === 'yours' && window.yours && data.paymentAddress) {
@@ -127,16 +184,21 @@ export default function TokenPage() {
         });
       }
 
-      setMessage({ type: 'success', text: `Successfully purchased ${amount.toLocaleString()} tokens!` });
+      setMessage({ type: 'success', text: `Successfully purchased ${data.amount.toLocaleString()} tokens for ${(data.totalSats / 100_000_000).toFixed(4)} BSV!` });
 
-      const holdingRes = await fetch('/api/token/holding', {
-        headers: {
-          'x-wallet-address': wallet.address || '',
-          'x-wallet-provider': wallet.provider || '',
-          'x-wallet-handle': wallet.handle || '',
-        },
-      });
+      // Refresh stats and holdings
+      const [holdingRes, statsRes] = await Promise.all([
+        fetch('/api/token/holding', {
+          headers: {
+            'x-wallet-address': wallet.address || '',
+            'x-wallet-provider': wallet.provider || '',
+            'x-wallet-handle': wallet.handle || '',
+          },
+        }),
+        fetch('/api/token/stats'),
+      ]);
       setHolding(await holdingRes.json());
+      setStats(await statsRes.json());
     } catch (error) {
       setMessage({ type: 'error', text: error instanceof Error ? error.message : 'Purchase failed' });
     } finally {
@@ -388,10 +450,10 @@ export default function TokenPage() {
           variants={staggerContainer}
         >
           {[
-            { label: 'Total Supply', value: TOKEN_CONFIG.totalSupply.toLocaleString() },
+            { label: 'Current Price', value: stats?.currentPrice ? `${stats.currentPrice.toLocaleString()} sats` : '—' },
+            { label: 'Tokens Sold', value: stats?.supplySold?.toLocaleString() ?? '—' },
             { label: 'Holders', value: stats?.totalHolders ?? '—' },
-            { label: 'Total Staked', value: stats?.totalStaked?.toLocaleString() ?? '—' },
-            { label: 'Protocol', value: TOKEN_CONFIG.protocol },
+            { label: 'Treasury', value: stats?.treasuryBalance?.toLocaleString() ?? '—' },
           ].map((stat, i) => (
             <motion.div
               key={i}
@@ -480,31 +542,106 @@ export default function TokenPage() {
           >
             <h2 className="text-xl font-bold text-white mb-4">Buy Tokens</h2>
             <p className="text-gray-400 text-sm mb-4">
-              Purchase PATH402.com tokens. Price: {TOKEN_PRICE_SATS} sat per token.
+              sqrt_decay pricing: price decreases as more tokens are sold.
+              {stats?.currentPrice && (
+                <span className="block mt-1 text-green-400">
+                  Current price: {stats.currentPrice.toLocaleString()} sats/token
+                </span>
+              )}
             </p>
             <div className="space-y-4">
               <div>
-                <label className="text-gray-400 text-sm block mb-2">Amount</label>
-                <motion.input
-                  type="number"
-                  value={buyAmount}
-                  onChange={(e) => setBuyAmount(e.target.value)}
-                  placeholder="1000000"
-                  className="w-full bg-black border border-gray-700 p-3 text-white focus:border-gray-500 outline-none transition-colors"
-                  whileFocus={{ borderColor: 'rgba(255,255,255,0.4)' }}
-                />
+                <label className="text-gray-400 text-sm block mb-2">Amount to Spend</label>
+                <div className="flex gap-2">
+                  <motion.input
+                    type="number"
+                    value={spendUnit === 'bsv' ? (parseFloat(spendAmount) / 100_000_000 || '') : spendAmount}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (spendUnit === 'bsv') {
+                        setSpendAmount(String(Math.floor(parseFloat(val || '0') * 100_000_000)));
+                      } else {
+                        setSpendAmount(val);
+                      }
+                    }}
+                    placeholder={spendUnit === 'bsv' ? '1' : '100000000'}
+                    step={spendUnit === 'bsv' ? '0.001' : '1'}
+                    className="flex-1 bg-black border border-gray-700 p-3 text-white focus:border-gray-500 outline-none transition-colors"
+                    whileFocus={{ borderColor: 'rgba(255,255,255,0.4)' }}
+                  />
+                  <select
+                    value={spendUnit}
+                    onChange={(e) => setSpendUnit(e.target.value as 'sats' | 'bsv')}
+                    className="bg-black border border-gray-700 px-4 text-white focus:border-gray-500 outline-none"
+                  >
+                    <option value="bsv">BSV</option>
+                    <option value="sats">sats</option>
+                  </select>
+                </div>
               </div>
-              <div className="text-gray-400 text-sm">
-                Total: {(parseInt(buyAmount) * TOKEN_PRICE_SATS || 0).toLocaleString()} sats
-              </div>
+
+              {/* Preview */}
+              <AnimatePresence mode="wait">
+                {previewLoading ? (
+                  <motion.div
+                    key="loading"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="bg-gray-900/50 border border-gray-700 p-4"
+                  >
+                    <span className="text-gray-400">Calculating...</span>
+                  </motion.div>
+                ) : preview && preview.tokenCount > 0 ? (
+                  <motion.div
+                    key="preview"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="bg-green-900/20 border border-green-500/30 p-4 space-y-2"
+                  >
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">You'll receive:</span>
+                      <span className="text-white font-bold text-lg">{preview.tokenCount.toLocaleString()} tokens</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-400">Avg price:</span>
+                      <span className="text-gray-300">{preview.avgPrice.toLocaleString()} sats/token</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-400">Total cost:</span>
+                      <span className="text-gray-300">{(preview.totalCost / 100_000_000).toFixed(4)} BSV</span>
+                    </div>
+                    {preview.remainingSats > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">Remainder (not spent):</span>
+                        <span className="text-gray-500">{preview.remainingSats.toLocaleString()} sats</span>
+                      </div>
+                    )}
+                  </motion.div>
+                ) : preview === null && parseInt(spendAmount) > 0 ? (
+                  <motion.div
+                    key="insufficient"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="bg-red-900/20 border border-red-500/30 p-4"
+                  >
+                    <span className="text-red-400">
+                      Amount too low. Min: {stats?.currentPrice?.toLocaleString() || '—'} sats for 1 token
+                    </span>
+                  </motion.div>
+                ) : null}
+              </AnimatePresence>
+
               <motion.button
                 onClick={handleBuy}
-                disabled={loading || !wallet.connected}
+                disabled={loading || !wallet.connected || !preview || preview.tokenCount === 0}
                 className="w-full px-6 py-3 bg-white text-black font-medium hover:bg-gray-200 disabled:opacity-50 transition-colors"
                 whileHover={{ scale: 1.01, boxShadow: '0 0 20px rgba(255,255,255,0.2)' }}
                 whileTap={{ scale: 0.99 }}
               >
-                {loading ? 'Processing...' : wallet.connected ? 'Buy Tokens' : 'Connect Wallet to Buy'}
+                {loading ? 'Processing...' : wallet.connected ? `Buy ${preview?.tokenCount?.toLocaleString() || 0} Tokens` : 'Connect Wallet to Buy'}
               </motion.button>
             </div>
           </motion.div>
