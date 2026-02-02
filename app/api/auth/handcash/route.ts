@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 // HandCash OAuth configuration
 const HANDCASH_APP_ID = process.env.HANDCASH_APP_ID?.trim();
-const HANDCASH_AUTH_URL = 'https://app.handcash.io';
+const HANDCASH_AUTH_URL = 'https://market.handcash.io';
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,8 +16,8 @@ export async function GET(request: NextRequest) {
       }, { status: 500 });
     }
 
-    // Build HandCash authorization URL
-    const authUrl = new URL(`${HANDCASH_AUTH_URL}/authorize`);
+    // Build HandCash authorization URL (new format: market.handcash.io/connect)
+    const authUrl = new URL(`${HANDCASH_AUTH_URL}/connect`);
     authUrl.searchParams.set('appId', HANDCASH_APP_ID);
 
     // Get the base URL for the callback - MUST match HandCash dashboard exactly
