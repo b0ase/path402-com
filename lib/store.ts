@@ -14,8 +14,10 @@ const memoryStore = {
 };
 
 // Treasury config
-const TREASURY_ADDRESS = process.env.TREASURY_ADDRESS || '1BrbnQon4uZPSxNwt19ozwtgHPDbgvaeD1';
+const TREASURY_ADDRESS = (process.env.TREASURY_ADDRESS || '1BrbnQon4uZPSxNwt19ozwtgHPDbgvaeD1').trim();
 export const PAYMENT_ADDRESS = TREASURY_ADDRESS;
+// HandCash requires paymail/handle, not raw addresses
+export const TREASURY_PAYMAIL = (process.env.TREASURY_PAYMAIL || 'boase@handcash.io').trim();
 
 // Helper to generate IDs
 function generateId(): string {

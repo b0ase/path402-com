@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getOrCreateHolder, createPurchase, processPurchaseImmediate, getTokenStats, PAYMENT_ADDRESS } from '@/lib/store';
+import { getOrCreateHolder, createPurchase, processPurchaseImmediate, getTokenStats, PAYMENT_ADDRESS, TREASURY_PAYMAIL } from '@/lib/store';
 import { getInstance, Connect } from '@handcash/sdk';
 
 // sqrt_decay pricing: price = BASE / sqrt(supply_sold + 1)
@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
             denominationCurrencyCode: 'USD',
             receivers: [{
               sendAmount: usdAmount,
-              destination: PAYMENT_ADDRESS,
+              destination: TREASURY_PAYMAIL,
             }],
             note: 'PATH402 token purchase',
           }
