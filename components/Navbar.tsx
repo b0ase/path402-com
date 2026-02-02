@@ -36,6 +36,9 @@ export function Navbar() {
           <Link href="/docs" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm">
             Docs
           </Link>
+          <Link href="/registry" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm">
+            Registry
+          </Link>
           <a
             href="https://github.com/b0ase/path402-mcp-server"
             target="_blank"
