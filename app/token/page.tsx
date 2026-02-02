@@ -13,7 +13,7 @@ interface HolderStats {
   totalCirculating: number;
   treasuryBalance: number;
   currentPrice: number;
-  supplySold: number;
+  totalSold: number;
 }
 
 interface UserHolding {
@@ -54,7 +54,7 @@ export default function TokenPage() {
   const { wallet, connectYours, connectHandCash, disconnect, isYoursAvailable } = useWallet();
   const [stats, setStats] = useState<HolderStats | null>(null);
   const [holding, setHolding] = useState<UserHolding | null>(null);
-  const [spendAmount, setSpendAmount] = useState('1'); // 1 BSV default
+  const [spendAmount, setSpendAmount] = useState('100000000'); // 1 BSV = 100M sats (stored in sats)
   const [spendUnit, setSpendUnit] = useState<'sats' | 'bsv'>('bsv');
   const [preview, setPreview] = useState<PurchasePreview | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
@@ -76,10 +76,9 @@ export default function TokenPage() {
   }, []);
 
   // Fetch preview when spend amount changes
+  // Note: spendAmount is ALWAYS stored in sats internally
   useEffect(() => {
-    const spendSats = spendUnit === 'bsv'
-      ? Math.floor(parseFloat(spendAmount || '0') * 100_000_000)
-      : parseInt(spendAmount || '0');
+    const spendSats = parseInt(spendAmount || '0');
 
     if (!spendSats || spendSats <= 0) {
       setPreview(null);
@@ -149,9 +148,8 @@ export default function TokenPage() {
       return;
     }
 
-    const spendSats = spendUnit === 'bsv'
-      ? Math.floor(parseFloat(spendAmount || '0') * 100_000_000)
-      : parseInt(spendAmount || '0');
+    // spendAmount is always stored in sats
+    const spendSats = parseInt(spendAmount || '0');
 
     if (isNaN(spendSats) || spendSats <= 0) {
       setMessage({ type: 'error', text: 'Please enter a valid amount' });
@@ -477,7 +475,7 @@ export default function TokenPage() {
         >
           {[
             { label: 'Current Price', value: stats?.currentPrice ? `${stats.currentPrice.toLocaleString()} sats` : '—' },
-            { label: 'Tokens Sold', value: stats?.supplySold?.toLocaleString() ?? '—' },
+            { label: 'Tokens Sold', value: stats?.totalSold?.toLocaleString() ?? '—' },
             { label: 'Holders', value: stats?.totalHolders ?? '—' },
             { label: 'Treasury', value: stats?.treasuryBalance?.toLocaleString() ?? '—' },
           ].map((stat, i) => (
