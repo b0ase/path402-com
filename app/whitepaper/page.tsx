@@ -27,7 +27,7 @@ export default function WhitepaperPage() {
             Through Unilateral Token Contracts
           </p>
           <p className="text-base text-gray-600 dark:text-gray-400">
-            Satoshi Nakamoto
+            <a href="https://x.com/b0ase" target="_blank" rel="noopener noreferrer" className="hover:underline">@b0ase</a>
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-500 mt-4">
             February 2026

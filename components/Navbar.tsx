@@ -23,7 +23,7 @@ export function Navbar() {
         </Link>
 
         {/* Navigation Links */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="flex items-center gap-6">
           <Link href="/whitepaper" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm">
             Whitepaper
           </Link>
