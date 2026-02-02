@@ -23,6 +23,9 @@ export function Navbar() {
         </Link>
         <div className="flex items-center gap-6">
           <Link href="/402" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm font-medium">
+            402
+          </Link>
+          <Link href="/whitepaper" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm">
             Whitepaper
           </Link>
           <Link href="/token" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm">
