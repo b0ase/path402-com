@@ -22,7 +22,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch user profile from HandCash API v3
-    const profileResponse = await fetch(`${HANDCASH_API_URL}/account/currentUserProfile`, {
+    // Endpoint: /v3/connect/profile/currentUserProfile (per SDK)
+    const profileResponse = await fetch(`${HANDCASH_API_URL}/profile/currentUserProfile`, {
       headers: {
         'app-secret': appSecret,
         'Authorization': `Bearer ${authToken}`,
