@@ -18,13 +18,13 @@ export function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-black/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800">
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        {/* Logo */}
         <Link href="/" className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
           $402
         </Link>
+
+        {/* Navigation Links */}
         <div className="flex items-center gap-6">
-          <Link href="/402" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm font-medium">
-            402
-          </Link>
           <Link href="/whitepaper" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm">
             Whitepaper
           </Link>
@@ -36,15 +36,6 @@ export function Navbar() {
           </Link>
           <Link href="/docs" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm">
             Docs
-          </Link>
-          <Link href="/registry" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm">
-            Registry
-          </Link>
-          <Link
-            href="/402"
-            className="px-3 py-1.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
-          >
-            Download PDF
           </Link>
           {/* GitHub Dropdown */}
           <div className="relative">
@@ -106,9 +97,18 @@ export function Navbar() {
               )}
             </AnimatePresence>
           </div>
+        </div>
 
-          {/* Theme Toggle */}
+        {/* Action Buttons */}
+        <div className="flex items-center gap-3">
           <ThemeToggle />
+
+          <Link
+            href="/402"
+            className="px-3 py-1.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
+          >
+            Download PDF
+          </Link>
 
           {/* Account link when connected */}
           {wallet.connected && (
