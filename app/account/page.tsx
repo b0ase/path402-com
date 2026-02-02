@@ -20,8 +20,10 @@ const staggerContainer = {
 
 interface Holding {
   balance: number;
-  percentage: number;
-  totalSpent: number;
+  stakedBalance: number;
+  availableBalance: number;
+  pendingDividends: number;
+  totalDividendsEarned: number;
 }
 
 interface Stats {
@@ -172,25 +174,25 @@ export default function AccountPage() {
           ) : holding && holding.balance > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <div className="text-sm text-gray-400 mb-1">Balance</div>
+                <div className="text-sm text-gray-400 mb-1">Total Balance</div>
                 <div className="text-2xl font-bold text-white">
                   {formatNumber(holding.balance)}
                 </div>
                 <div className="text-sm text-gray-500">PATH402</div>
               </div>
               <div>
-                <div className="text-sm text-gray-400 mb-1">Ownership</div>
+                <div className="text-sm text-gray-400 mb-1">Available</div>
                 <div className="text-2xl font-bold text-white">
-                  {holding.percentage.toFixed(4)}%
+                  {formatNumber(holding.availableBalance)}
                 </div>
-                <div className="text-sm text-gray-500">of circulating</div>
+                <div className="text-sm text-gray-500">unstaked</div>
               </div>
               <div>
-                <div className="text-sm text-gray-400 mb-1">Total Spent</div>
-                <div className="text-2xl font-bold text-white">
-                  {formatSats(holding.totalSpent)}
+                <div className="text-sm text-gray-400 mb-1">Staked</div>
+                <div className="text-2xl font-bold text-purple-400">
+                  {formatNumber(holding.stakedBalance)}
                 </div>
-                <div className="text-sm text-gray-500">acquisition cost</div>
+                <div className="text-sm text-gray-500">earning dividends</div>
               </div>
             </div>
           ) : (
