@@ -97,8 +97,9 @@ export async function POST(request: NextRequest) {
 
       // Convert sats to USD for HandCash payment
       // BSV ~= $17, so sats to USD = sats * 17 / 100_000_000
+      // Round to 2 decimal places (cents) for clean payment
       const BSV_PRICE_USD = 17;
-      const usdAmount = Math.max(0.01, (totalSats * BSV_PRICE_USD) / 100_000_000);
+      const usdAmount = Math.max(0.01, Math.round((totalSats * BSV_PRICE_USD) / 1_000_000) / 100);
 
       try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
