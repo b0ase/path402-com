@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getInstance, Connect } from '@handcash/sdk';
 import { getOrCreateHolder } from '@/lib/store';
-
-const HANDCASH_API_URL = 'https://cloud.handcash.io/v3/connect';
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,37 +9,42 @@ export async function GET(request: NextRequest) {
     const redirect = searchParams.get('redirect') || '/token';
 
     const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://path402.com').trim();
+    const appId = process.env.HANDCASH_APP_ID?.trim();
     const appSecret = process.env.HANDCASH_APP_SECRET?.trim();
 
     if (!authToken) {
       return NextResponse.redirect(`${baseUrl}/token?error=no_token`);
     }
 
-    if (!appSecret) {
-      console.error('HANDCASH_APP_SECRET not configured');
+    if (!appId || !appSecret) {
+      console.error('HANDCASH_APP_ID or HANDCASH_APP_SECRET not configured');
       return NextResponse.redirect(`${baseUrl}/token?error=config_error`);
     }
 
-    // Fetch user profile from HandCash API v3
-    // Endpoint: /v3/connect/profile/currentUserProfile (per SDK)
-    const profileResponse = await fetch(`${HANDCASH_API_URL}/profile/currentUserProfile`, {
-      headers: {
-        'app-secret': appSecret,
-        'Authorization': `Bearer ${authToken}`,
-      },
+    // Initialize HandCash SDK
+    const sdk = getInstance({
+      appId,
+      appSecret,
     });
 
-    if (!profileResponse.ok) {
-      const errorText = await profileResponse.text();
-      console.error('HandCash profile fetch failed:', profileResponse.status, errorText);
+    // Get account client for this user
+    const client = sdk.getAccountClient(authToken);
+
+    // Fetch user profile using SDK
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const result = await Connect.getCurrentUserProfile({ client: client as any });
+
+    if (result.error || !result.data) {
+      console.error('Failed to fetch HandCash profile:', result.error);
       return NextResponse.redirect(`${baseUrl}/token?error=profile_fetch_failed`);
     }
 
-    const profile = await profileResponse.json();
-    const handle = profile?.handle || profile?.publicProfile?.handle;
-    const paymail = profile?.paymail || profile?.publicProfile?.paymail;
+    const profile = result.data;
+    const handle = profile?.publicProfile?.handle;
+    const paymail = profile?.publicProfile?.paymail;
 
     if (!handle) {
+      console.error('No handle in profile:', profile);
       return NextResponse.redirect(`${baseUrl}/token?error=no_handle`);
     }
 
