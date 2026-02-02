@@ -165,7 +165,7 @@ export async function POST(request: NextRequest) {
               sendAmount: usdAmount,
               destination: PAYMENT_ADDRESS, // Treasury BSV address
             }],
-            note: `PATH402 token purchase: ${tokenAmount} tokens`,
+            note: 'PATH402 purchase',
           }
         });
 
