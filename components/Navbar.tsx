@@ -40,6 +40,12 @@ export function Navbar() {
           <Link href="/registry" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm">
             Registry
           </Link>
+          <Link
+            href="/402"
+            className="px-3 py-1.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
+          >
+            Download PDF
+          </Link>
           {/* GitHub Dropdown */}
           <div className="relative">
             <button
