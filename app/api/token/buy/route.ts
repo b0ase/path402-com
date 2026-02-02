@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getOrCreateHolder, createPurchase, processPurchaseImmediate, getTokenStats, PAYMENT_ADDRESS, getHolder } from '@/lib/store';
+import { getOrCreateHolder, createPurchase, processPurchaseImmediate, getTokenStats, TREASURY_PAYMAIL, PAYMENT_ADDRESS } from '@/lib/store';
 import { getInstance, Connect } from '@handcash/sdk';
-import { executeTransfer } from '@/lib/bsv20-transfer';
 
 // sqrt_decay pricing: price = BASE / sqrt(remaining + 1)
 // Price INCREASES as treasury depletes - rewards early buyers
@@ -164,9 +163,9 @@ export async function POST(request: NextRequest) {
             denominationCurrencyCode: 'USD',
             receivers: [{
               sendAmount: usdAmount,
-              destination: PAYMENT_ADDRESS, // BSV address, not paymail
+              destination: TREASURY_PAYMAIL, // HandCash paymail, not raw address
             }],
-            note: 'PATH402 token purchase',
+            note: `PATH402 token purchase: ${tokenAmount} tokens`,
           }
         });
 
@@ -181,36 +180,9 @@ export async function POST(request: NextRequest) {
         // Payment succeeded, credit tokens in database
         const purchase = await processPurchaseImmediate(holder.id, tokenAmount, avgPrice);
 
-        // Attempt on-chain BSV-20 transfer if user has derived address
-        let onChainTransfer = null;
-        const userOnChainAddress = holder.ordinalsAddress;
-
-        if (userOnChainAddress) {
-          console.log(`Attempting on-chain transfer of ${tokenAmount} to ${userOnChainAddress}`);
-          const transferResult = await executeTransfer(tokenAmount, userOnChainAddress);
-
-          if (transferResult.success) {
-            onChainTransfer = {
-              success: true,
-              txId: transferResult.txId,
-              address: userOnChainAddress,
-            };
-            console.log(`On-chain transfer successful: ${transferResult.txId}`);
-          } else {
-            console.error(`On-chain transfer failed: ${transferResult.error}`);
-            onChainTransfer = {
-              success: false,
-              error: transferResult.error,
-              note: 'Tokens credited to database. On-chain transfer pending.',
-            };
-          }
-        } else {
-          onChainTransfer = {
-            success: false,
-            error: 'No derived address',
-            note: 'Derive your on-chain address in Account settings to receive tokens on-chain.',
-          };
-        }
+        // Tokens are credited to database immediately
+        // On-chain BSV-20 transfer happens via separate withdrawal flow
+        // User must first derive their ordinals address in Account settings
 
         return NextResponse.json({
           purchaseId: purchase.id,
@@ -223,7 +195,7 @@ export async function POST(request: NextRequest) {
           status: 'confirmed',
           txId: paymentResult.data?.transactionId,
           newBalance: holder.balance + tokenAmount,
-          onChainTransfer,
+          note: 'Tokens credited to your account. Withdraw to your ordinals address from Account page.',
         });
       } catch (paymentError) {
         console.error('HandCash payment exception:', paymentError);
