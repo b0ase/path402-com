@@ -21,6 +21,15 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(`${baseUrl}/token?error=config_error`);
     }
 
+    // Debug: Log credential lengths and first/last chars
+    console.log('HandCash credentials check:', {
+      appIdLength: appId.length,
+      appIdFirst4: appId.slice(0, 4),
+      appSecretLength: appSecret.length,
+      appSecretFirst4: appSecret.slice(0, 4),
+      appSecretLast4: appSecret.slice(-4),
+    });
+
     // Initialize HandCash SDK
     const sdk = getInstance({
       appId,
