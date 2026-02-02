@@ -117,7 +117,7 @@ export default function RegistryPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-black text-white pt-20">
+    <main className="min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white pt-20">
       <div className="max-w-6xl mx-auto px-6 py-20">
         {/* Header */}
         <motion.div
@@ -127,19 +127,19 @@ export default function RegistryPage() {
           variants={staggerContainer}
         >
           <motion.div variants={fadeIn}>
-            <Link href="/" className="text-gray-500 hover:text-white text-sm mb-4 inline-block">
+            <Link href="/" className="text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white text-sm mb-4 inline-block">
               ← Back to Home
             </Link>
           </motion.div>
           <motion.h1
-            className="text-5xl font-bold tracking-tight mb-4"
+            className="text-5xl font-bold tracking-tight mb-4 text-gray-900 dark:text-white"
             variants={fadeIn}
             transition={{ duration: 0.6 }}
           >
             Token Registry
           </motion.h1>
           <motion.p
-            className="text-gray-400 text-lg"
+            className="text-gray-600 dark:text-gray-400 text-lg"
             variants={fadeIn}
             transition={{ delay: 0.2 }}
           >
@@ -157,18 +157,18 @@ export default function RegistryPage() {
           {stats.map((stat, i) => (
             <motion.div
               key={i}
-              className="border border-gray-800 p-6"
+              className="border border-gray-200 dark:border-gray-800 p-6 bg-white dark:bg-transparent rounded-lg"
               variants={scaleIn}
               transition={{ duration: 0.4, delay: i * 0.1 }}
               whileHover={{
-                borderColor: "rgba(255,255,255,0.3)",
+                borderColor: "rgba(96, 165, 250, 0.5)",
                 y: -2,
                 transition: { duration: 0.2 }
               }}
             >
-              <div className="text-gray-400 text-sm mb-2">{stat.label}</div>
+              <div className="text-gray-600 dark:text-gray-400 text-sm mb-2">{stat.label}</div>
               <motion.div
-                className="text-2xl font-bold"
+                className="text-2xl font-bold text-gray-900 dark:text-white"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 + i * 0.1 }}
@@ -200,20 +200,20 @@ export default function RegistryPage() {
 
         {/* Treasury Info */}
         <motion.div
-          className="border border-gray-800 p-6 mb-12"
+          className="border border-gray-200 dark:border-gray-800 p-6 mb-12 bg-white dark:bg-transparent rounded-lg"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          whileHover={{ borderColor: "rgba(255,255,255,0.2)" }}
+          whileHover={{ borderColor: "rgba(96, 165, 250, 0.5)" }}
         >
           <div className="flex items-center justify-between mb-4">
             <div>
-              <div className="text-gray-400 text-sm mb-1">Treasury</div>
-              <div className="font-mono text-sm">{TOKEN_CONFIG.txId.slice(0, 20)}...</div>
+              <div className="text-gray-600 dark:text-gray-400 text-sm mb-1">Treasury</div>
+              <div className="font-mono text-sm text-gray-900 dark:text-white">{TOKEN_CONFIG.txId.slice(0, 20)}...</div>
             </div>
             <button
               onClick={() => setShowOnChain(!showOnChain)}
-              className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+              className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 transition-colors"
             >
               {showOnChain ? 'Hide' : 'Show'} On-Chain State
             </button>
@@ -222,11 +222,11 @@ export default function RegistryPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Database State */}
             <div>
-              <div className="text-gray-500 text-xs uppercase tracking-wider mb-2">Database (Off-Chain)</div>
-              <div className="text-xl font-bold">
+              <div className="text-gray-500 dark:text-gray-500 text-xs uppercase tracking-wider mb-2">Database (Off-Chain)</div>
+              <div className="text-xl font-bold text-gray-900 dark:text-white">
                 {loading ? '...' : formatNumber(data?.stats.treasuryBalance || TOKEN_CONFIG.totalSupply)}
               </div>
-              <div className="text-gray-500 text-sm">
+              <div className="text-gray-500 dark:text-gray-500 text-sm">
                 {loading
                   ? '...'
                   : `${(((data?.stats.treasuryBalance || TOKEN_CONFIG.totalSupply) / TOKEN_CONFIG.totalSupply) * 100).toFixed(2)}%`}
@@ -235,18 +235,18 @@ export default function RegistryPage() {
 
             {/* On-Chain State */}
             <div>
-              <div className="text-gray-500 text-xs uppercase tracking-wider mb-2 flex items-center gap-2">
+              <div className="text-gray-500 dark:text-gray-500 text-xs uppercase tracking-wider mb-2 flex items-center gap-2">
                 On-Chain (BSV-20)
                 {onChainData?.comparison.inSync ? (
-                  <span className="text-green-400 text-xs">IN SYNC</span>
+                  <span className="text-green-600 dark:text-green-400 text-xs">IN SYNC</span>
                 ) : (
-                  <span className="text-yellow-400 text-xs">OUT OF SYNC</span>
+                  <span className="text-yellow-600 dark:text-yellow-400 text-xs">OUT OF SYNC</span>
                 )}
               </div>
-              <div className="text-xl font-bold">
+              <div className="text-xl font-bold text-gray-900 dark:text-white">
                 {onChainData ? formatNumber(onChainData.onChain.treasuryBalance) : '...'}
               </div>
-              <div className="text-gray-500 text-sm">
+              <div className="text-gray-500 dark:text-gray-500 text-sm">
                 {onChainData
                   ? `${((onChainData.onChain.treasuryBalance / TOKEN_CONFIG.totalSupply) * 100).toFixed(2)}%`
                   : '...'}
@@ -261,9 +261,9 @@ export default function RegistryPage() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="mt-6 pt-6 border-t border-gray-800"
+                className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-800"
               >
-                <div className="text-sm text-gray-400 mb-4">
+                <div className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                   <strong>On-Chain Holders:</strong> {onChainData.onChain.totalHolders}
                 </div>
 
@@ -271,20 +271,20 @@ export default function RegistryPage() {
                   <div className="space-y-2">
                     {onChainData.onChain.holders.map((holder, i) => (
                       <div key={i} className="flex justify-between text-sm">
-                        <span className="font-mono text-gray-400">{truncateAddress(holder.address)}</span>
-                        <span className="text-white">{formatNumber(holder.balance)}</span>
+                        <span className="font-mono text-gray-600 dark:text-gray-400">{truncateAddress(holder.address)}</span>
+                        <span className="text-gray-900 dark:text-white">{formatNumber(holder.balance)}</span>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="text-gray-500 text-sm">All tokens in treasury (no transfers yet)</div>
+                  <div className="text-gray-500 dark:text-gray-500 text-sm">All tokens in treasury (no transfers yet)</div>
                 )}
 
                 {onChainData.comparison.discrepancies.length > 0 && (
-                  <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/30">
-                    <div className="text-yellow-400 text-sm font-medium mb-2">Discrepancies:</div>
+                  <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded">
+                    <div className="text-yellow-600 dark:text-yellow-400 text-sm font-medium mb-2">Discrepancies:</div>
                     {onChainData.comparison.discrepancies.map((d, i) => (
-                      <div key={i} className="text-xs text-yellow-400/80">
+                      <div key={i} className="text-xs text-yellow-600/80 dark:text-yellow-400/80">
                         {truncateAddress(d.address)}: DB={formatNumber(d.database)}, Chain={formatNumber(d.onChain)}
                       </div>
                     ))}
@@ -297,20 +297,20 @@ export default function RegistryPage() {
 
         {/* Cap Table */}
         <motion.div
-          className="border border-gray-800"
+          className="border border-gray-200 dark:border-gray-800 bg-white dark:bg-transparent rounded-lg"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
         >
-          <div className="border-b border-gray-800 px-6 py-4">
-            <h2 className="text-lg font-medium">Token Holders</h2>
+          <div className="border-b border-gray-200 dark:border-gray-800 px-6 py-4">
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white">Token Holders</h2>
           </div>
 
           <AnimatePresence mode="wait">
             {loading ? (
               <motion.div
                 key="loading"
-                className="p-12 text-center text-gray-400"
+                className="p-12 text-center text-gray-600 dark:text-gray-400"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -325,14 +325,14 @@ export default function RegistryPage() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
-                <div className="text-gray-400 mb-4">No token holders yet</div>
+                <div className="text-gray-600 dark:text-gray-400 mb-4">No token holders yet</div>
                 <motion.div
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
                   <Link
                     href="/token"
-                    className="inline-block px-6 py-3 bg-white text-black font-medium hover:bg-gray-200 transition-colors"
+                    className="inline-block px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-black font-medium hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors rounded"
                   >
                     Buy Tokens
                   </Link>
@@ -348,7 +348,7 @@ export default function RegistryPage() {
               >
                 <table className="w-full">
                   <thead>
-                    <tr className="text-left text-gray-400 text-sm border-b border-gray-800">
+                    <tr className="text-left text-gray-500 dark:text-gray-400 text-sm border-b border-gray-200 dark:border-gray-800">
                       <th className="px-6 py-4">Rank</th>
                       <th className="px-6 py-4">Holder</th>
                       <th className="px-6 py-4 text-right">Balance</th>
@@ -359,24 +359,24 @@ export default function RegistryPage() {
                     {data.holders.map((holder, index) => (
                       <motion.tr
                         key={holder.address}
-                        className="border-b border-gray-800"
+                        className="border-b border-gray-200 dark:border-gray-800"
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.05 }}
-                        whileHover={{ backgroundColor: "rgba(255,255,255,0.02)" }}
+                        whileHover={{ backgroundColor: "rgba(96, 165, 250, 0.05)" }}
                       >
-                        <td className="px-6 py-4 text-gray-400">#{index + 1}</td>
+                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400">#{index + 1}</td>
                         <td className="px-6 py-4">
                           {holder.handle ? (
-                            <span className="text-green-400">@{holder.handle}</span>
+                            <span className="text-green-600 dark:text-green-400">@{holder.handle}</span>
                           ) : (
-                            <span className="font-mono text-sm">{truncateAddress(holder.address)}</span>
+                            <span className="font-mono text-sm text-gray-900 dark:text-white">{truncateAddress(holder.address)}</span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-right font-mono">
+                        <td className="px-6 py-4 text-right font-mono text-gray-900 dark:text-white">
                           {formatNumber(holder.balance)}
                         </td>
-                        <td className="px-6 py-4 text-right text-gray-400">
+                        <td className="px-6 py-4 text-right text-gray-500 dark:text-gray-400">
                           {holder.percentage.toFixed(4)}%
                         </td>
                       </motion.tr>
@@ -390,31 +390,31 @@ export default function RegistryPage() {
 
         {/* Token Info */}
         <motion.div
-          className="mt-12 border border-gray-800 p-6"
+          className="mt-12 border border-gray-200 dark:border-gray-800 p-6 bg-white dark:bg-transparent rounded-lg"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
           variants={fadeIn}
           transition={{ duration: 0.6 }}
-          whileHover={{ borderColor: "rgba(255,255,255,0.2)" }}
+          whileHover={{ borderColor: "rgba(96, 165, 250, 0.5)" }}
         >
-          <h3 className="font-medium mb-4">Token Information</h3>
+          <h3 className="font-medium mb-4 text-gray-900 dark:text-white">Token Information</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div>
-              <span className="text-gray-400">Symbol:</span>{' '}
-              <span className="font-mono">{TOKEN_CONFIG.symbol}</span>
+              <span className="text-gray-500 dark:text-gray-400">Symbol:</span>{' '}
+              <span className="font-mono text-gray-900 dark:text-white">{TOKEN_CONFIG.symbol}</span>
             </div>
             <div>
-              <span className="text-gray-400">Protocol:</span>{' '}
-              <span className="font-mono">{TOKEN_CONFIG.protocol}</span>
+              <span className="text-gray-500 dark:text-gray-400">Protocol:</span>{' '}
+              <span className="font-mono text-gray-900 dark:text-white">{TOKEN_CONFIG.protocol}</span>
             </div>
             <div className="md:col-span-2">
-              <span className="text-gray-400">Inscription ID:</span>{' '}
+              <span className="text-gray-500 dark:text-gray-400">Inscription ID:</span>{' '}
               <a
                 href={TOKEN_CONFIG.marketUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-mono text-blue-400 hover:text-blue-300 break-all"
+                className="font-mono text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 break-all"
               >
                 {TOKEN_CONFIG.inscriptionId}
               </a>
@@ -432,12 +432,12 @@ export default function RegistryPage() {
         >
           <motion.div
             variants={fadeIn}
-            whileHover={{ scale: 1.02, boxShadow: "0 0 20px rgba(255,255,255,0.2)" }}
+            whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
             <Link
               href="/token"
-              className="inline-block px-6 py-3 bg-white text-black font-medium hover:bg-gray-200 transition-colors"
+              className="inline-block px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-black font-medium hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors rounded"
             >
               Buy Tokens
             </Link>
@@ -446,7 +446,7 @@ export default function RegistryPage() {
             href={TOKEN_CONFIG.marketUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block px-6 py-3 border border-gray-600 text-white hover:border-white transition-colors"
+            className="inline-block px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white hover:border-gray-500 dark:hover:border-white transition-colors rounded"
             variants={fadeIn}
             whileHover={{ scale: 1.02, x: 4 }}
             whileTap={{ scale: 0.98 }}
