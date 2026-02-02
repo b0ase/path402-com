@@ -107,7 +107,7 @@ export default function WhitepaperPage() {
         {/* Title */}
         <header className="text-center mb-12">
           <h1 className="text-3xl font-bold mb-6 tracking-tight text-gray-900 dark:text-white">
-            The Path $402 Token Standard
+            $402 Token Standard
           </h1>
           <p className="text-lg italic text-gray-700 dark:text-gray-300 mb-6">
             A Peer-to-Peer System for Content Monetization<br />
@@ -147,7 +147,7 @@ export default function WhitepaperPage() {
             incentives with consumer value. The vision of native web payments never materialized—until now.
           </p>
           <p className="text-justify text-[15px] leading-relaxed mb-3 text-gray-800 dark:text-gray-200">
-            The Path $402 Token Standard resolves this by defining a complete protocol for:
+            The $402 Token Standard resolves this by defining a complete protocol for:
           </p>
           <ul className="list-disc list-inside text-[15px] leading-relaxed mb-3 ml-4 text-gray-800 dark:text-gray-200">
             <li><strong>Discovery</strong> — Machine-readable pricing at any URL</li>
@@ -583,7 +583,7 @@ X-402-Token: $example.com
         <section className="mb-8">
           <h2 className="text-lg font-bold mb-3 text-gray-900 dark:text-white">10. Conclusion</h2>
           <p className="text-justify text-[15px] leading-relaxed mb-3 text-gray-800 dark:text-gray-200">
-            The Path $402 Token Standard represents a fundamental shift in how the internet handles value
+            The $402 Token Standard represents a fundamental shift in how the internet handles value
             exchange. By combining HTTP 402, unilateral contract theory, and deterministic pricing, we
             create a system where content creators earn directly from consumers, early supporters are
             rewarded for their belief, AI agents can autonomously participate in the economy, and every
