@@ -18,7 +18,7 @@ export function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm border-b border-gray-800">
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
         <Link href="/" className="text-xl font-bold tracking-tight">
-          $PATH402
+          $402
         </Link>
         <div className="flex items-center gap-6">
           <Link href="/docs" className="text-gray-400 hover:text-white transition-colors text-sm">
