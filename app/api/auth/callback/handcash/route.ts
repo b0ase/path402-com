@@ -30,20 +30,35 @@ export async function GET(request: NextRequest) {
     // Get account client for this user
     const client = sdk.getAccountClient(authToken);
 
+    // Log authToken format for debugging (first/last chars only for security)
+    console.log('AuthToken format:', {
+      length: authToken.length,
+      first4: authToken.slice(0, 4),
+      last4: authToken.slice(-4),
+      isHex: /^[0-9a-fA-F]+$/.test(authToken),
+    });
+
     // Fetch user profile using SDK
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let result;
     try {
       result = await Connect.getCurrentUserProfile({ client: client as any });
       console.log('HandCash profile result:', JSON.stringify(result, null, 2));
-    } catch (profileError) {
-      console.error('HandCash profile fetch exception:', profileError);
-      return NextResponse.redirect(`${baseUrl}/token?error=profile_fetch_failed&reason=exception`);
+    } catch (profileError: unknown) {
+      const errMsg = profileError instanceof Error ? profileError.message : String(profileError);
+      console.error('HandCash profile fetch exception:', errMsg);
+      return NextResponse.redirect(`${baseUrl}/token?error=profile_fetch_failed&reason=exception&details=${encodeURIComponent(errMsg)}`);
     }
 
     if (result.error) {
-      console.error('Failed to fetch HandCash profile - error:', result.error);
-      return NextResponse.redirect(`${baseUrl}/token?error=profile_fetch_failed&reason=api_error`);
+      // Log full response for debugging
+      console.error('Failed to fetch HandCash profile - full result:', {
+        error: result.error,
+        response: result.response?.status,
+        responseText: result.response?.statusText,
+      });
+      const errorMsg = encodeURIComponent(typeof result.error === 'string' ? result.error : JSON.stringify(result.error));
+      return NextResponse.redirect(`${baseUrl}/token?error=profile_fetch_failed&reason=api_error&status=${result.response?.status || 'unknown'}&details=${errorMsg}`);
     }
 
     if (!result.data) {
