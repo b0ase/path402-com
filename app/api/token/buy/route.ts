@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
               sendAmount: usdAmount,
               destination: PAYMENT_ADDRESS,
             }],
-            note: `Purchase ${amount.toLocaleString()} PATH402 tokens`,
+            note: 'PATH402 token purchase',
           }
         });
 
