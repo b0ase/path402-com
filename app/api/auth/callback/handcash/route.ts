@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getOrCreateHolder } from '@/lib/store';
 
+const HANDCASH_API_URL = 'https://cloud.handcash.io/v3/connect';
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -8,26 +10,34 @@ export async function GET(request: NextRequest) {
     const redirect = searchParams.get('redirect') || '/token';
 
     const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://path402.com').trim();
+    const appSecret = process.env.HANDCASH_APP_SECRET?.trim();
 
     if (!authToken) {
       return NextResponse.redirect(`${baseUrl}/token?error=no_token`);
     }
 
-    // Fetch user profile from HandCash
-    const profileResponse = await fetch('https://cloud.handcash.io/v2/users/currentUserProfile', {
+    if (!appSecret) {
+      console.error('HANDCASH_APP_SECRET not configured');
+      return NextResponse.redirect(`${baseUrl}/token?error=config_error`);
+    }
+
+    // Fetch user profile from HandCash API v3
+    const profileResponse = await fetch(`${HANDCASH_API_URL}/account/currentUserProfile`, {
       headers: {
+        'app-secret': appSecret,
         'Authorization': `Bearer ${authToken}`,
       },
     });
 
     if (!profileResponse.ok) {
-      console.error('Failed to fetch HandCash profile');
+      const errorText = await profileResponse.text();
+      console.error('HandCash profile fetch failed:', profileResponse.status, errorText);
       return NextResponse.redirect(`${baseUrl}/token?error=profile_fetch_failed`);
     }
 
     const profile = await profileResponse.json();
-    const handle = profile.publicProfile?.handle;
-    const paymail = profile.publicProfile?.paymail;
+    const handle = profile?.handle || profile?.publicProfile?.handle;
+    const paymail = profile?.paymail || profile?.publicProfile?.paymail;
 
     if (!handle) {
       return NextResponse.redirect(`${baseUrl}/token?error=no_handle`);

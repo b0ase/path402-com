@@ -14,9 +14,12 @@ CREATE TABLE IF NOT EXISTS path402_holders (
   total_withdrawn BIGINT NOT NULL DEFAULT 0,
   total_dividends BIGINT NOT NULL DEFAULT 0,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  CONSTRAINT unique_holder UNIQUE (provider, COALESCE(address, ''), COALESCE(handle, ''))
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- Unique index for provider + address/handle combination
+CREATE UNIQUE INDEX IF NOT EXISTS idx_holders_unique_yours ON path402_holders(provider, address) WHERE provider = 'yours' AND address IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_holders_unique_handcash ON path402_holders(provider, handle) WHERE provider = 'handcash' AND handle IS NOT NULL;
 
 -- Token Purchases
 CREATE TABLE IF NOT EXISTS path402_purchases (
