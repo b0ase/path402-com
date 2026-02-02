@@ -9,19 +9,30 @@ import { Navbar } from "@/components/Navbar";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://path402.com'),
   title: "$402 — The Path Token Standard",
   description: "Turn any URL into a priced, tokenised market. The protocol for AI-native micropayments on BSV.",
+  keywords: ["$402", "path token", "BSV", "micropayments", "AI payments", "tokenization", "HTTP 402"],
+  authors: [{ name: "b0ase", url: "https://x.com/b0ase" }],
+  creator: "b0ase",
   openGraph: {
     title: "$402 — The Path Token Standard",
     description: "Turn any URL into a priced, tokenised market. The protocol for AI-native micropayments on BSV.",
     url: "https://path402.com",
     siteName: "$402 Protocol",
+    locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "$402 — The Path Token Standard",
     description: "Turn any URL into a priced, tokenised market.",
+    creator: "@b0ase",
+    site: "@b0ase",
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
