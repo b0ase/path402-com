@@ -219,7 +219,14 @@ export async function getInscriptionStats() {
 /**
  * Get a single inscription by ID
  */
-export async function getInscription(id: string) {
+export async function getInscription(id: string): Promise<{
+  id: string;
+  txId: string;
+  blockHeight: number | null;
+  timestamp: string;
+  fee: number;
+  inscription: string;
+} | null> {
   // TODO: Query database for real inscription
   // For now return null (not found)
   console.log('[x402] getInscription called with id:', id);
