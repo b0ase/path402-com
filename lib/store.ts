@@ -13,13 +13,13 @@ const dividends: Dividend[] = [];
 // Treasury wallet (holds tokens for sale)
 const TREASURY = {
   balance: TOKEN_CONFIG.totalSupply,
-  address: '1sPzWgCv5ftiv2VtJAspLYgz6bUtrgtVj', // Your ordinals address
+  address: process.env.TREASURY_ADDRESS || '1BrbnQon4uZPSxNwt19ozwtgHPDbgvaeD1',
   totalSold: 0,
   totalRevenue: 0,
 };
 
-// Payment address for token purchases
-export const PAYMENT_ADDRESS = process.env.PAYMENT_ADDRESS || '1sPzWgCv5ftiv2VtJAspLYgz6bUtrgtVj';
+// Payment address for token purchases (same as treasury)
+export const PAYMENT_ADDRESS = process.env.TREASURY_ADDRESS || '1BrbnQon4uZPSxNwt19ozwtgHPDbgvaeD1';
 
 // Helper to generate IDs
 function generateId(): string {
