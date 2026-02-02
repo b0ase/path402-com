@@ -21,10 +21,20 @@ import { calculatePrice, calculateTotalCost, calculateTokensForSpend } from './p
 export * from './types';
 export * from './pricing';
 
-// Supabase client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseKey);
+// Lazy Supabase client (avoid build-time initialization)
+let _supabase: ReturnType<typeof createClient> | null = null;
+
+function getSupabase() {
+  if (!_supabase) {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error('Supabase environment variables not configured');
+    }
+    _supabase = createClient(supabaseUrl, supabaseKey);
+  }
+  return _supabase;
+}
 
 // Default values
 const DEFAULT_BASE_PRICE = 500;
@@ -41,7 +51,7 @@ export async function listTokens(options?: {
   limit?: number;
   offset?: number;
 }): Promise<TokenWithPrice[]> {
-  let query = supabase
+  let query = getSupabase()
     .from('tokens')
     .select('*')
     .eq('is_active', true)
@@ -86,7 +96,7 @@ export async function listTokens(options?: {
  * Get a single token by address
  */
 export async function getToken(address: string): Promise<TokenWithPrice | null> {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('tokens')
     .select('*')
     .eq('address', address)
@@ -123,7 +133,7 @@ export async function registerToken(
     throw new Error('Address must start with $');
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('tokens')
     .insert({
       address: request.address,
@@ -209,7 +219,7 @@ export async function acquireTokens(
   const facilitatorRevenue = totalCost - issuerRevenue;
 
   // Update token treasury
-  const { error: tokenError } = await supabase
+  const { error: tokenError } = await getSupabase()
     .from('tokens')
     .update({
       treasury_balance: token.treasury_balance - amount,
@@ -223,7 +233,7 @@ export async function acquireTokens(
   }
 
   // Get or create holding
-  const { data: existingHolding } = await supabase
+  const { data: existingHolding } = await getSupabase()
     .from('token_holdings')
     .select('*')
     .eq('token_address', tokenAddress)
@@ -236,7 +246,7 @@ export async function acquireTokens(
   const newAvgCost = Math.ceil(newTotalSpent / newTotalAcquired);
 
   if (existingHolding) {
-    await supabase
+    await getSupabase()
       .from('token_holdings')
       .update({
         balance: newBalance,
@@ -247,7 +257,7 @@ export async function acquireTokens(
       })
       .eq('id', existingHolding.id);
   } else {
-    await supabase
+    await getSupabase()
       .from('token_holdings')
       .insert({
         token_address: tokenAddress,
@@ -260,7 +270,7 @@ export async function acquireTokens(
   }
 
   // Record transaction
-  await supabase
+  await getSupabase()
     .from('token_transactions')
     .insert({
       token_address: tokenAddress,
@@ -286,7 +296,7 @@ export async function acquireTokens(
  * Get holdings for a user
  */
 export async function getHoldings(holderHandle: string): Promise<TokenHolding[]> {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('token_holdings')
     .select('*')
     .eq('holder_handle', holderHandle)
@@ -310,7 +320,7 @@ export async function transferTokens(
   amount: number
 ): Promise<{ success: boolean; error?: string }> {
   // Get sender's holding
-  const { data: fromHolding } = await supabase
+  const { data: fromHolding } = await getSupabase()
     .from('token_holdings')
     .select('*')
     .eq('token_address', tokenAddress)
@@ -322,13 +332,13 @@ export async function transferTokens(
   }
 
   // Update sender
-  await supabase
+  await getSupabase()
     .from('token_holdings')
     .update({ balance: fromHolding.balance - amount })
     .eq('id', fromHolding.id);
 
   // Get or create recipient holding
-  const { data: toHolding } = await supabase
+  const { data: toHolding } = await getSupabase()
     .from('token_holdings')
     .select('*')
     .eq('token_address', tokenAddress)
@@ -336,12 +346,12 @@ export async function transferTokens(
     .single();
 
   if (toHolding) {
-    await supabase
+    await getSupabase()
       .from('token_holdings')
       .update({ balance: toHolding.balance + amount })
       .eq('id', toHolding.id);
   } else {
-    await supabase
+    await getSupabase()
       .from('token_holdings')
       .insert({
         token_address: tokenAddress,
@@ -351,7 +361,7 @@ export async function transferTokens(
   }
 
   // Record transaction
-  await supabase
+  await getSupabase()
     .from('token_transactions')
     .insert({
       token_address: tokenAddress,
@@ -371,7 +381,7 @@ export async function getHistory(
   holderHandle: string,
   options?: { token_address?: string; tx_type?: TxType; limit?: number }
 ): Promise<TokenTransaction[]> {
-  let query = supabase
+  let query = getSupabase()
     .from('token_transactions')
     .select('*')
     .or(`from_handle.eq.${holderHandle},to_handle.eq.${holderHandle}`)
