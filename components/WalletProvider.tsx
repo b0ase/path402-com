@@ -60,20 +60,27 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     return () => clearTimeout(timeout);
   }, []);
 
-  // Check for HandCash session on mount
+  // Check for HandCash session on mount (via API since cookies are httpOnly)
   useEffect(() => {
-    const handcashToken = localStorage.getItem('path402_handcash_token');
-    const handcashHandle = localStorage.getItem('path402_handcash_handle');
-    if (handcashToken && handcashHandle) {
-      setWallet({
-        connected: true,
-        provider: 'handcash',
-        address: null,
-        ordinalsAddress: null,
-        handle: handcashHandle,
-        balance: 0,
-      });
-    }
+    const checkHandCashSession = async () => {
+      try {
+        const response = await fetch('/api/auth/session');
+        const session = await response.json();
+        if (session.connected && session.provider === 'handcash') {
+          setWallet({
+            connected: true,
+            provider: 'handcash',
+            address: null,
+            ordinalsAddress: null,
+            handle: session.handle,
+            balance: 0,
+          });
+        }
+      } catch (error) {
+        console.error('Failed to check HandCash session:', error);
+      }
+    };
+    checkHandCashSession();
   }, []);
 
   const restoreYoursSession = async () => {
@@ -144,8 +151,12 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     }
 
     if (wallet.provider === 'handcash') {
-      localStorage.removeItem('path402_handcash_token');
-      localStorage.removeItem('path402_handcash_handle');
+      // Clear server-side cookies
+      try {
+        await fetch('/api/auth/logout', { method: 'POST' });
+      } catch (error) {
+        console.error('Failed to logout from HandCash:', error);
+      }
     }
 
     setWallet(defaultWalletState);
