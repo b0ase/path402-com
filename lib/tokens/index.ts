@@ -22,9 +22,11 @@ export * from './types';
 export * from './pricing';
 
 // Lazy Supabase client (avoid build-time initialization)
-let _supabase: ReturnType<typeof createClient> | null = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let _supabase: any = null;
 
-function getSupabase() {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getSupabase(): any {
   if (!_supabase) {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -134,23 +136,25 @@ export async function registerToken(
     throw new Error('Address must start with $');
   }
 
+  const insertData = {
+    address: request.address,
+    name: request.name,
+    description: request.description,
+    content_type: request.content_type,
+    icon_url: request.icon_url,
+    access_url: request.access_url,
+    issuer_handle: issuerHandle,
+    pricing_model: request.pricing_model || 'sqrt_decay',
+    base_price_sats: request.base_price_sats || DEFAULT_BASE_PRICE,
+    max_supply: request.max_supply,
+    treasury_balance: DEFAULT_TREASURY,
+    issuer_share_bps: request.issuer_share_bps || DEFAULT_ISSUER_SHARE,
+    facilitator_share_bps: DEFAULT_FACILITATOR_SHARE,
+  };
+
   const { data, error } = await getSupabase()
     .from('tokens')
-    .insert({
-      address: request.address,
-      name: request.name,
-      description: request.description,
-      content_type: request.content_type,
-      icon_url: request.icon_url,
-      access_url: request.access_url,
-      issuer_handle: issuerHandle,
-      pricing_model: request.pricing_model || 'sqrt_decay',
-      base_price_sats: request.base_price_sats || DEFAULT_BASE_PRICE,
-      max_supply: request.max_supply,
-      treasury_balance: DEFAULT_TREASURY,
-      issuer_share_bps: request.issuer_share_bps || DEFAULT_ISSUER_SHARE,
-      facilitator_share_bps: DEFAULT_FACILITATOR_SHARE,
-    })
+    .insert(insertData)
     .select()
     .single();
 
