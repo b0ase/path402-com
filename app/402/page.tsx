@@ -228,19 +228,19 @@ $example.com/$api/$premium   → Content token (specific resource)`}
             <pre className="bg-gray-100 dark:bg-gray-900 p-6 rounded-lg overflow-x-auto text-sm mt-4 mb-6 text-gray-800 dark:text-gray-300">
 {`HTTP/1.1 402 Payment Required
 Content-Type: application/json
-X-Path402-Version: 1.0.0
-X-Path402-Price: 5000
-X-Path402-Token: $example.com
-X-Path402-Chain: bsv
-X-Path402-Facilitator: https://path402.com/api/x402/verify
+X-402-Version: 1.0.0
+X-402-Price: 10
+X-402-Token: $example.com
+X-402-Chain: bsv
+X-402-Facilitator: https://path402.com/api/x402/verify
 
 {
   "error": "payment_required",
-  "price_sats": 5000,
+  "price_sats": 10,
   "token": "$example.com",
   "pricing_model": "sqrt_decay",
-  "current_supply": 1000,
-  "discovery_url": "https://example.com/.well-known/path402.json",
+  "treasury_remaining": 500000000,
+  "discovery_url": "https://example.com/.well-known/x402.json",
   "acquire_url": "https://example.com/api/acquire",
   "accepts": ["bsv", "base", "sol", "eth"]
 }`}
@@ -248,28 +248,28 @@ X-Path402-Facilitator: https://path402.com/api/x402/verify
 
             <h3 className="text-xl font-bold mt-8 mb-4">3.3 Discovery Protocol</h3>
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-              All $402-compliant servers expose <code className="bg-gray-200 dark:bg-gray-800 px-2 py-1 rounded">/.well-known/path402.json</code>:
+              All $402-compliant servers expose <code className="bg-gray-200 dark:bg-gray-800 px-2 py-1 rounded">/.well-known/x402.json</code>:
             </p>
             <pre className="bg-gray-100 dark:bg-gray-900 p-6 rounded-lg overflow-x-auto text-sm mt-4 text-gray-800 dark:text-gray-300">
 {`{
-  "$402_version": "1.0.0",
+  "x402_version": "1.0.0",
   "name": "Example Content Network",
   "token": {
     "symbol": "$example.com",
     "total_supply": 1000000000,
-    "current_supply": 500032356,
+    "treasury_remaining": 500000000,
     "inscription_id": "5bf47d3af709a385d3a5...",
     "chain": "bsv"
   },
   "pricing": {
     "model": "sqrt_decay",
-    "base_price_sats": 100000000,
-    "current_price_sats": 4473
+    "base_price_sats": 223610,
+    "current_price_sats": 10,
+    "formula": "price = base / sqrt(treasury + 1)"
   },
   "revenue_split": {
-    "issuer_bps": 7000,
-    "platform_bps": 2000,
-    "holder_bps": 1000
+    "issuer_bps": 8000,
+    "facilitator_bps": 2000
   },
   "facilitator": "https://path402.com/api/x402"
 }`}
@@ -352,98 +352,102 @@ X-Path402-Facilitator: https://path402.com/api/x402/verify
 
             <h3 className="text-xl font-bold mt-8 mb-4">5.1 sqrt_decay Pricing Model</h3>
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-              The default pricing model uses square root decay:
+              The default pricing model uses square root decay based on remaining treasury:
             </p>
             <pre className="bg-gray-100 dark:bg-gray-900 p-6 rounded-lg overflow-x-auto text-sm mt-4 mb-6 text-gray-800 dark:text-gray-300">
-{`price(n) = base_price / √(supply + 1)
+{`price = base_price / √(treasury_remaining + 1)
 
 Where:
-  base_price = Initial price when supply = 0
-  supply = Current number of tokens in circulation
-  n = Position of this purchase in the queue`}
+  base_price = 223,610 sats (calibrated so 1 BSV ≈ 1% of supply)
+  treasury_remaining = Tokens left for sale
+
+As treasury depletes, price INCREASES → early buyers are rewarded`}
             </pre>
 
             <h3 className="text-xl font-bold mt-8 mb-4">5.2 Mathematical Properties</h3>
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-              This formula produces several desirable properties:
+              This formula produces desirable properties—early buyers get lower prices:
             </p>
 
             <div className="overflow-x-auto mt-4 mb-6">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-gray-200 dark:border-gray-800">
-                    <th className="text-left py-3 pr-4 text-gray-500 dark:text-gray-400 font-medium">Supply</th>
+                    <th className="text-left py-3 pr-4 text-gray-500 dark:text-gray-400 font-medium">Treasury Remaining</th>
                     <th className="text-left py-3 pr-4 text-gray-500 dark:text-gray-400 font-medium">Price (sats)</th>
-                    <th className="text-left py-3 text-gray-500 dark:text-gray-400 font-medium">Change</th>
+                    <th className="text-left py-3 text-gray-500 dark:text-gray-400 font-medium">% Sold</th>
                   </tr>
                 </thead>
                 <tbody className="text-gray-700 dark:text-gray-300 font-mono">
                   <tr className="border-b border-gray-200 dark:border-gray-700">
-                    <td className="py-3 pr-4">0</td>
-                    <td className="py-3 pr-4 text-green-600 dark:text-green-400">100,000,000</td>
-                    <td className="py-3">—</td>
+                    <td className="py-3 pr-4">500,000,000</td>
+                    <td className="py-3 pr-4 text-green-600 dark:text-green-400">10</td>
+                    <td className="py-3 text-gray-500">0%</td>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
-                    <td className="py-3 pr-4">100</td>
-                    <td className="py-3 pr-4 text-green-600 dark:text-green-400">9,950,372</td>
-                    <td className="py-3 text-gray-500">-90%</td>
+                    <td className="py-3 pr-4">100,000,000</td>
+                    <td className="py-3 pr-4 text-green-600 dark:text-green-400">22</td>
+                    <td className="py-3 text-gray-500">80%</td>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
-                    <td className="py-3 pr-4">10,000</td>
-                    <td className="py-3 pr-4 text-yellow-600 dark:text-yellow-400">999,950</td>
-                    <td className="py-3 text-gray-500">-99%</td>
+                    <td className="py-3 pr-4">10,000,000</td>
+                    <td className="py-3 pr-4 text-yellow-600 dark:text-yellow-400">71</td>
+                    <td className="py-3 text-gray-500">98%</td>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <td className="py-3 pr-4">1,000,000</td>
-                    <td className="py-3 pr-4 text-yellow-600 dark:text-yellow-400">99,999</td>
-                    <td className="py-3 text-gray-500">-99.9%</td>
+                    <td className="py-3 pr-4 text-yellow-600 dark:text-yellow-400">224</td>
+                    <td className="py-3 text-gray-500">99.8%</td>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
-                    <td className="py-3 pr-4">500,000,000</td>
-                    <td className="py-3 pr-4 text-red-600 dark:text-red-400">4,472</td>
-                    <td className="py-3 text-gray-500">-99.995%</td>
+                    <td className="py-3 pr-4">1,000</td>
+                    <td className="py-3 pr-4 text-red-600 dark:text-red-400">7,072</td>
+                    <td className="py-3 text-gray-500">99.9998%</td>
                   </tr>
                 </tbody>
               </table>
             </div>
 
             <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-6 rounded-lg mt-6 mb-6">
-              <div className="font-bold text-blue-900 dark:text-blue-300 mb-2">Key Insight: Positive-Sum Economics</div>
+              <div className="font-bold text-blue-900 dark:text-blue-300 mb-2">Key Insight: Early Mover Advantage</div>
               <p className="text-blue-800 dark:text-blue-400 text-sm">
-                With sqrt_decay pricing, <strong>every buyer except the last achieves positive ROI</strong> if
-                they serve content to subsequent buyers. This creates a self-reinforcing network where early
-                adoption is rewarded, but late adoption remains affordable.
+                With sqrt_decay pricing, <strong>early buyers acquire tokens at the lowest prices</strong>. As
+                the treasury depletes, each subsequent token costs more. First movers who believe in the content
+                are rewarded—late adopters pay a premium but still get access at a deterministic, fair price.
               </p>
             </div>
 
-            <h3 className="text-xl font-bold mt-8 mb-4">5.3 Revenue Distribution</h3>
+            <h3 className="text-xl font-bold mt-8 mb-4">5.3 Revenue Distribution (Configurable)</h3>
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-              When a token is acquired, payment flows to three parties:
+              Content creators implementing $402 can configure revenue splits. The recommended default:
             </p>
             <pre className="bg-gray-100 dark:bg-gray-900 p-6 rounded-lg overflow-x-auto text-sm mt-4 text-gray-800 dark:text-gray-300">
-{`Payment Flow (default split):
-├── Issuer/Creator:   70% (7000 bps)
-├── Platform:         20% (2000 bps)
-└── Existing Holders: 10% (1000 bps)
+{`Recommended Split (configurable per token):
+├── Issuer/Creator:   70-90%
+├── Facilitator:      5-20%
+└── Referrer/CDN:     5-10% (optional)
 
-Example: 10,000 sat purchase
-├── Creator receives:  7,000 sats
-├── Platform receives: 2,000 sats
-└── Holders receive:   1,000 sats (distributed pro-rata)`}
+Discovery document specifies:
+  "revenue_split": {
+    "issuer_bps": 8000,
+    "facilitator_bps": 2000
+  }`}
             </pre>
 
-            <h3 className="text-xl font-bold mt-8 mb-4">5.4 Breakeven Analysis</h3>
+            <h3 className="text-xl font-bold mt-8 mb-4">5.4 Token Value Dynamics</h3>
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-              Given sqrt_decay pricing, a buyer at position N breaks even when:
+              Token value derives from three sources:
             </p>
             <pre className="bg-gray-100 dark:bg-gray-900 p-6 rounded-lg overflow-x-auto text-sm mt-4 text-gray-800 dark:text-gray-300">
-{`breakeven_buyers = (price_paid / holder_share_per_buyer)
+{`Value Sources:
+├── Access Right:   Token unlocks protected content
+├── Scarcity:       Fixed supply, increasing price floor
+└── Secondary:      Tradeable on BSV-20 markets
 
-Example:
-  Buyer #100 pays: 10,000 sats
-  Holder share per new buyer: ~100 sats
-  Breakeven: 100 more buyers needed
-  If 200 more buy, ROI = 100%`}
+Example: $BLOG token for premium content
+  - Creator prices at 1000 sats base
+  - Early supporters get cheap access
+  - Can resell tokens if content gains popularity`}
             </pre>
           </section>
 
