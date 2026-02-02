@@ -32,11 +32,23 @@ export async function GET(request: NextRequest) {
 
     // Fetch user profile using SDK
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const result = await Connect.getCurrentUserProfile({ client: client as any });
+    let result;
+    try {
+      result = await Connect.getCurrentUserProfile({ client: client as any });
+      console.log('HandCash profile result:', JSON.stringify(result, null, 2));
+    } catch (profileError) {
+      console.error('HandCash profile fetch exception:', profileError);
+      return NextResponse.redirect(`${baseUrl}/token?error=profile_fetch_failed&reason=exception`);
+    }
 
-    if (result.error || !result.data) {
-      console.error('Failed to fetch HandCash profile:', result.error);
-      return NextResponse.redirect(`${baseUrl}/token?error=profile_fetch_failed`);
+    if (result.error) {
+      console.error('Failed to fetch HandCash profile - error:', result.error);
+      return NextResponse.redirect(`${baseUrl}/token?error=profile_fetch_failed&reason=api_error`);
+    }
+
+    if (!result.data) {
+      console.error('Failed to fetch HandCash profile - no data:', result);
+      return NextResponse.redirect(`${baseUrl}/token?error=profile_fetch_failed&reason=no_data`);
     }
 
     const profile = result.data;

@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
 import { WalletProvider } from "@/components/WalletProvider";
+import { Navbar } from "@/components/Navbar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -32,45 +33,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <WalletProvider>
-        {/* Navigation */}
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm border-b border-gray-800">
-          <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-            <Link href="/" className="text-xl font-bold tracking-tight">
-              $PATH402
-            </Link>
-            <div className="flex items-center gap-6">
-              <Link href="/docs" className="text-gray-400 hover:text-white transition-colors text-sm">
-                Docs
-              </Link>
-              <Link href="/exchange" className="text-gray-400 hover:text-white transition-colors text-sm">
-                Exchange
-              </Link>
-              <Link href="/token" className="text-gray-400 hover:text-white transition-colors text-sm">
-                Token
-              </Link>
-              <Link href="/registry" className="text-gray-400 hover:text-white transition-colors text-sm">
-                Registry
-              </Link>
-              <a
-                href="https://github.com/b0ase/path402-mcp-server"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition-colors text-sm"
-              >
-                GitHub
-              </a>
-              <a
-                href="https://www.npmjs.com/package/path402-mcp-server"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-4 py-2 bg-white text-black font-medium text-sm hover:bg-gray-200 transition-colors"
-              >
-                npm install
-              </a>
-            </div>
-          </div>
-        </nav>
-
+        <Navbar />
         {children}
 
         {/* Footer */}
