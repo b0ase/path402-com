@@ -1,13 +1,20 @@
 // Token Configuration
+// $PATH402 = Equity in the PATH402.com facilitator business
+// The "$402" ticker on 1sat.market is shorthand for $PATH402
+// See docs/ARCHITECTURE.md for full token architecture
 export const TOKEN_CONFIG = {
-  symbol: 'PATH402.com',
-  name: 'PATH402.com Protocol Token',
-  totalSupply: 1_000_000_000,
+  symbol: '$PATH402',
+  name: 'PATH402.com Facilitator Equity',
+  description: 'Equity in the PATH402.com x402 facilitator business. Stake to earn dividends from facilitator fees.',
+  totalSupply: 1_000_000_000, // 1 billion
+  treasuryAllocation: 500_000_000, // 50% retained by business
+  publicAllocation: 500_000_000, // 50% on sale via treasury curve
   decimals: 0,
   inscriptionId: '5bf47d3af709a385d3a50a298faa18f9479b090114a69ce8308055861d20e18d_1',
   txId: '5bf47d3af709a385d3a50a298faa18f9479b090114a69ce8308055861d20e18d',
   protocol: 'bsv-20',
   marketUrl: 'https://1sat.market/outpoint/5bf47d3af709a385d3a50a298faa18f9479b090114a69ce8308055861d20e18d_1/timeline',
+  treasuryAddress: '1BrbnQon4uZPSxNwt19ozwtgHPDbgvaeD1',
 };
 
 // Wallet types
