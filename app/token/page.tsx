@@ -107,7 +107,8 @@ export default function TokenPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || 'Purchase failed');
+        const errorMsg = data.details ? `${data.error}: ${data.details}` : data.error;
+        throw new Error(errorMsg || 'Purchase failed');
       }
 
       if (wallet.provider === 'yours' && window.yours && data.paymentAddress) {
