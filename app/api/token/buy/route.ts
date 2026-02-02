@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getOrCreateHolder, createPurchase, processPurchaseImmediate, getTokenStats, PAYMENT_ADDRESS } from '@/lib/store';
+import { getInstance, Connect } from '@handcash/sdk';
 
 // sqrt_decay pricing: price = BASE / sqrt(supply_sold + 1)
 // Early buyers pay more, price decreases as more tokens are sold
@@ -76,21 +77,74 @@ export async function POST(request: NextRequest) {
         status: 'pending_payment',
       });
     } else if (provider === 'handcash') {
-      // For HandCash, the payment was already made via their flow
-      // This is called after successful HandCash payment
-      const purchase = await processPurchaseImmediate(holder.id, amount, avgPrice);
+      // For HandCash, we need to initiate payment using the SDK
+      const authToken = request.cookies.get('hc_token')?.value;
 
-      return NextResponse.json({
-        purchaseId: purchase.id,
-        amount,
-        pricingModel: 'sqrt_decay',
-        currentPrice,
-        avgPrice,
-        totalSats,
-        supplySold,
-        status: 'confirmed',
-        newBalance: holder.balance,
-      });
+      if (!authToken) {
+        return NextResponse.json({ error: 'HandCash session expired, please reconnect' }, { status: 401 });
+      }
+
+      const appId = process.env.HANDCASH_APP_ID?.trim();
+      const appSecret = process.env.HANDCASH_APP_SECRET?.trim();
+
+      if (!appId || !appSecret) {
+        return NextResponse.json({ error: 'HandCash not configured' }, { status: 500 });
+      }
+
+      // Initialize HandCash SDK and make payment
+      const sdk = getInstance({ appId, appSecret });
+      const client = sdk.getAccountClient(authToken);
+
+      // Convert sats to USD for HandCash payment
+      // BSV ~= $17, so sats to USD = sats * 17 / 100_000_000
+      const BSV_PRICE_USD = 17;
+      const usdAmount = Math.max(0.01, (totalSats * BSV_PRICE_USD) / 100_000_000);
+
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const paymentResult = await Connect.pay({
+          client: client as any,
+          body: {
+            instrumentCurrencyCode: 'BSV',
+            denominationCurrencyCode: 'USD',
+            receivers: [{
+              sendAmount: usdAmount,
+              destination: PAYMENT_ADDRESS,
+            }],
+            note: `Purchase ${amount.toLocaleString()} PATH402 tokens`,
+          }
+        });
+
+        if (paymentResult.error) {
+          console.error('HandCash payment failed:', paymentResult.error);
+          return NextResponse.json({
+            error: 'Payment failed',
+            details: typeof paymentResult.error === 'string' ? paymentResult.error : JSON.stringify(paymentResult.error)
+          }, { status: 400 });
+        }
+
+        // Payment succeeded, credit tokens
+        const purchase = await processPurchaseImmediate(holder.id, amount, avgPrice);
+
+        return NextResponse.json({
+          purchaseId: purchase.id,
+          amount,
+          pricingModel: 'sqrt_decay',
+          currentPrice,
+          avgPrice,
+          totalSats,
+          supplySold,
+          status: 'confirmed',
+          txId: paymentResult.data?.transactionId,
+          newBalance: holder.balance + amount,
+        });
+      } catch (paymentError) {
+        console.error('HandCash payment exception:', paymentError);
+        return NextResponse.json({
+          error: 'Payment failed',
+          details: paymentError instanceof Error ? paymentError.message : 'Unknown error'
+        }, { status: 400 });
+      }
     }
 
     return NextResponse.json({ error: 'Unsupported provider' }, { status: 400 });
