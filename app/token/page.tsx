@@ -434,11 +434,11 @@ export default function TokenPage() {
                 animate="visible"
               >
                 {[
-                  { label: 'Total Balance', value: holding.balance.toLocaleString(), color: 'text-white' },
-                  { label: 'Available', value: holding.availableBalance.toLocaleString(), color: 'text-white' },
-                  { label: 'Staked', value: holding.stakedBalance.toLocaleString(), color: 'text-purple-400' },
-                  { label: 'Pending Dividends', value: `${holding.pendingDividends.toLocaleString()} sats`, color: 'text-green-400' },
-                  { label: 'Total Earned', value: `${holding.totalDividendsEarned.toLocaleString()} sats`, color: 'text-green-400' },
+                  { label: 'Total Balance', value: (holding.balance ?? 0).toLocaleString(), color: 'text-white' },
+                  { label: 'Available', value: (holding.availableBalance ?? 0).toLocaleString(), color: 'text-white' },
+                  { label: 'Staked', value: (holding.stakedBalance ?? 0).toLocaleString(), color: 'text-purple-400' },
+                  { label: 'Pending Dividends', value: `${(holding.pendingDividends ?? 0).toLocaleString()} sats`, color: 'text-green-400' },
+                  { label: 'Total Earned', value: `${(holding.totalDividendsEarned ?? 0).toLocaleString()} sats`, color: 'text-green-400' },
                 ].map((item, i) => (
                   <motion.div key={i} variants={fadeIn}>
                     <div className="text-gray-400 text-sm">{item.label}</div>

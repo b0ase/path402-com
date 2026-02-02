@@ -62,7 +62,7 @@ export default function RegistryPage() {
     }
   };
 
-  const formatNumber = (n: number) => n.toLocaleString();
+  const formatNumber = (n: number | undefined | null) => (n ?? 0).toLocaleString();
 
   const truncateAddress = (address: string) => {
     if (address.length <= 16) return address;

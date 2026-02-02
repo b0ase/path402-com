@@ -66,12 +66,13 @@ export default function AccountPage() {
     }
   };
 
-  const formatNumber = (n: number) => n.toLocaleString();
-  const formatSats = (sats: number) => {
-    if (sats >= 100000000) {
-      return `${(sats / 100000000).toFixed(4)} BSV`;
+  const formatNumber = (n: number | undefined | null) => (n ?? 0).toLocaleString();
+  const formatSats = (sats: number | undefined | null) => {
+    const val = sats ?? 0;
+    if (val >= 100000000) {
+      return `${(val / 100000000).toFixed(4)} BSV`;
     }
-    return `${formatNumber(sats)} sats`;
+    return `${formatNumber(val)} sats`;
   };
 
   if (!wallet.connected) {
