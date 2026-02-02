@@ -351,7 +351,7 @@ app.get('/.well-known/path402.json', (req, res) => {
 
 ## License
 
-This specification is released under [CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/).
+This specification and reference implementation are released under the [Open BSV License version 4](https://github.com/b0ase/path402-com/blob/main/LICENSE).
 
 ---
 

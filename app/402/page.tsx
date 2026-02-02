@@ -343,9 +343,9 @@ X-Path402-Protocol: bsv-20`}
           {/* Footer */}
           <section className="border-t border-gray-800 pt-8">
             <p className="text-gray-500 text-sm">
-              This specification is released under{' '}
-              <a href="https://creativecommons.org/publicdomain/zero/1.0/" className="text-gray-400 hover:text-white">
-                CC0 1.0 Universal
+              This specification is released under the{' '}
+              <a href="https://github.com/b0ase/path402-com/blob/main/LICENSE" className="text-gray-400 hover:text-white">
+                Open BSV License version 4
               </a>.
             </p>
             <p className="text-gray-500 text-sm mt-2">
