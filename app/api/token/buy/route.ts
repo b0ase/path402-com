@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getOrCreateHolder, createPurchase, processPurchaseImmediate, getTokenStats, PAYMENT_ADDRESS, TREASURY_PAYMAIL, getHolder } from '@/lib/store';
+import { getOrCreateHolder, createPurchase, processPurchaseImmediate, getTokenStats, PAYMENT_ADDRESS, getHolder } from '@/lib/store';
 import { getInstance, Connect } from '@handcash/sdk';
 import { executeTransfer } from '@/lib/bsv20-transfer';
 
@@ -164,7 +164,7 @@ export async function POST(request: NextRequest) {
             denominationCurrencyCode: 'USD',
             receivers: [{
               sendAmount: usdAmount,
-              destination: TREASURY_PAYMAIL,
+              destination: PAYMENT_ADDRESS, // BSV address, not paymail
             }],
             note: 'PATH402 token purchase',
           }
