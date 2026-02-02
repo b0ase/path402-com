@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // HandCash OAuth configuration
-const HANDCASH_APP_ID = process.env.HANDCASH_APP_ID;
+const HANDCASH_APP_ID = process.env.HANDCASH_APP_ID?.trim();
 const HANDCASH_AUTH_URL = 'https://app.handcash.io';
 
 export async function GET(request: NextRequest) {
@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     authUrl.searchParams.set('appId', HANDCASH_APP_ID);
 
     // Get the base URL for the callback - MUST match HandCash dashboard exactly
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://path402.com';
+    const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://path402.com').trim();
     // Note: HandCash dashboard has this registered as the callback URL
     const callbackUrl = `${baseUrl}/api/auth/callback/handcash`;
     authUrl.searchParams.set('redirectUrl', callbackUrl);

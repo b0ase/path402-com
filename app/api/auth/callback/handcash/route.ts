@@ -7,8 +7,10 @@ export async function GET(request: NextRequest) {
     const authToken = searchParams.get('authToken');
     const redirect = searchParams.get('redirect') || '/token';
 
+    const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://path402.com').trim();
+
     if (!authToken) {
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL || ''}/token?error=no_token`);
+      return NextResponse.redirect(`${baseUrl}/token?error=no_token`);
     }
 
     // Fetch user profile from HandCash
@@ -20,7 +22,7 @@ export async function GET(request: NextRequest) {
 
     if (!profileResponse.ok) {
       console.error('Failed to fetch HandCash profile');
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL || ''}/token?error=profile_fetch_failed`);
+      return NextResponse.redirect(`${baseUrl}/token?error=profile_fetch_failed`);
     }
 
     const profile = await profileResponse.json();
@@ -28,11 +30,11 @@ export async function GET(request: NextRequest) {
     const paymail = profile.publicProfile?.paymail;
 
     if (!handle) {
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL || ''}/token?error=no_handle`);
+      return NextResponse.redirect(`${baseUrl}/token?error=no_handle`);
     }
 
     // Register/get the holder
-    const holder = getOrCreateHolder(
+    await getOrCreateHolder(
       paymail || `${handle}@handcash.io`,
       'handcash',
       undefined,
@@ -40,7 +42,6 @@ export async function GET(request: NextRequest) {
     );
 
     // Create response with redirect and set cookie for session
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || '';
     const response = NextResponse.redirect(`${baseUrl}${redirect}`);
 
     // Set session cookies
@@ -61,6 +62,7 @@ export async function GET(request: NextRequest) {
     return response;
   } catch (error) {
     console.error('HandCash callback error:', error);
-    return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL || ''}/token?error=callback_failed`);
+    const errorUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://path402.com').trim();
+    return NextResponse.redirect(`${errorUrl}/token?error=callback_failed`);
   }
 }
