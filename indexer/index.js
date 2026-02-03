@@ -150,14 +150,8 @@ async function processTx(txid) {
   const tx = await fetchTxDetails(txid);
   if (!tx || !tx.vout) return null;
 
-  // Check if this is an outgoing tx from treasury
-  const isOutgoing = tx.vin?.some(vin =>
-    vin.addresses?.includes(CONFIG.treasuryAddress)
-  );
-
-  if (!isOutgoing) return null;
-
   // Look for BSV-20 transfer in outputs
+  // Any tx in treasury history that has a BSV-20 transfer to non-treasury address
   for (const vout of tx.vout) {
     const scriptHex = vout.scriptPubKey?.hex;
     if (!scriptHex) continue;
@@ -165,7 +159,8 @@ async function processTx(txid) {
     const transfer = parseBsv20Transfer(scriptHex);
     if (!transfer) continue;
 
-    // Get recipient address
+    // Get recipient address from the script
+    // For BSV-20 inscriptions, the address is embedded in the P2PKH part
     const toAddress = getAddressFromScript(scriptHex);
     if (!toAddress || toAddress === CONFIG.treasuryAddress) continue;
 
