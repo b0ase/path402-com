@@ -189,21 +189,21 @@ export default function RegistryPage() {
           ))}
         </motion.div>
 
-        {/* On-Chain Sync Status */}
-        {onChainData && !onChainData.comparison.inSync && (
+        {/* On-Chain Sync Status - only show if there's an actual problem */}
+        {onChainData && !onChainData.comparison.inSync && onChainData.onChain.circulatingSupply > 0 && (
           <motion.div
-            className="border border-yellow-500/50 bg-yellow-500/10 p-4 mb-6"
+            className="border border-blue-500/50 bg-blue-500/10 p-4 mb-6"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <div className="flex items-center gap-2 text-yellow-400 mb-2">
+            <div className="flex items-center gap-2 text-blue-400 mb-2">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <span className="font-medium">Database out of sync with blockchain</span>
+              <span className="font-medium">External indexer syncing</span>
             </div>
-            <p className="text-yellow-400/80 text-sm">
-              The on-chain BSV-20 token state differs from the database. On-chain is the source of truth.
+            <p className="text-blue-400/80 text-sm">
+              Third-party indexer (GorillaPool) is catching up. Your balance is tracked locally and accurate.
             </p>
           </motion.div>
         )}

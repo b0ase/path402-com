@@ -116,18 +116,29 @@ export async function POST(request: NextRequest) {
       handle || undefined
     );
 
-    // For HandCash, check if user has derived ordinals address
+    // For HandCash, REQUIRE derived ordinals address before purchase
     let ordinalsAddress: string | null = null;
     if (provider === 'handcash' && handle && isDbConnected() && supabase) {
       const { data: wallet } = await supabase
         .from('user_wallets')
         .select('address')
-        .eq('handle', handle)
+        .ilike('handle', handle)
         .single();
 
       if (wallet) {
         ordinalsAddress = wallet.address;
       }
+    }
+
+    // REQUIRE address derivation before purchase
+    if (provider === 'handcash' && !ordinalsAddress) {
+      return NextResponse.json({
+        error: 'Address derivation required',
+        code: 'NO_ORDINALS_ADDRESS',
+        details: 'You must derive your on-chain address before purchasing tokens.',
+        action: 'Go to Account page and click "Derive My Address" first.',
+        redirectTo: '/account',
+      }, { status: 400 });
     }
 
     if (provider === 'yours') {
@@ -208,15 +219,29 @@ export async function POST(request: NextRequest) {
             transferTxId = transferResult.txId;
             console.log(`BSV-20 transfer successful: ${transferTxId}`);
 
-            // Update purchase with transfer txid
+            // IMMEDIATELY record the transfer in path402_transfers
+            // This is the source of truth - don't wait for indexer
             if (isDbConnected() && supabase) {
               await supabase
-                .from('path402_purchases')
-                .update({ transfer_tx_id: transferTxId })
-                .eq('id', purchase.id);
+                .from('path402_transfers')
+                .insert({
+                  holder_id: holder.id,
+                  to_address: ordinalsAddress,
+                  amount: tokenAmount,
+                  tx_id: transferTxId,
+                  status: 'confirmed',
+                });
+
+              // Zero out database balance - tokens are now on-chain
+              await supabase
+                .from('path402_holders')
+                .update({ balance: 0 })
+                .eq('id', holder.id);
+
+              console.log(`Recorded transfer and zeroed database balance for ${holder.id}`);
             }
           } else {
-            // Transfer failed - tokens are still in database, user can withdraw later
+            // Transfer failed - tokens remain in database balance, user can withdraw later
             transferError = transferResult.error || 'Unknown transfer error';
             console.error('BSV-20 transfer failed:', transferError);
           }
@@ -236,11 +261,9 @@ export async function POST(request: NextRequest) {
           transferError,
           newBalance: holder.balance + tokenAmount,
           ordinalsAddress,
-          note: ordinalsAddress
-            ? (transferTxId
-                ? `Tokens transferred to your ordinals address: ${ordinalsAddress}`
-                : `Payment confirmed. Token transfer pending - withdraw from Account page.`)
-            : 'Tokens credited. Derive your ordinals address in Account to receive on-chain.',
+          note: transferTxId
+            ? `Tokens transferred to your ordinals address: ${ordinalsAddress}`
+            : `Payment confirmed. Token transfer pending - withdraw from Account page.`,
         });
       } catch (paymentError) {
         console.error('HandCash payment exception:', paymentError);

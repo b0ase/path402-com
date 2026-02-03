@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getHolder, updateHolderBalance } from '@/lib/store';
 import { supabase, isDbConnected } from '@/lib/supabase';
-import { decryptWif, verifySignatureOwnership, SIGN_MESSAGES } from '@/lib/address-derivation';
+import { verifySignatureOwnership, SIGN_MESSAGES } from '@/lib/address-derivation';
 import { createTransferTransaction } from '@/lib/bsv20-transfer';
 
 const WHATSONCHAIN_API = 'https://api.whatsonchain.com/v1/bsv/main';
@@ -144,23 +144,22 @@ export async function POST(request: NextRequest) {
       }, { status: 403 });
     }
 
-    // Decrypt WIF
-    let wif: string;
-    try {
-      wif = decryptWif(wallet.encrypted_wif, signature, wallet.encryption_salt);
-    } catch (decryptError) {
-      console.error('WIF decryption failed:', decryptError);
+    // Transfer from TREASURY to user's destination
+    // The user's signature proves they own this database balance
+    // The treasury key is used to send the on-chain tokens
+    const treasuryWIF = process.env.TREASURY_PRIVATE_KEY;
+    if (!treasuryWIF) {
       return NextResponse.json({
-        error: 'Decryption failed',
-        details: 'Could not decrypt your private key.',
+        error: 'Treasury not configured',
+        details: 'Contact support - treasury private key is missing.',
       }, { status: 500 });
     }
 
-    // Create and sign the transfer transaction
+    // Create and sign the transfer transaction from treasury
     let txHex: string;
     let txId: string;
     try {
-      const result = await createTransferTransaction(amount, destination, wif);
+      const result = await createTransferTransaction(amount, destination, treasuryWIF);
       txHex = result.txHex;
       txId = result.txId;
     } catch (txError) {
@@ -184,17 +183,19 @@ export async function POST(request: NextRequest) {
       }, { status: 500 });
     }
 
-    // Update database balance
+    // Update database balance (subtract the withdrawn amount)
     await updateHolderBalance(holder.id, -amount);
 
-    // Record the withdrawal
-    await supabase.from('path402_withdrawals').insert({
+    // Record the transfer in path402_transfers (source of truth for on-chain positions)
+    await supabase.from('path402_transfers').insert({
       holder_id: holder.id,
+      to_address: destination,
       amount,
-      destination,
       tx_id: broadcastTxId,
-      from_address: wallet.address,
+      status: 'confirmed',
     });
+
+    console.log(`Recorded withdrawal transfer: ${amount} to ${destination} (tx: ${broadcastTxId})`);
 
     return NextResponse.json({
       success: true,
