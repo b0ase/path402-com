@@ -70,7 +70,7 @@ function WhitepaperContent() {
             </motion.p>
 
             <motion.div
-              className="flex items-center gap-4 text-zinc-500 text-sm"
+              className="flex items-center gap-4 text-zinc-500 text-sm mb-6"
               variants={fadeIn}
             >
               <a href="https://x.com/b0ase" target="_blank" rel="noopener noreferrer" className="hover:text-zinc-900 dark:hover:text-white transition-colors">
@@ -78,6 +78,22 @@ function WhitepaperContent() {
               </a>
               <span>·</span>
               <span>February 2026</span>
+            </motion.div>
+
+            <motion.div
+              className="flex items-center gap-3"
+              variants={fadeIn}
+            >
+              <a
+                href="/whitepaper/academic"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-900 dark:bg-white text-white dark:text-black text-xs uppercase tracking-widest hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Download PDF (Academic)
+              </a>
+              <span className="text-zinc-400 text-xs">Bitcoin-style format</span>
             </motion.div>
           </motion.div>
         </div>
