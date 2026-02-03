@@ -152,7 +152,7 @@ export default function RegistryPage() {
             variants={fadeIn}
             transition={{ delay: 0.2 }}
           >
-            Cap table for {TOKEN_CONFIG.symbol} token holders
+            Cap table for {TOKEN_CONFIG.displaySymbol} token holders
           </motion.p>
         </motion.div>
 
@@ -412,7 +412,8 @@ export default function RegistryPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div>
               <span className="text-zinc-500">Symbol:</span>{' '}
-              <span className="font-mono text-zinc-900 dark:text-white">{TOKEN_CONFIG.symbol}</span>
+              <span className="font-mono text-zinc-900 dark:text-white">{TOKEN_CONFIG.displaySymbol}</span>
+              <span className="text-zinc-400 text-xs ml-2">(on-chain: {TOKEN_CONFIG.symbol})</span>
             </div>
             <div>
               <span className="text-zinc-500">Protocol:</span>{' '}

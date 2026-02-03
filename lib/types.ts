@@ -1,9 +1,10 @@
 // Token Configuration
-// $PATH402 = Equity in the PATH402.com facilitator business
-// The "$402" ticker on 1sat.market is shorthand for $PATH402
+// PATH402.com = On-chain BSV-20 token ticker (as deployed)
+// $PATH402 = User-friendly display name
 // See docs/ARCHITECTURE.md for full token architecture
 export const TOKEN_CONFIG = {
-  symbol: '$PATH402',
+  symbol: 'PATH402.com',  // Must match on-chain ticker exactly for transfers
+  displaySymbol: '$PATH402',  // Human-friendly display name
   name: 'PATH402.com Facilitator Equity',
   description: 'Equity in the PATH402.com x402 facilitator business. Stake to earn dividends from facilitator fees.',
   totalSupply: 1_000_000_000, // 1 billion

@@ -394,7 +394,7 @@ export default function TokenPage() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                {TOKEN_CONFIG.symbol}
+                {TOKEN_CONFIG.displaySymbol}
               </motion.h1>
               <p className="text-zinc-600 dark:text-zinc-400">{TOKEN_CONFIG.name}</p>
             </motion.div>
