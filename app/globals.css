@@ -2,24 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Light mode (default) */
+/* Light mode */
 :root {
   --bg-surface: #ffffff;
-  --bg-surface-secondary: #f9fafb;
-  --text-primary: #111827;
-  --text-secondary: #374151;
-  --text-muted: #6b7280;
-  --border-primary: #e5e7eb;
+  --bg-surface-secondary: #fafafa;
+  --text-primary: #18181b;
+  --text-secondary: #3f3f46;
+  --text-muted: #71717a;
+  --border-primary: #e4e4e7;
 }
 
 /* Dark mode */
 .dark {
   --bg-surface: #000000;
-  --bg-surface-secondary: #111827;
+  --bg-surface-secondary: #09090b;
   --text-primary: #ffffff;
-  --text-secondary: #d1d5db;
-  --text-muted: #9ca3af;
-  --border-primary: #374151;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --border-primary: #27272a;
 }
 
 /* Base styles */
@@ -29,18 +29,51 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Selection */
+/* Selection - light */
 ::selection {
-  background: #3b82f6;
-  color: #fff;
+  background: #18181b;
+  color: #ffffff;
 }
 
-/* Smooth transitions for theme changes */
-* {
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+/* Selection - dark */
+.dark ::selection {
+  background: #ffffff;
+  color: #000000;
 }
 
-/* Don't transition text to avoid flicker */
-h1, h2, h3, h4, h5, h6, p, span, a, li {
-  transition: none;
+/* Scrollbar - light */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #fafafa;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d4d4d8;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1aa;
+}
+
+/* Scrollbar - dark */
+.dark ::-webkit-scrollbar-track {
+  background: #09090b;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #27272a;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
+
+/* Focus styles */
+*:focus-visible {
+  outline: 1px solid #3f3f46;
+  outline-offset: 2px;
 }

@@ -68,19 +68,19 @@ export default function DocsPage() {
           variants={staggerContainer}
         >
           <motion.div variants={fadeIn}>
-            <Link href="/" className="text-gray-500 hover:text-gray-900 dark:hover:text-white text-sm mb-4 inline-block">
+            <Link href="/" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-900 dark:text-white text-sm mb-4 inline-block">
               ← Back to Home
             </Link>
           </motion.div>
           <motion.h1
-            className="text-5xl font-bold text-gray-900 dark:text-white mb-4"
+            className="text-5xl font-bold text-zinc-900 dark:text-white mb-4"
             variants={fadeIn}
             transition={{ duration: 0.6 }}
           >
             Documentation
           </motion.h1>
           <motion.p
-            className="text-gray-600 dark:text-gray-400"
+            className="text-zinc-400"
             variants={fadeIn}
             transition={{ delay: 0.2 }}
           >
@@ -90,13 +90,13 @@ export default function DocsPage() {
 
         {/* Table of Contents */}
         <motion.div
-          className="border border-gray-200 dark:border-gray-800 p-6 mb-12 bg-gray-50 dark:bg-transparent rounded-lg"
+          className="border border-zinc-200 dark:border-zinc-800 p-6 mb-12 bg-zinc-50 dark:bg-zinc-950 "
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
           whileHover={{ borderColor: "rgba(128,128,128,0.4)" }}
         >
-          <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-4 uppercase tracking-wider">Contents</h2>
+          <h2 className="text-sm font-medium text-zinc-500 mb-4 uppercase tracking-wider">Contents</h2>
           <ul className="space-y-2 text-sm">
             {tocItems.map((item, i) => (
               <motion.li
@@ -123,19 +123,19 @@ export default function DocsPage() {
           variants={fadeIn}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">What is $402?</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
+          <h2 className="text-3xl font-bold text-zinc-900 dark:text-white mb-6">What is $402?</h2>
+          <p className="text-zinc-400 mb-4 leading-relaxed">
             $402 is a protocol that turns any URL path into a priced, tokenised market. Put a{" "}
-            <code className="text-gray-900 dark:text-white bg-gray-200 dark:bg-gray-900 px-2 py-1 rounded">$</code> in front of a path segment
+            <code className="text-zinc-900 dark:text-white bg-zinc-900 px-2 py-1 ">$</code> in front of a path segment
             and it becomes an economic object with a price curve, a supply count, holders who serve
             the content, and revenue that flows to participants.
           </p>
-          <p className="text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
+          <p className="text-zinc-400 mb-4 leading-relaxed">
             The name combines:
           </p>
-          <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2 mb-4">
-            <li><strong className="text-gray-900 dark:text-white">$PATH</strong> — the namespace/directory concept (every $address is a path)</li>
-            <li><strong className="text-gray-900 dark:text-white">402</strong> — HTTP 402 Payment Required (the response that triggers payment)</li>
+          <ul className="list-disc list-inside text-zinc-400 space-y-2 mb-4">
+            <li><strong className="text-zinc-900 dark:text-white">$PATH</strong> — the namespace/directory concept (every $address is a path)</li>
+            <li><strong className="text-zinc-900 dark:text-white">402</strong> — HTTP 402 Payment Required (the response that triggers payment)</li>
           </ul>
         </motion.section>
 
@@ -149,21 +149,21 @@ export default function DocsPage() {
           variants={fadeIn}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">$addresses</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
-            Content behind <code className="text-gray-900 dark:text-white bg-gray-200 dark:bg-gray-900 px-2 py-1 rounded">$</code> path segments
+          <h2 className="text-3xl font-bold text-zinc-900 dark:text-white mb-6">$addresses</h2>
+          <p className="text-zinc-400 mb-4 leading-relaxed">
+            Content behind <code className="text-zinc-900 dark:text-white bg-zinc-900 px-2 py-1 ">$</code> path segments
             is $402-gated. Each segment is an independent market.
           </p>
           <motion.pre
-            className="bg-gray-100 dark:bg-gray-900 p-6 font-mono text-sm text-gray-700 dark:text-gray-300 overflow-x-auto mb-4 rounded-lg"
+            className="bg-zinc-900 p-6 font-mono text-sm text-zinc-400 overflow-x-auto mb-4 "
             whileHover={{ backgroundColor: "rgba(255,255,255,0.05)" }}
           >
 {`$example.com                    → site-level token (cheap)
 $example.com/$blog              → section token
 $example.com/$blog/$my-post     → content token (the actual content)`}
           </motion.pre>
-          <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-            Each <code className="text-gray-900 dark:text-white bg-gray-200 dark:bg-gray-900 px-1 rounded">$</code> segment creates a new market
+          <p className="text-zinc-400 leading-relaxed">
+            Each <code className="text-zinc-900 dark:text-white bg-zinc-900 px-1 ">$</code> segment creates a new market
             with its own price curve, supply, and token holders.
           </p>
         </motion.section>
@@ -178,7 +178,7 @@ $example.com/$blog/$my-post     → content token (the actual content)`}
           variants={staggerContainer}
         >
           <motion.h2
-            className="text-3xl font-bold text-gray-900 dark:text-white mb-6"
+            className="text-3xl font-bold text-zinc-900 dark:text-white mb-6"
             variants={fadeIn}
           >
             Pricing Models
@@ -187,7 +187,7 @@ $example.com/$blog/$my-post     → content token (the actual content)`}
             {pricingModels.map((model, i) => (
               <motion.div
                 key={i}
-                className="border border-gray-200 dark:border-gray-700 p-6 bg-gray-50 dark:bg-transparent rounded-lg"
+                className="border border-zinc-200 dark:border-zinc-800 p-6 bg-zinc-50 dark:bg-zinc-950 "
                 variants={scaleIn}
                 transition={{ duration: 0.4, delay: i * 0.1 }}
                 whileHover={{
@@ -195,10 +195,10 @@ $example.com/$blog/$my-post     → content token (the actual content)`}
                   transition: { duration: 0.2 }
                 }}
               >
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{model.title}</h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">{model.desc}</p>
+                <h3 className="text-lg font-semibold text-zinc-900 dark:text-white mb-2">{model.title}</h3>
+                <p className="text-zinc-400 text-sm mb-2">{model.desc}</p>
                 {model.note && (
-                  <p className="text-gray-500 dark:text-gray-500 text-sm italic">{model.note}</p>
+                  <p className="text-zinc-500 text-sm italic">{model.note}</p>
                 )}
               </motion.div>
             ))}
@@ -215,20 +215,20 @@ $example.com/$blog/$my-post     → content token (the actual content)`}
           variants={fadeIn}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">MCP Server</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
+          <h2 className="text-3xl font-bold text-zinc-900 dark:text-white mb-6">MCP Server</h2>
+          <p className="text-zinc-400 mb-4 leading-relaxed">
             The path402-mcp-server enables AI agents to interact with $402 content.
           </p>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Installation</h3>
+          <h3 className="text-xl font-semibold text-zinc-900 dark:text-white mb-4">Installation</h3>
           <motion.pre
-            className="bg-gray-100 dark:bg-gray-900 p-6 font-mono text-sm text-gray-700 dark:text-gray-300 overflow-x-auto mb-6 rounded-lg"
+            className="bg-zinc-900 p-6 font-mono text-sm text-zinc-400 overflow-x-auto mb-6 "
             whileHover={{ backgroundColor: "rgba(255,255,255,0.05)" }}
           >
 npm install path402-mcp-server
           </motion.pre>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Claude Desktop Configuration</h3>
+          <h3 className="text-xl font-semibold text-zinc-900 dark:text-white mb-4">Claude Desktop Configuration</h3>
           <motion.pre
-            className="bg-gray-100 dark:bg-gray-900 p-6 font-mono text-sm text-gray-700 dark:text-gray-300 overflow-x-auto mb-6 rounded-lg"
+            className="bg-zinc-900 p-6 font-mono text-sm text-zinc-400 overflow-x-auto mb-6 "
             whileHover={{ backgroundColor: "rgba(255,255,255,0.05)" }}
           >
 {`{
@@ -241,7 +241,7 @@ npm install path402-mcp-server
 }`}
           </motion.pre>
           <p className="text-gray-400">
-            Add this to your <code className="text-gray-900 dark:text-white bg-gray-200 dark:bg-gray-900 px-1 rounded">claude_desktop_config.json</code> file.
+            Add this to your <code className="text-zinc-900 dark:text-white bg-zinc-900 px-1 ">claude_desktop_config.json</code> file.
           </p>
         </motion.section>
 
@@ -255,20 +255,20 @@ npm install path402-mcp-server
           variants={fadeIn}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Available Tools</h2>
+          <h2 className="text-3xl font-bold text-zinc-900 dark:text-white mb-6">Available Tools</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-200 dark:border-gray-800">
-                  <th className="text-left py-3 text-gray-500 dark:text-gray-400 font-medium">Tool</th>
-                  <th className="text-left py-3 text-gray-500 dark:text-gray-400 font-medium">Description</th>
+                <tr className="border-b border-zinc-800">
+                  <th className="text-left py-3 text-zinc-500 font-medium">Tool</th>
+                  <th className="text-left py-3 text-zinc-500 font-medium">Description</th>
                 </tr>
               </thead>
-              <tbody className="text-gray-700 dark:text-gray-300">
+              <tbody className="text-zinc-400">
                 {tools.map((tool, i) => (
                   <motion.tr
                     key={tool.name}
-                    className="border-b border-gray-200 dark:border-gray-800"
+                    className="border-b border-zinc-800"
                     initial={{ opacity: 0, x: -10 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
@@ -294,40 +294,40 @@ npm install path402-mcp-server
           variants={fadeIn}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Self-Funding Agents</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
+          <h2 className="text-3xl font-bold text-zinc-900 dark:text-white mb-6">Self-Funding Agents</h2>
+          <p className="text-zinc-400 mb-4 leading-relaxed">
             The vision: an AI agent that starts with a small balance and grows it by:
           </p>
-          <ol className="list-decimal list-inside text-gray-600 dark:text-gray-400 space-y-2 mb-6">
+          <ol className="list-decimal list-inside text-zinc-400 space-y-2 mb-6">
             <li>Acquiring undervalued tokens early</li>
             <li>Serving content to later buyers</li>
             <li>Reinvesting earnings into new tokens</li>
             <li>Eventually operating at profit</li>
           </ol>
-          <p className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
+          <p className="text-zinc-400 mb-6 leading-relaxed">
             This is possible because sqrt_decay pricing mathematically guarantees positive returns
             for early buyers. The agent's job is to identify good opportunities early.
           </p>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Agent Strategy Tips</h3>
-          <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
-            <li><strong className="text-gray-900 dark:text-white">Buy early:</strong> Position matters. #5 earns more than #500.</li>
-            <li><strong className="text-gray-900 dark:text-white">Check breakeven:</strong> If breakeven requires 1000+ future buyers, skip.</li>
-            <li><strong className="text-gray-900 dark:text-white">Diversify:</strong> Hold multiple tokens to average out risk.</li>
-            <li><strong className="text-gray-900 dark:text-white">Serve actively:</strong> Revenue only flows when you serve.</li>
-            <li><strong className="text-gray-900 dark:text-white">Monitor ROI:</strong> Use path402_servable to track performance.</li>
+          <h3 className="text-xl font-semibold text-zinc-900 dark:text-white mb-4">Agent Strategy Tips</h3>
+          <ul className="list-disc list-inside text-zinc-400 space-y-2">
+            <li><strong className="text-zinc-900 dark:text-white">Buy early:</strong> Position matters. #5 earns more than #500.</li>
+            <li><strong className="text-zinc-900 dark:text-white">Check breakeven:</strong> If breakeven requires 1000+ future buyers, skip.</li>
+            <li><strong className="text-zinc-900 dark:text-white">Diversify:</strong> Hold multiple tokens to average out risk.</li>
+            <li><strong className="text-zinc-900 dark:text-white">Serve actively:</strong> Revenue only flows when you serve.</li>
+            <li><strong className="text-zinc-900 dark:text-white">Monitor ROI:</strong> Use path402_servable to track performance.</li>
           </ul>
         </motion.section>
 
         {/* Links */}
         <motion.section
-          className="border-t border-gray-200 dark:border-gray-800 pt-12"
+          className="border-t border-zinc-800 pt-12"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
           variants={staggerContainer}
         >
           <motion.h2
-            className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-6 uppercase tracking-wider"
+            className="text-sm font-medium text-zinc-500 mb-6 uppercase tracking-wider"
             variants={fadeIn}
           >
             Resources
@@ -345,18 +345,18 @@ npm install path402-mcp-server
                     href={resource.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block border border-gray-200 dark:border-gray-700 p-4 hover:border-gray-400 dark:hover:border-gray-500 transition-colors rounded-lg bg-gray-50 dark:bg-transparent"
+                    className="block border border-zinc-200 dark:border-zinc-800 p-4 hover:border-gray-400 dark:hover:border-gray-500 transition-colors  bg-zinc-50 dark:bg-zinc-950"
                   >
-                    <h3 className="font-semibold text-gray-900 dark:text-white">{resource.title}</h3>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm">{resource.desc}</p>
+                    <h3 className="font-semibold text-zinc-900 dark:text-white">{resource.title}</h3>
+                    <p className="text-zinc-400 text-sm">{resource.desc}</p>
                   </a>
                 ) : (
                   <Link
                     href={resource.href}
-                    className="block border border-gray-200 dark:border-gray-700 p-4 hover:border-gray-400 dark:hover:border-gray-500 transition-colors rounded-lg bg-gray-50 dark:bg-transparent"
+                    className="block border border-zinc-200 dark:border-zinc-800 p-4 hover:border-gray-400 dark:hover:border-gray-500 transition-colors  bg-zinc-50 dark:bg-zinc-950"
                   >
-                    <h3 className="font-semibold text-gray-900 dark:text-white">{resource.title}</h3>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm">{resource.desc}</p>
+                    <h3 className="font-semibold text-zinc-900 dark:text-white">{resource.title}</h3>
+                    <p className="text-zinc-400 text-sm">{resource.desc}</p>
                   </Link>
                 )}
               </motion.div>

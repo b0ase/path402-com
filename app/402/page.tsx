@@ -119,7 +119,7 @@ export default function WhitepaperPaywallPage() {
           <button
             onClick={wallet.connected ? handlePurchase : connectHandCash}
             disabled={loading}
-            className="w-96 h-96 rounded-full text-black disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 active:scale-95 relative flex flex-col items-center justify-center"
+            className="w-96 h-96 -full text-black disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 active:scale-95 relative flex flex-col items-center justify-center"
             style={{
               background: 'linear-gradient(145deg, #ffffff 0%, #f0f0f0 50%, #d4d4d4 100%)',
               boxShadow: `
@@ -132,7 +132,7 @@ export default function WhitepaperPaywallPage() {
           >
             {/* Inner highlight */}
             <span
-              className="absolute inset-6 rounded-full pointer-events-none"
+              className="absolute inset-6 -full pointer-events-none"
               style={{
                 background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 50%)',
               }}
@@ -158,7 +158,7 @@ export default function WhitepaperPaywallPage() {
 
         {/* Message */}
         {message && (
-          <div className={`p-3 rounded-lg max-w-sm mx-auto text-sm ${
+          <div className={`p-3  max-w-sm mx-auto text-sm ${
             message.type === 'success'
               ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
               : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'

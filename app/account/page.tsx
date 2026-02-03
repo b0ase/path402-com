@@ -159,9 +159,9 @@ export default function AccountPage() {
             animate="visible"
             variants={fadeIn}
           >
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">Account</h1>
-            <p className="text-gray-600 dark:text-gray-400 mb-8">Connect your wallet to view your account.</p>
-            <p className="text-gray-500 dark:text-gray-500 text-sm">
+            <h1 className="text-4xl font-bold text-zinc-900 dark:text-zinc-900 dark:text-white mb-6">Account</h1>
+            <p className="text-zinc-600 dark:text-zinc-400 mb-8">Connect your wallet to view your account.</p>
+            <p className="text-zinc-500 text-sm">
               Click "Connect Wallet" in the navbar to get started.
             </p>
           </motion.div>
@@ -181,18 +181,18 @@ export default function AccountPage() {
           variants={staggerContainer}
         >
           <motion.div variants={fadeIn}>
-            <Link href="/" className="text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white text-sm mb-4 inline-block">
+            <Link href="/" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-900 dark:text-white text-sm mb-4 inline-block">
               ← Back to Home
             </Link>
           </motion.div>
           <motion.h1
-            className="text-5xl font-bold text-gray-900 dark:text-white mb-4"
+            className="text-5xl font-bold text-zinc-900 dark:text-white mb-4"
             variants={fadeIn}
           >
             Account
           </motion.h1>
           <motion.p
-            className="text-gray-600 dark:text-gray-400"
+            className="text-zinc-400"
             variants={fadeIn}
           >
             Manage your $402 holdings and wallet
@@ -201,7 +201,7 @@ export default function AccountPage() {
 
         {/* Wallet Info */}
         <motion.div
-          className="border border-gray-200 dark:border-gray-800 p-6 mb-8 bg-white dark:bg-transparent rounded-lg"
+          className="border border-zinc-200 dark:border-zinc-800 p-6 mb-8 bg-zinc-50 dark:bg-zinc-950 "
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
@@ -209,20 +209,20 @@ export default function AccountPage() {
         >
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Connected Wallet</div>
+              <div className="text-sm text-zinc-400 mb-1">Connected Wallet</div>
               <div className="flex items-center gap-3">
-                <span className="w-3 h-3 bg-green-500 dark:bg-green-400 rounded-full" />
-                <span className="text-xl font-bold text-gray-900 dark:text-white">
+                <span className="w-3 h-3 bg-green-500 dark:bg-green-400 -full" />
+                <span className="text-xl font-bold text-zinc-900 dark:text-white">
                   {wallet.handle ? `@${wallet.handle}` : wallet.address?.slice(0, 12) + '...'}
                 </span>
-                <span className="text-gray-500 dark:text-gray-500 text-sm capitalize px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded">
+                <span className="text-zinc-500 text-sm capitalize px-2 py-1 bg-gray-100 dark:bg-gray-800 ">
                   {wallet.provider}
                 </span>
               </div>
             </div>
             <motion.button
               onClick={disconnect}
-              className="px-4 py-2 border border-red-500/50 text-red-600 dark:text-red-400 text-sm hover:bg-red-500/10 transition-colors rounded"
+              className="px-4 py-2 border border-red-500/50 text-red-600 dark:text-red-400 text-sm hover:bg-red-500/10 transition-colors "
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -233,27 +233,27 @@ export default function AccountPage() {
 
         {/* On-Chain Address */}
         <motion.div
-          className="border border-gray-200 dark:border-gray-800 p-6 mb-8 bg-white dark:bg-transparent rounded-lg"
+          className="border border-zinc-200 dark:border-zinc-800 p-6 mb-8 bg-zinc-50 dark:bg-zinc-950 "
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.22 }}
           whileHover={{ borderColor: "rgba(96, 165, 250, 0.5)" }}
         >
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">On-Chain Address</h2>
+          <h2 className="text-lg font-semibold text-zinc-900 dark:text-white mb-4">On-Chain Address</h2>
 
           {derivedAddress ? (
             <div className="space-y-4">
-              <div className="p-4 bg-green-500/10 border border-green-500/30 rounded">
-                <div className="text-green-600 dark:text-green-400 text-sm mb-1">Your PATH402 Address</div>
-                <div className="font-mono text-gray-900 dark:text-white break-all">{derivedAddress.address}</div>
-                <p className="text-gray-500 dark:text-gray-500 text-xs mt-2">
+              <div className="p-4 bg-green-500/10 border border-green-500/30 ">
+                <div className="text-green-400 text-sm mb-1">Your PATH402 Address</div>
+                <div className="font-mono text-zinc-900 dark:text-white break-all">{derivedAddress.address}</div>
+                <p className="text-zinc-500 text-xs mt-2">
                   You control this address. Tokens sent here are yours.
                 </p>
               </div>
               <div className="flex gap-2">
                 <button
                   onClick={() => navigator.clipboard.writeText(derivedAddress.address)}
-                  className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-500 transition-colors rounded"
+                  className="px-4 py-2 text-sm border border-zinc-200 dark:border-zinc-800 text-zinc-400 hover:text-zinc-900 dark:text-white hover:border-gray-500 transition-colors "
                 >
                   Copy Address
                 </button>
@@ -261,7 +261,7 @@ export default function AccountPage() {
                   href={`https://whatsonchain.com/address/${derivedAddress.address}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-500 transition-colors rounded"
+                  className="px-4 py-2 text-sm border border-zinc-200 dark:border-zinc-800 text-zinc-400 hover:text-zinc-900 dark:text-white hover:border-gray-500 transition-colors "
                 >
                   View on Explorer
                 </a>
@@ -269,13 +269,13 @@ export default function AccountPage() {
             </div>
           ) : (
             <div className="space-y-4">
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
+              <p className="text-zinc-400 text-sm">
                 Derive your unique on-chain address from your HandCash signature.
                 This address is controlled by YOU - PATH402 never has your keys.
               </p>
 
               {deriveError && (
-                <div className="p-3 bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 text-sm rounded">
+                <div className="p-3 bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 text-sm ">
                   {deriveError}
                 </div>
               )}
@@ -284,7 +284,7 @@ export default function AccountPage() {
                 <motion.button
                   onClick={deriveAddress}
                   disabled={deriving}
-                  className="px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-black font-medium hover:bg-gray-700 dark:hover:bg-gray-200 disabled:opacity-50 transition-colors rounded"
+                  className="px-6 py-3 bg-white text-black font-medium hover:bg-zinc-200 disabled:opacity-50 transition-colors "
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -301,41 +301,41 @@ export default function AccountPage() {
 
         {/* Account Tier */}
         <motion.div
-          className="border border-gray-200 dark:border-gray-800 p-6 mb-8 bg-white dark:bg-transparent rounded-lg"
+          className="border border-zinc-200 dark:border-zinc-800 p-6 mb-8 bg-zinc-50 dark:bg-zinc-950 "
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
           whileHover={{ borderColor: "rgba(96, 165, 250, 0.5)" }}
         >
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Account Tier</h2>
-            <span className="px-3 py-1 bg-blue-500/20 border border-blue-500/50 text-blue-600 dark:text-blue-400 text-sm font-medium rounded">
+            <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">Account Tier</h2>
+            <span className="px-3 py-1 bg-blue-500/20 border border-blue-500/50 text-blue-400 text-sm font-medium ">
               Tier 1: Holder
             </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Tier 1 - Current */}
-            <div className="p-4 bg-blue-500/10 border border-blue-500/30 rounded">
-              <div className="text-blue-600 dark:text-blue-400 font-medium mb-2">Tier 1: Token Holder</div>
-              <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+            <div className="p-4 bg-blue-500/10 border border-blue-500/30 ">
+              <div className="text-blue-400 font-medium mb-2">Tier 1: Token Holder</div>
+              <ul className="text-sm text-zinc-400 space-y-1">
                 <li className="flex items-center gap-2">
-                  <span className="text-green-600 dark:text-green-400">✓</span> Receive tokens
+                  <span className="text-green-400">✓</span> Receive tokens
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-green-600 dark:text-green-400">✓</span> Hold & transfer (your keys)
+                  <span className="text-green-400">✓</span> Hold & transfer (your keys)
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-green-600 dark:text-green-400">✓</span> View on registry
+                  <span className="text-green-400">✓</span> View on registry
                 </li>
               </ul>
             </div>
 
             {/* Tier 2 - Coming Soon */}
-            <div className="p-4 bg-gray-100 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded opacity-60">
-              <div className="text-gray-500 dark:text-gray-400 font-medium mb-2">
+            <div className="p-4 bg-gray-100 dark:bg-gray-800/50 border border-zinc-200 dark:border-zinc-800  opacity-60">
+              <div className="text-zinc-500 font-medium mb-2">
                 Tier 2: Staker
-                <span className="ml-2 text-xs bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded">Coming Soon</span>
+                <span className="ml-2 text-xs bg-gray-200 dark:bg-gray-700 px-2 py-0.5 ">Coming Soon</span>
               </div>
               <ul className="text-sm text-gray-400 dark:text-gray-500 space-y-1">
                 <li className="flex items-center gap-2">
@@ -351,57 +351,57 @@ export default function AccountPage() {
             </div>
           </div>
 
-          <p className="text-gray-500 dark:text-gray-500 text-xs mt-4">
+          <p className="text-zinc-500 text-xs mt-4">
             Tier 2 staking with dividends and governance will require KYC verification.
           </p>
         </motion.div>
 
         {/* Holdings */}
         <motion.div
-          className="border border-gray-200 dark:border-gray-800 p-6 mb-8 bg-white dark:bg-transparent rounded-lg"
+          className="border border-zinc-200 dark:border-zinc-800 p-6 mb-8 bg-zinc-50 dark:bg-zinc-950 "
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
           whileHover={{ borderColor: "rgba(96, 165, 250, 0.5)" }}
         >
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">$402 Holdings</h2>
+          <h2 className="text-lg font-semibold text-zinc-900 dark:text-white mb-6">$402 Holdings</h2>
 
           {loading ? (
-            <div className="text-gray-600 dark:text-gray-400">Loading...</div>
+            <div className="text-zinc-400">Loading...</div>
           ) : holding && holding.balance > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Total Balance</div>
-                <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                <div className="text-sm text-zinc-400 mb-1">Total Balance</div>
+                <div className="text-2xl font-bold text-zinc-900 dark:text-white">
                   {formatNumber(holding.balance)}
                 </div>
-                <div className="text-sm text-gray-500 dark:text-gray-500">PATH402</div>
+                <div className="text-sm text-zinc-500">PATH402</div>
               </div>
               <div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Available</div>
-                <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                <div className="text-sm text-zinc-400 mb-1">Available</div>
+                <div className="text-2xl font-bold text-zinc-900 dark:text-white">
                   {formatNumber(holding.availableBalance)}
                 </div>
-                <div className="text-sm text-gray-500 dark:text-gray-500">unstaked</div>
+                <div className="text-sm text-zinc-500">unstaked</div>
               </div>
               <div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Staked</div>
-                <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                <div className="text-sm text-zinc-400 mb-1">Staked</div>
+                <div className="text-2xl font-bold text-purple-400">
                   {formatNumber(holding.stakedBalance)}
                 </div>
-                <div className="text-sm text-gray-500 dark:text-gray-500">earning dividends</div>
+                <div className="text-sm text-zinc-500">earning dividends</div>
               </div>
             </div>
           ) : (
             <div className="text-center py-8">
-              <div className="text-gray-600 dark:text-gray-400 mb-4">You don't hold any $402 tokens yet.</div>
+              <div className="text-zinc-400 mb-4">You don't hold any $402 tokens yet.</div>
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
                 <Link
                   href="/token"
-                  className="inline-block px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-black font-medium hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors rounded"
+                  className="inline-block px-6 py-3 bg-white text-black font-medium hover:bg-zinc-200 transition-colors "
                 >
                   Buy Tokens
                 </Link>
@@ -413,23 +413,23 @@ export default function AccountPage() {
         {/* Market Stats */}
         {stats && (
           <motion.div
-            className="border border-gray-200 dark:border-gray-800 p-6 mb-8 bg-white dark:bg-transparent rounded-lg"
+            className="border border-zinc-200 dark:border-zinc-800 p-6 mb-8 bg-zinc-50 dark:bg-zinc-950 "
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
             whileHover={{ borderColor: "rgba(96, 165, 250, 0.5)" }}
           >
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Market Info</h2>
+            <h2 className="text-lg font-semibold text-zinc-900 dark:text-white mb-6">Market Info</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Circulating Supply</div>
-                <div className="text-xl font-bold text-gray-900 dark:text-white">
+                <div className="text-sm text-zinc-400 mb-1">Circulating Supply</div>
+                <div className="text-xl font-bold text-zinc-900 dark:text-white">
                   {formatNumber(stats.totalCirculating)}
                 </div>
               </div>
               <div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Current Price</div>
-                <div className="text-xl font-bold text-gray-900 dark:text-white">
+                <div className="text-sm text-zinc-400 mb-1">Current Price</div>
+                <div className="text-xl font-bold text-zinc-900 dark:text-white">
                   {formatSats(stats.currentPrice)}
                 </div>
               </div>
@@ -447,7 +447,7 @@ export default function AccountPage() {
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Link
               href="/token"
-              className="inline-block px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-black font-medium hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors rounded"
+              className="inline-block px-6 py-3 bg-white text-black font-medium hover:bg-zinc-200 transition-colors "
             >
               Buy More Tokens
             </Link>
@@ -455,7 +455,7 @@ export default function AccountPage() {
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Link
               href="/registry"
-              className="inline-block px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white hover:border-gray-500 dark:hover:border-white transition-colors rounded"
+              className="inline-block px-6 py-3 border border-gray-300 dark:border-gray-600 text-zinc-900 dark:text-white hover:border-gray-500 dark:hover:border-white transition-colors "
             >
               View Registry
             </Link>
