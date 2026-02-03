@@ -74,8 +74,9 @@ export default function WhitepaperPage() {
           <h2 className="text-[10px] font-bold text-zinc-500 mb-6 uppercase tracking-widest">Abstract</h2>
           <p className="text-zinc-400 leading-relaxed">
             We propose a protocol where every URL path can become a <em className="text-zinc-900 dark:text-white">shareholder business</em>.
-            Visitors buy tokens to access content. Holders who stake become <em className="text-zinc-900 dark:text-white">partners</em>—running infrastructure,
-            indexing the blockchain, serving the registry, and receiving dividends. The result is a self-sustaining flywheel where buying, serving, and staking
+            Visitors buy tokens to access content. Token holders can serve that content to others and earn revenue.
+            Holders who stake become <em className="text-zinc-900 dark:text-white">partners</em>—running infrastructure, indexing the blockchain,
+            and receiving dividends. The result is a self-sustaining flywheel where buying, serving, and staking
             are the same activity at different stages. No separate classes. No central infrastructure.
             Just aligned incentives all the way down.
           </p>
@@ -275,20 +276,24 @@ export default function WhitepaperPage() {
           </p>
 
           <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">sqrt_decay (Default)</h4>
+          <div className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 mb-6 text-center">
+            <p className="text-lg mb-2 text-zinc-900 dark:text-white font-mono">
+              price = base / √(supply + 1)
+            </p>
+          </div>
+
           <p className="text-zinc-400 leading-relaxed mb-6">
-            <strong className="text-zinc-900 dark:text-white">Two variants</strong> with different dynamics:
+            <strong className="text-zinc-900 dark:text-white">Two variants:</strong>
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div className="border border-zinc-200 dark:border-zinc-800 p-4 bg-zinc-50 dark:bg-zinc-950">
               <div className="text-zinc-500 text-xs uppercase tracking-widest mb-2">Investment (Treasury)</div>
-              <div className="text-zinc-900 dark:text-white font-mono text-sm mb-2">price = base / √(treasury + 1)</div>
               <div className="text-zinc-900 dark:text-white mb-2">Price <strong>increases</strong> as treasury depletes</div>
               <div className="text-zinc-400 text-sm">Early buyers get cheap tokens. Rewards early belief.</div>
             </div>
             <div className="border border-zinc-200 dark:border-zinc-800 p-4 bg-zinc-50 dark:bg-zinc-950">
-              <div className="text-zinc-500 text-xs uppercase tracking-widest mb-2">Content (Supply)</div>
-              <div className="text-zinc-900 dark:text-white font-mono text-sm mb-2">price = base / √(supply + 1)</div>
+              <div className="text-zinc-500 text-xs uppercase tracking-widest mb-2">Content (Access)</div>
               <div className="text-zinc-900 dark:text-white mb-2">Price <strong>decreases</strong> as supply grows</div>
               <div className="text-zinc-400 text-sm">Early buyers pay premium for time advantage.</div>
             </div>
@@ -525,6 +530,85 @@ Large domain ($news.com):
         </div>
       </section>
 
+      {/* Implementation */}
+      <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-sm font-bold text-zinc-900 dark:text-white mb-6 uppercase tracking-wide">Implementation</h2>
+
+          <h3 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">HTTP 402 Response</h3>
+          <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
+{`HTTP/1.1 402 Payment Required
+X-$402-Version: 1.0.0
+X-$402-Price: 4500
+X-$402-Token: $example.com/$blog
+X-$402-Model: sqrt_decay
+
+{
+  "price_sats": 4500,
+  "token": "$example.com/$blog",
+  "treasury_remaining": 499000000,
+  "accepts": ["bsv", "base", "sol", "eth"]
+}`}
+          </pre>
+
+          <h3 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">Discovery Endpoint</h3>
+          <p className="text-zinc-400 leading-relaxed mb-4">
+            Every $402 domain exposes <span className="font-mono text-blue-400">/.well-known/$402.json</span>:
+          </p>
+          <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
+{`{
+  "$402_version": "1.0",
+  "extensions": ["$402-curves", "$402-hierarchy"],
+  "root": {
+    "path": "$example.com",
+    "inscription_id": "abc123..."
+  },
+  "children": [
+    { "path": "$example.com/$blog", "inscription_id": "def456..." }
+  ]
+}`}
+          </pre>
+
+          <h3 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">x402 Facilitator</h3>
+          <p className="text-zinc-400 leading-relaxed mb-4">
+            PATH402.com operates as an x402 facilitator—verifying payments from any chain and inscribing proofs on BSV:
+          </p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-zinc-800">
+                  <th className="text-left py-3 text-zinc-500 font-bold uppercase tracking-widest text-[10px]">Network</th>
+                  <th className="text-left py-3 text-zinc-500 font-bold uppercase tracking-widest text-[10px]">Status</th>
+                  <th className="text-left py-3 text-zinc-500 font-bold uppercase tracking-widest text-[10px]">Assets</th>
+                </tr>
+              </thead>
+              <tbody className="text-zinc-400">
+                <tr className="border-b border-zinc-800">
+                  <td className="py-3">BSV</td>
+                  <td className="py-3 text-blue-400">Primary</td>
+                  <td className="py-3">BSV, BSV-20 tokens</td>
+                </tr>
+                <tr className="border-b border-zinc-800">
+                  <td className="py-3">Base</td>
+                  <td className="py-3">Supported</td>
+                  <td className="py-3">USDC, ETH</td>
+                </tr>
+                <tr className="border-b border-zinc-800">
+                  <td className="py-3">Solana</td>
+                  <td className="py-3">Supported</td>
+                  <td className="py-3">USDC, SOL</td>
+                </tr>
+                <tr>
+                  <td className="py-3">Ethereum</td>
+                  <td className="py-3">Supported</td>
+                  <td className="py-3">USDC, ETH, USDT</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
       {/* Step 8: AI Agents and x402 */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
         <div className="max-w-4xl mx-auto">
@@ -627,85 +711,6 @@ Stake:      path402_stake, path402_serve`}
           <p className="text-zinc-900 dark:text-white leading-relaxed">
             This is not competing with Coinbase. This is offering Coinbase a better model.
           </p>
-        </div>
-      </section>
-
-      {/* Implementation */}
-      <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-sm font-bold text-zinc-900 dark:text-white mb-6 uppercase tracking-wide">Implementation</h2>
-
-          <h3 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">HTTP 402 Response</h3>
-          <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-{`HTTP/1.1 402 Payment Required
-X-$402-Version: 2.0.0
-X-$402-Price: 4500
-X-$402-Token: $example.com/$blog
-X-$402-Model: sqrt_decay
-
-{
-  "price_sats": 4500,
-  "token": "$example.com/$blog",
-  "treasury_remaining": 499000000,
-  "accepts": ["bsv", "base", "sol", "eth"]
-}`}
-          </pre>
-
-          <h3 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">Discovery Endpoint</h3>
-          <p className="text-zinc-400 leading-relaxed mb-4">
-            Every $402 domain exposes <span className="font-mono text-blue-400">/.well-known/$402.json</span>:
-          </p>
-          <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-{`{
-  "$402_version": "2.0",
-  "extensions": ["$402-curves", "$402-hierarchy"],
-  "root": {
-    "path": "$example.com",
-    "inscription_id": "abc123..."
-  },
-  "children": [
-    { "path": "$example.com/$blog", "inscription_id": "def456..." }
-  ]
-}`}
-          </pre>
-
-          <h3 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">x402 Facilitator</h3>
-          <p className="text-zinc-400 leading-relaxed mb-4">
-            PATH402.com operates as an x402 facilitator—verifying payments from any chain and inscribing proofs on BSV:
-          </p>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-zinc-800">
-                  <th className="text-left py-3 text-zinc-500 font-bold uppercase tracking-widest text-[10px]">Network</th>
-                  <th className="text-left py-3 text-zinc-500 font-bold uppercase tracking-widest text-[10px]">Status</th>
-                  <th className="text-left py-3 text-zinc-500 font-bold uppercase tracking-widest text-[10px]">Assets</th>
-                </tr>
-              </thead>
-              <tbody className="text-zinc-400">
-                <tr className="border-b border-zinc-800">
-                  <td className="py-3">BSV</td>
-                  <td className="py-3 text-blue-400">Primary</td>
-                  <td className="py-3">BSV, BSV-20 tokens</td>
-                </tr>
-                <tr className="border-b border-zinc-800">
-                  <td className="py-3">Base</td>
-                  <td className="py-3">Supported</td>
-                  <td className="py-3">USDC, ETH</td>
-                </tr>
-                <tr className="border-b border-zinc-800">
-                  <td className="py-3">Solana</td>
-                  <td className="py-3">Supported</td>
-                  <td className="py-3">USDC, SOL</td>
-                </tr>
-                <tr>
-                  <td className="py-3">Ethereum</td>
-                  <td className="py-3">Supported</td>
-                  <td className="py-3">USDC, ETH, USDT</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
         </div>
       </section>
 
