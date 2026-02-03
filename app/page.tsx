@@ -68,7 +68,7 @@ export default function Home() {
               variants={fadeIn}
               transition={{ duration: 0.6, delay: 0.3 }}
             >
-              The Path Token Standard. Turn any URL into a priced, tokenised market.
+              Turning Websites into Shareholder Businesses
             </motion.p>
 
             <motion.p
@@ -77,7 +77,8 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.35 }}
             >
               Put a <code className="text-zinc-900 dark:text-white bg-zinc-100 dark:bg-zinc-900 px-2 py-1 border border-zinc-200 dark:border-zinc-800">$</code> in front of a path
-              and it becomes an economic object with a price curve, holders, and revenue distribution.
+              and it becomes a shareholder business. Visitors buy tokens, holders can stake to become partners,
+              partners run infrastructure and earn revenue.
             </motion.p>
 
             <motion.div
@@ -133,15 +134,16 @@ export default function Home() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-[10px] font-bold text-zinc-500 mb-6 uppercase tracking-widest">
-              The Protocol
+              The Flywheel
             </h2>
             <div className="border border-zinc-200 dark:border-zinc-800 p-8 bg-zinc-50 dark:bg-zinc-950">
               <pre className="text-zinc-600 dark:text-zinc-400 font-mono text-sm overflow-x-auto">
-{`$402 Protocol — The Path Token Standard
-├── $pathd (the daemon — any machine can run it)
-├── path402-mcp-server (AI agent tools)
-├── x402 facilitator (multi-chain payment verification)
-└── path402.com (official site + exchange)`}
+{`Buy Access → Stake Tokens → Run Infrastructure → Earn Revenue → New Buyers Repeat
+
+Every role is the same person at different stages:
+  Visitor → Buyer → Holder → Staker → Partner
+
+No separate classes. The path is open to everyone.`}
               </pre>
             </div>
           </motion.div>
@@ -161,20 +163,21 @@ export default function Home() {
               className="text-[10px] font-bold text-zinc-500 mb-6 uppercase tracking-widest"
               variants={fadeIn}
             >
-              $addresses
+              Paths as Shareholder Businesses
             </motion.h2>
             <motion.p
               className="text-zinc-600 dark:text-zinc-400 mb-8 max-w-2xl"
               variants={fadeIn}
             >
-              Content behind <code className="text-zinc-900 dark:text-white bg-zinc-100 dark:bg-zinc-900 px-2 py-1 border border-zinc-200 dark:border-zinc-800">$</code> path segments is $402-gated.
-              Each segment is an independent market with its own price and token.
+              Each <code className="text-zinc-900 dark:text-white bg-zinc-100 dark:bg-zinc-900 px-2 py-1 border border-zinc-200 dark:border-zinc-800">$path</code> is
+              an independent business with tradeable bearer shares, a pricing curve, and revenue distribution.
+              Child paths give 50% of tokens to parent—revenue flows up the tree.
             </motion.p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[
-                { code: "$example.com", desc: "Site-level token (cheap entry)" },
-                { code: "$example.com/$api", desc: "Section token (API access)" },
-                { code: "$example.com/$api/$data", desc: "Content token (specific resource)" },
+                { code: "$example.com", desc: "Holding company (root)" },
+                { code: "$example.com/$blog", desc: "Subsidiary (50% to parent)" },
+                { code: "$example.com/$blog/$premium", desc: "Product line (50% to parent)" },
               ].map((item, i) => (
                 <motion.div
                   key={i}
@@ -212,12 +215,12 @@ export default function Home() {
             </motion.h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[
-                { title: "sqrt_decay Pricing", desc: "Price decreases as P/sqrt(n). Early buyers get better prices, everyone except the last achieves positive ROI." },
-                { title: "AI-Native", desc: "Designed for AI agents as first-class consumers. MCP server included for Claude and other LLMs." },
-                { title: "Self-Funding Agents", desc: "Agents acquire tokens, serve content, earn revenue. Over time they become self-funding." },
-                { title: "x402 Compatible", desc: "Full x402 facilitator for multi-chain payment verification. BSV inscription for permanent proofs." },
-                { title: "HTTP 402", desc: "Uses the dormant HTTP 402 Payment Required status code. Finally giving it purpose." },
-                { title: "Multiple Pricing Models", desc: "Fixed, sqrt_decay, logarithmic, or linear with floor. Choose what fits your content." },
+                { title: "Bearer Shares", desc: "Pay for access, receive tradeable tokens. Early buyers get more tokens per dollar. Resell to latecomers at profit." },
+                { title: "Two-Tier System", desc: "Bearer tier: hold and trade freely. Staker tier: complete KYC, stake tokens, receive dividends." },
+                { title: "Staking Partners", desc: "Stakers run indexers, maintain registries, and earn 70% of entry fees plus dividends." },
+                { title: "AI Agents", desc: "First-class participants. Agents can buy, stake, serve, and earn—becoming self-funding over time." },
+                { title: "x402 + $402", desc: "x402 verifies payments. $402 adds economics: pricing curves, hierarchy, shareholder registry." },
+                { title: "Pricing Curves", desc: "sqrt_decay (investment or content), fixed, linear, exponential, bonding_curve. The curve is your constitution." },
               ].map((feature, i) => (
                 <motion.div
                   key={i}
@@ -351,15 +354,15 @@ export default function Home() {
               className="text-[10px] font-bold text-zinc-500 mb-12 uppercase tracking-widest text-center"
               variants={fadeIn}
             >
-              Agent Workflow
+              The Flywheel in Action
             </motion.h2>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
               {[
-                { num: "1", title: "DISCOVER", desc: "Probe $address, read pricing" },
-                { num: "2", title: "EVALUATE", desc: "Check budget, estimate ROI" },
-                { num: "3", title: "ACQUIRE", desc: "Pay, receive token + content" },
-                { num: "4", title: "SERVE", desc: "Hold token, earn from buyers" },
-                { num: "5", title: "REPEAT", desc: "Reinvest, grow portfolio" },
+                { num: "1", title: "BUY", desc: "Pay entry fee, receive bearer shares" },
+                { num: "2", title: "STAKE", desc: "Lock tokens, become partner" },
+                { num: "3", title: "SERVE", desc: "Run indexer, maintain registry" },
+                { num: "4", title: "EARN", desc: "Entry fees + API fees + dividends" },
+                { num: "5", title: "GROW", desc: "New buyers repeat the cycle" },
               ].map((step, i) => (
                 <motion.div
                   key={i}
@@ -393,10 +396,10 @@ export default function Home() {
       <section className="py-20 px-6 border-t border-zinc-200 dark:border-zinc-900">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-2xl font-bold uppercase tracking-tight mb-4">
-            Ready to Build?
+            Turn Your Domain into Equity
           </h2>
           <p className="text-zinc-500 mb-8">
-            Start monetizing your content with the $402 protocol.
+            Every URL path can become a shareholder business. Start building with $402.
           </p>
           <Link
             href="/docs"
