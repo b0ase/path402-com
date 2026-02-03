@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, Suspense } from 'react';
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -16,7 +18,20 @@ const staggerContainer = {
   }
 };
 
-export default function WhitepaperPage() {
+function WhitepaperContent() {
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    // Auto-trigger print dialog when ?download=true
+    if (searchParams.get('download') === 'true') {
+      // Small delay to ensure page is fully rendered
+      const timer = setTimeout(() => {
+        window.print();
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams]);
+
   return (
     <div className="min-h-screen bg-white dark:bg-black text-zinc-900 dark:text-white font-mono selection:bg-zinc-900 selection:text-white dark:selection:bg-white dark:selection:text-black">
       {/* Header */}
@@ -756,5 +771,13 @@ X-$402-Model: sqrt_decay
         </div>
       </section>
     </div>
+  );
+}
+
+export default function WhitepaperPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white dark:bg-black" />}>
+      <WhitepaperContent />
+    </Suspense>
   );
 }
