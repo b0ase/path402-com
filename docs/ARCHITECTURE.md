@@ -222,8 +222,12 @@ b0ase.com is Richard's digital venture studio (60+ projects). PATH402.com is one
 
 ## Token Details
 
-**Genesis inscription:** `7a1d91c25d0be00343566d8dc9845d71da865a9aae5e0c018369d981d3e98eba_1`
+**On-chain ticker:** `PATH402.com` (used in BSV-20 inscriptions)
+
+**Display name:** `$PATH402` (user-facing)
+
+**Genesis inscription:** `5bf47d3af709a385d3a50a298faa18f9479b090114a69ce8308055861d20e18d_1`
 
 **Treasury address:** `1BrbnQon4uZPSxNwt19ozwtgHPDbgvaeD1`
 
-**Note:** The token minted on 1sat.market as "$402" represents $PATH402 equity. The ticker is shorthand; the full name is $PATH402. This is one token, not two.
+**Note:** The on-chain BSV-20 ticker is `PATH402.com`. In UI and documentation, we display it as `$PATH402` for readability. These refer to the same token. Transfer inscriptions must use the exact on-chain ticker `PATH402.com` to be recognized by indexers.
