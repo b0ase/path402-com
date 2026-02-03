@@ -388,6 +388,145 @@ ws.onmessage = (event) => {
 };
 ```
 
+## Token Control & Governance
+
+### Control Thresholds
+
+| Stake | Power | Use Case |
+|-------|-------|----------|
+| <50% | Access only | Normal user, can read content |
+| **51%** | Majority control | Vote on serving policy, embargo |
+| **67%** | Supermajority | Change pricing, access rules |
+| **100%** | Complete control | Name any price, or refuse to serve |
+
+### The Hostile Takeover Dynamic
+
+Content creates a race between:
+- **Distributors** — Want content to spread (sell to many)
+- **Suppressors** — Want content to disappear (buy to 51%+)
+
+```
+Damaging article inscribed
+         │
+         ▼
+Threatened party detects it
+         │
+         ▼
+Race to 51% begins
+         │
+    ┌────┴────┐
+    │         │
+    ▼         ▼
+SUPPRESSOR   PRESERVERS
+WINS         WIN
+    │         │
+    ▼         ▼
+Embargo      Wide
+Content      Distribution
+```
+
+### Governance Operations
+
+**Vote to Embargo (51%+ required)**:
+```json
+{
+  "p": "$402",
+  "op": "governance",
+  "action": "embargo",
+  "inscription_id": "abc123...",
+  "reason": "Defamatory content",
+  "votes_for_bps": 5500,
+  "effective_at": "2026-02-03T12:00:00Z"
+}
+```
+
+**Change Pricing (67%+ required)**:
+```json
+{
+  "p": "$402",
+  "op": "governance",
+  "action": "set_price",
+  "inscription_id": "abc123...",
+  "new_pricing": {
+    "model": "fixed",
+    "price": 1000000000
+  },
+  "votes_for_bps": 7500
+}
+```
+
+**Permanent Seal (100% required)**:
+```json
+{
+  "p": "$402",
+  "op": "governance",
+  "action": "seal",
+  "inscription_id": "abc123...",
+  "policy": "never_serve",
+  "owner": "1ABC...xyz"
+}
+```
+
+### The Censorship Transparency
+
+Unlike traditional censorship (invisible), $402 censorship is:
+
+| Traditional | $402 |
+|-------------|------|
+| Content disappears | Content exists, serving blocked |
+| No one knows why | On-chain embargo vote visible |
+| Unknown actor | Buyers on record |
+| No recourse | Counter-buyers can bid |
+
+**The inscription is permanent. Only serving is controlled.**
+
+Anyone can see:
+- The original content (it's inscribed forever)
+- Who bought it up (on-chain record)
+- Why it was embargoed (governance inscription)
+- How much they paid (transaction history)
+
+### The Economics of Suppression
+
+Suppressing content is **expensive**:
+
+```
+Content inscribed at base price 1000 sats
+Supply: 1,000,000 tokens
+
+To acquire 51% (510,000 tokens):
+  First 100,000 tokens:  avg 950 sats  = 95,000,000 sats
+  Next 200,000 tokens:   avg 800 sats  = 160,000,000 sats
+  Next 210,000 tokens:   avg 650 sats  = 136,500,000 sats
+  Total cost: ~391,500,000 sats (~$40,000 at 10k sats/$)
+
+And the original writer got paid for every token sold.
+```
+
+**Suppression funds the creator.** The threatened party enriches the person they're trying to silence.
+
+### Counter-Takeover Mechanics
+
+If content is being accumulated by a hostile actor:
+
+```http
+POST /api/v1/alert/takeover
+Content-Type: application/json
+
+{
+  "inscription_id": "abc123...",
+  "accumulator": "1HOSTILE...",
+  "current_stake_pct": 35,
+  "velocity": "aggressive",
+  "estimated_51_time_minutes": 15
+}
+```
+
+Preservers can:
+1. **Counter-buy** — Race to block 51%
+2. **Fork** — Create a new inscription with same content
+3. **Mirror** — Other nodes can cache and serve regardless
+
 ## Best Practices
 
 ### For Content Creators
@@ -396,6 +535,28 @@ ws.onmessage = (event) => {
 2. **Write clear descriptions** — Bots scan descriptions, not full content
 3. **Tag accurately** — Wrong tags = wrong audience = no demand
 4. **Price for your goal** — High base for speculation, low base for distribution
+5. **Understand the game** — Your content may be bought by opponents to suppress OR supporters to spread
+
+### The Narrative Game
+
+**You SELL propaganda, not buy it.**
+
+```
+Goal: Spread your worldview
+Method: Sell content to opposing camps
+Effect: They PAY to become informed by YOUR narrative
+
+Christians sell to Muslims  → Muslims buy → Muslims read Christian perspective
+Muslims sell to Christians  → Christians buy → Christians read Islamic perspective
+
+The buyer funds the narrative they're consuming.
+The seller wins by DISTRIBUTING widely.
+```
+
+**Why opponents buy a little of each other's content:**
+- Intelligence gathering (what are they saying?)
+- Not enough to empower (minimal purchase)
+- Monitoring, not adopting
 
 ### For Nodes
 

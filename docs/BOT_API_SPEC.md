@@ -581,6 +581,84 @@ async def agenda_dominance_strategy():
         )
 ```
 
+### Hostile Takeover Strategy (Censorship Defense)
+
+Race to acquire 51%+ of threatening content to control/embargo:
+
+```python
+async def hostile_takeover_strategy(ws):
+    async for event in ws:
+        if event["type"] == "inscription:new":
+            # Check if content is THREATENING to our agenda
+            if threatens_our_agenda(event["signals"], event["sample"]):
+                # Calculate cost to acquire 51%
+                supply = event["supply"]["total"]
+                target = int(supply * 0.51)
+                cost = estimate_cost(event["pricing"], target)
+
+                if cost < MAX_SUPPRESSION_BUDGET:
+                    # Race to acquire control
+                    await buy(
+                        inscription_id=event["inscription_id"],
+                        amount=target,
+                        max_price=cost * 1.5,  # Willing to overpay
+                        urgency="high"
+                    )
+
+                    # If successful, embargo
+                    if await check_stake(event["inscription_id"]) >= 0.51:
+                        await vote_embargo(event["inscription_id"])
+```
+
+### Content Preservation Strategy (Counter-Censorship)
+
+Prevent hostile takeovers by buying before suppressors:
+
+```python
+async def preservation_strategy(ws):
+    async for event in ws:
+        if event["type"] == "trade:executed":
+            # Detect aggressive accumulation (possible takeover)
+            if event["amount"] > 10000 and event["side"] == "buy":
+                accumulator = event["buyer"]
+
+                # Check if accumulator is a known suppressor
+                if is_hostile_actor(accumulator):
+                    # Counter-buy to prevent 51% control
+                    current_stake = await get_stake(event["inscription_id"], accumulator)
+                    if current_stake > 0.3:  # They're getting close
+                        # Buy enough to block majority
+                        blocking_amount = int(event["supply"]["total"] * 0.2)
+                        await buy(
+                            inscription_id=event["inscription_id"],
+                            amount=blocking_amount
+                        )
+```
+
+### Narrative Distribution Strategy (Propaganda Spread)
+
+Sell your content to opposing camps to spread your narrative:
+
+```python
+async def narrative_distribution_strategy():
+    # Find our content that opposing agendas haven't bought yet
+    our_content = await get_holdings(agenda=["our-worldview"])
+
+    for content in our_content:
+        # Check who's buying
+        buyers = await get_buyer_demographics(content["inscription_id"])
+
+        # Find underrepresented opposing agendas
+        for opposing_agenda in OPPOSING_AGENDAS:
+            if buyers.get(opposing_agenda, 0) < TARGET_PENETRATION:
+                # Lower the price or promote to attract them
+                # (They buy our propaganda = they become informed by our narrative)
+                await promote_to_agenda(
+                    inscription_id=content["inscription_id"],
+                    target_agenda=opposing_agenda
+                )
+```
+
 ---
 
 ## SDKs
