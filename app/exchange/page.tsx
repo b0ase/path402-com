@@ -57,7 +57,7 @@ export default function ExchangePage() {
           variants={staggerContainer}
         >
           <motion.div variants={fadeIn}>
-            <Link href="/" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-900 dark:text-white text-sm mb-4 inline-block">
+            <Link href="/" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white text-sm mb-4 inline-block">
               ← Back to Home
             </Link>
           </motion.div>
@@ -69,7 +69,7 @@ export default function ExchangePage() {
             Exchange
           </motion.h1>
           <motion.p
-            className="text-zinc-400 max-w-2xl"
+            className="text-zinc-600 dark:text-zinc-400 max-w-2xl"
             variants={fadeIn}
             transition={{ delay: 0.2 }}
           >
@@ -86,8 +86,8 @@ export default function ExchangePage() {
           transition={{ delay: 0.3 }}
           whileHover={{ borderColor: "rgba(59, 130, 246, 0.5)" }}
         >
-          <h3 className="text-blue-400 font-semibold mb-2">Live Exchange at b0ase.com</h3>
-          <p className="text-zinc-400 text-sm mb-4">
+          <h3 className="text-blue-600 dark:text-blue-400 font-semibold mb-2">Live Exchange at b0ase.com</h3>
+          <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
             For live token trading with real payments, visit the full exchange at b0ase.com.
             This page shows example tokens and pricing models.
           </p>
@@ -132,16 +132,16 @@ export default function ExchangePage() {
               >
                 <div className="flex items-start justify-between">
                   <div>
-                    <code className="text-blue-400 font-mono text-lg">{token.address}</code>
-                    <p className="text-zinc-400 text-sm mt-1">{token.description}</p>
+                    <code className="text-blue-600 dark:text-blue-400 font-mono text-lg">{token.address}</code>
+                    <p className="text-zinc-600 dark:text-zinc-400 text-sm mt-1">{token.description}</p>
                   </div>
                   <div className="text-right">
                     <div className="text-2xl font-bold text-zinc-900 dark:text-white">{token.price} SAT</div>
-                    <div className="text-gray-500 text-sm">Supply: {token.supply}</div>
+                    <div className="text-zinc-500 text-sm">Supply: {token.supply}</div>
                   </div>
                 </div>
-                <div className="mt-4 pt-4 border-t border-zinc-800 flex items-center justify-between">
-                  <span className="text-gray-500 text-sm font-mono">{token.model}</span>
+                <div className="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+                  <span className="text-zinc-500 text-sm font-mono">{token.model}</span>
                   <motion.button
                     className="px-4 py-2 bg-white text-black font-medium text-sm hover:bg-zinc-200 transition-colors "
                     whileHover={{ scale: 1.02 }}
@@ -193,12 +193,12 @@ export default function ExchangePage() {
                 }}
               >
                 <h3 className="text-lg font-semibold text-zinc-900 dark:text-white mb-2">{item.title}</h3>
-                <p className="text-zinc-400 text-sm mb-4">{item.desc}</p>
+                <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-4">{item.desc}</p>
                 <motion.div
-                  className="bg-zinc-900 p-4 font-mono text-sm "
+                  className="bg-zinc-200 dark:bg-zinc-900 p-4 font-mono text-sm "
                 >
                   {item.code.map((line, j) => (
-                    <div key={j} className="text-gray-600 dark:text-gray-500">{line}</div>
+                    <div key={j} className="text-zinc-700 dark:text-zinc-500">{line}</div>
                   ))}
                 </motion.div>
               </motion.div>
@@ -208,7 +208,7 @@ export default function ExchangePage() {
 
         {/* Agent Tools */}
         <motion.div
-          className="border-t border-zinc-800 pt-12"
+          className="border-t border-zinc-200 dark:border-zinc-800 pt-12"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
@@ -218,11 +218,11 @@ export default function ExchangePage() {
           <h2 className="text-sm font-medium text-zinc-500 mb-6 uppercase tracking-wider">
             For AI Agents
           </h2>
-          <p className="text-zinc-400 mb-6">
+          <p className="text-zinc-600 dark:text-zinc-400 mb-6">
             Use the path402-mcp-server to discover, evaluate, and acquire tokens programmatically.
           </p>
           <motion.pre
-            className="bg-zinc-900 p-6 font-mono text-sm text-zinc-400 overflow-x-auto "
+            className="bg-zinc-200 dark:bg-zinc-900 p-6 font-mono text-sm text-zinc-700 dark:text-zinc-400 overflow-x-auto "
           >
 {`# Install the MCP server
 npm install path402-mcp-server

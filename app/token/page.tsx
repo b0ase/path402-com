@@ -389,14 +389,14 @@ export default function TokenPage() {
           <div className="flex items-center justify-between flex-wrap gap-4">
             <motion.div variants={fadeIn} transition={{ delay: 0.1 }}>
               <motion.h1
-                className="text-5xl font-bold text-white mb-2"
+                className="text-5xl font-bold text-zinc-900 dark:text-white mb-2"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5 }}
               >
                 {TOKEN_CONFIG.symbol}
               </motion.h1>
-              <p className="text-zinc-400">{TOKEN_CONFIG.name}</p>
+              <p className="text-zinc-600 dark:text-zinc-400">{TOKEN_CONFIG.name}</p>
             </motion.div>
             <motion.div
               className="flex gap-3"
@@ -429,10 +429,10 @@ export default function TokenPage() {
                   animate={{ opacity: 1, scale: 1 }}
                 >
                   <div className="text-right">
-                    <div className="text-white font-medium">
+                    <div className="text-zinc-900 dark:text-white font-medium">
                       {wallet.handle || wallet.address?.slice(0, 8) + '...'}
                     </div>
-                    <div className="text-gray-500 text-sm capitalize">{wallet.provider}</div>
+                    <div className="text-zinc-500 text-sm capitalize">{wallet.provider}</div>
                   </div>
                   <motion.button
                     onClick={disconnect}
@@ -490,9 +490,9 @@ export default function TokenPage() {
                 transition: { duration: 0.2 }
               }}
             >
-              <div className="text-gray-500 text-sm uppercase tracking-wider mb-2">{stat.label}</div>
+              <div className="text-zinc-500 text-sm uppercase tracking-wider mb-2">{stat.label}</div>
               <motion.div
-                className="text-2xl font-bold text-white"
+                className="text-2xl font-bold text-zinc-900 dark:text-white"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 + i * 0.1 }}
@@ -513,7 +513,7 @@ export default function TokenPage() {
               exit={{ opacity: 0, y: -20, height: 0 }}
               transition={{ duration: 0.4 }}
             >
-              <h2 className="text-xl font-bold text-white mb-4">Your Holdings</h2>
+              <h2 className="text-xl font-bold text-zinc-900 dark:text-white mb-4">Your Holdings</h2>
               <motion.div
                 className="grid grid-cols-2 md:grid-cols-5 gap-4"
                 variants={staggerContainer}
@@ -521,14 +521,14 @@ export default function TokenPage() {
                 animate="visible"
               >
                 {[
-                  { label: 'Total Balance', value: (holding.balance ?? 0).toLocaleString(), color: 'text-white' },
-                  { label: 'Available', value: (holding.availableBalance ?? 0).toLocaleString(), color: 'text-white' },
-                  { label: 'Staked', value: (holding.stakedBalance ?? 0).toLocaleString(), color: 'text-purple-400' },
-                  { label: 'Pending Dividends', value: `${(holding.pendingDividends ?? 0).toLocaleString()} sats`, color: 'text-green-400' },
-                  { label: 'Total Earned', value: `${(holding.totalDividendsEarned ?? 0).toLocaleString()} sats`, color: 'text-green-400' },
+                  { label: 'Total Balance', value: (holding.balance ?? 0).toLocaleString(), color: 'text-zinc-900 dark:text-white' },
+                  { label: 'Available', value: (holding.availableBalance ?? 0).toLocaleString(), color: 'text-zinc-900 dark:text-white' },
+                  { label: 'Staked', value: (holding.stakedBalance ?? 0).toLocaleString(), color: 'text-purple-600 dark:text-purple-400' },
+                  { label: 'Pending Dividends', value: `${(holding.pendingDividends ?? 0).toLocaleString()} sats`, color: 'text-green-600 dark:text-green-400' },
+                  { label: 'Total Earned', value: `${(holding.totalDividendsEarned ?? 0).toLocaleString()} sats`, color: 'text-green-600 dark:text-green-400' },
                 ].map((item, i) => (
                   <motion.div key={i} variants={fadeIn}>
-                    <div className="text-zinc-400 text-sm">{item.label}</div>
+                    <div className="text-zinc-600 dark:text-zinc-400 text-sm">{item.label}</div>
                     <div className={`text-xl font-bold ${item.color}`}>{item.value}</div>
                   </motion.div>
                 ))}
@@ -565,44 +565,44 @@ export default function TokenPage() {
             whileHover={{ borderColor: 'rgba(128,128,128,0.4)' }}
           >
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-white">Buy Tokens</h2>
+              <h2 className="text-xl font-bold text-zinc-900 dark:text-white">Buy Tokens</h2>
               {/* BSV/USD Toggle */}
               <div className="flex items-center gap-2">
-                <span className={`text-xs ${!showUsd ? 'text-white' : 'text-gray-500'}`}>BSV</span>
+                <span className={`text-xs ${!showUsd ? 'text-zinc-900 dark:text-white' : 'text-zinc-500'}`}>BSV</span>
                 <button
                   onClick={() => setShowUsd(!showUsd)}
-                  className={`relative w-10 h-5 -full transition-colors ${showUsd ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-700'}`}
+                  className={`relative w-10 h-5 rounded-full transition-colors ${showUsd ? 'bg-green-600' : 'bg-zinc-300 dark:bg-zinc-700'}`}
                 >
                   <span
-                    className={`absolute top-0.5 w-4 h-4 bg-white -full transition-transform ${
+                    className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform ${
                       showUsd ? 'translate-x-5' : 'translate-x-0.5'
                     }`}
                   />
                 </button>
-                <span className={`text-xs ${showUsd ? 'text-white' : 'text-gray-500'}`}>USD</span>
+                <span className={`text-xs ${showUsd ? 'text-zinc-900 dark:text-white' : 'text-zinc-500'}`}>USD</span>
               </div>
             </div>
-            <p className="text-zinc-400 text-sm mb-4">
+            <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
               sqrt_decay pricing: price increases as treasury depletes. Early buyers win.
               {stats?.currentPrice && (
-                <span className="block mt-1 text-green-400">
+                <span className="block mt-1 text-green-600 dark:text-green-400">
                   Current price: {stats.currentPrice.toLocaleString()} sats/token
                   {showUsd && !priceLoading && (
-                    <span className="text-gray-400 ml-2">
+                    <span className="text-zinc-500 ml-2">
                       (${((stats.currentPrice / 100_000_000) * bsvUsdPrice).toFixed(4)} USD)
                     </span>
                   )}
                 </span>
               )}
               {!priceLoading && (
-                <span className="block mt-1 text-gray-500 text-xs">
+                <span className="block mt-1 text-zinc-500 text-xs">
                   BSV/USD: ${bsvUsdPrice.toFixed(2)}
                 </span>
               )}
             </p>
             <div className="space-y-4">
               <div>
-                <label className="text-zinc-400 text-sm block mb-2">Amount to Spend</label>
+                <label className="text-zinc-600 dark:text-zinc-400 text-sm block mb-2">Amount to Spend</label>
                 <div className="flex gap-2">
                   <motion.input
                     type="number"
@@ -617,13 +617,13 @@ export default function TokenPage() {
                     }}
                     placeholder={spendUnit === 'bsv' ? '1' : '100000000'}
                     step={spendUnit === 'bsv' ? '0.001' : '1'}
-                    className="flex-1 bg-black border border-zinc-800 p-3 text-white focus:border-gray-500 outline-none transition-colors"
+                    className="flex-1 bg-zinc-100 dark:bg-black border border-zinc-300 dark:border-zinc-800 p-3 text-zinc-900 dark:text-white focus:border-zinc-500 outline-none transition-colors"
                     whileFocus={{ borderColor: 'rgba(128,128,128,0.6)' }}
                   />
                   <select
                     value={spendUnit}
                     onChange={(e) => setSpendUnit(e.target.value as 'sats' | 'bsv')}
-                    className="bg-black border border-zinc-800 px-4 text-white focus:border-gray-500 outline-none"
+                    className="bg-zinc-100 dark:bg-black border border-zinc-300 dark:border-zinc-800 px-4 text-zinc-900 dark:text-white focus:border-zinc-500 outline-none"
                   >
                     <option value="bsv">BSV</option>
                     <option value="sats">sats</option>
@@ -639,9 +639,9 @@ export default function TokenPage() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="bg-gray-900/50 border border-gray-700 p-4"
+                    className="bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-300 dark:border-zinc-700 p-4"
                   >
-                    <span className="text-gray-400">Calculating...</span>
+                    <span className="text-zinc-500">Calculating...</span>
                   </motion.div>
                 ) : preview && preview.tokenCount > 0 ? (
                   <motion.div
@@ -649,15 +649,15 @@ export default function TokenPage() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="bg-green-900/20 border border-green-500/30 p-4 space-y-2"
+                    className="bg-green-100 dark:bg-green-900/20 border border-green-500/30 p-4 space-y-2"
                   >
                     <div className="flex justify-between">
-                      <span className="text-gray-400">You'll receive:</span>
-                      <span className="text-white font-bold text-lg">{preview.tokenCount.toLocaleString()} tokens</span>
+                      <span className="text-zinc-600 dark:text-zinc-400">You'll receive:</span>
+                      <span className="text-zinc-900 dark:text-white font-bold text-lg">{preview.tokenCount.toLocaleString()} tokens</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">Avg price:</span>
-                      <span className="text-gray-300">
+                      <span className="text-zinc-600 dark:text-zinc-400">Avg price:</span>
+                      <span className="text-zinc-700 dark:text-zinc-300">
                         {showUsd
                           ? `$${((preview.avgPrice / 100_000_000) * bsvUsdPrice).toFixed(4)}`
                           : `${preview.avgPrice.toLocaleString()} sats`
@@ -665,8 +665,8 @@ export default function TokenPage() {
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">Total cost:</span>
-                      <span className="text-gray-300">
+                      <span className="text-zinc-600 dark:text-zinc-400">Total cost:</span>
+                      <span className="text-zinc-700 dark:text-zinc-300">
                         {showUsd
                           ? `$${((preview.totalCost / 100_000_000) * bsvUsdPrice).toFixed(2)} USD`
                           : `${(preview.totalCost / 100_000_000).toFixed(4)} BSV`
@@ -675,8 +675,8 @@ export default function TokenPage() {
                     </div>
                     {preview.remainingSats > 0 && (
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-500">Remainder (not spent):</span>
-                        <span className="text-gray-500">
+                        <span className="text-zinc-500">Remainder (not spent):</span>
+                        <span className="text-zinc-500">
                           {showUsd
                             ? `$${((preview.remainingSats / 100_000_000) * bsvUsdPrice).toFixed(4)}`
                             : `${preview.remainingSats.toLocaleString()} sats`
@@ -691,9 +691,9 @@ export default function TokenPage() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="bg-red-900/20 border border-red-500/30 p-4"
+                    className="bg-red-100 dark:bg-red-900/20 border border-red-500/30 p-4"
                   >
-                    <span className="text-red-400">
+                    <span className="text-red-600 dark:text-red-400">
                       Amount too low. Min: {stats?.currentPrice?.toLocaleString() || '—'} sats for 1 token
                     </span>
                   </motion.div>
@@ -718,20 +718,20 @@ export default function TokenPage() {
             variants={scaleIn}
             whileHover={{ borderColor: 'rgba(128,128,128,0.4)' }}
           >
-            <h2 className="text-xl font-bold text-white mb-4">Stake Tokens</h2>
-            <p className="text-zinc-400 text-sm mb-4">
+            <h2 className="text-xl font-bold text-zinc-900 dark:text-white mb-4">Stake Tokens</h2>
+            <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
               Stake your tokens to earn dividends from $402 protocol fees.
             </p>
             <div className="space-y-4">
               <div>
-                <label className="text-zinc-400 text-sm block mb-2">Stake Amount</label>
+                <label className="text-zinc-600 dark:text-zinc-400 text-sm block mb-2">Stake Amount</label>
                 <input
                   type="number"
                   value={stakeAmount}
                   onChange={(e) => setStakeAmount(e.target.value)}
                   placeholder="Amount to stake"
                   max={holding?.availableBalance || 0}
-                  className="w-full bg-black border border-zinc-800 p-3 text-white focus:border-gray-500 outline-none"
+                  className="w-full bg-zinc-100 dark:bg-black border border-zinc-300 dark:border-zinc-800 p-3 text-zinc-900 dark:text-white focus:border-zinc-500 outline-none"
                 />
               </div>
               <motion.button
@@ -743,15 +743,15 @@ export default function TokenPage() {
               >
                 Stake
               </motion.button>
-              <div className="border-t border-zinc-800 pt-4 mt-4">
-                <label className="text-zinc-400 text-sm block mb-2">Unstake Amount</label>
+              <div className="border-t border-zinc-200 dark:border-zinc-800 pt-4 mt-4">
+                <label className="text-zinc-600 dark:text-zinc-400 text-sm block mb-2">Unstake Amount</label>
                 <input
                   type="number"
                   value={unstakeAmount}
                   onChange={(e) => setUnstakeAmount(e.target.value)}
                   placeholder="Amount to unstake"
                   max={holding?.stakedBalance || 0}
-                  className="w-full bg-black border border-zinc-800 p-3 text-white focus:border-gray-500 outline-none"
+                  className="w-full bg-zinc-100 dark:bg-black border border-zinc-300 dark:border-zinc-800 p-3 text-zinc-900 dark:text-white focus:border-zinc-500 outline-none"
                 />
                 <motion.button
                   onClick={handleUnstake}
@@ -789,36 +789,36 @@ export default function TokenPage() {
         <AnimatePresence>
           {wallet.connected && holding && holding.availableBalance > 0 && (
             <motion.div
-              className="border border-zinc-800 p-6 mb-12 bg-zinc-950"
+              className="border border-zinc-200 dark:border-zinc-800 p-6 mb-12 bg-zinc-50 dark:bg-zinc-950"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               whileHover={{ borderColor: 'rgba(128,128,128,0.4)' }}
             >
-              <h2 className="text-xl font-bold text-white mb-4">Withdraw to Ordinals Wallet</h2>
-              <p className="text-zinc-400 text-sm mb-4">
+              <h2 className="text-xl font-bold text-zinc-900 dark:text-white mb-4">Withdraw to Ordinals Wallet</h2>
+              <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
                 Withdraw your tokens to an external ordinals-compatible wallet.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="text-zinc-400 text-sm block mb-2">Amount</label>
+                  <label className="text-zinc-600 dark:text-zinc-400 text-sm block mb-2">Amount</label>
                   <input
                     type="number"
                     value={withdrawAmount}
                     onChange={(e) => setWithdrawAmount(e.target.value)}
                     placeholder="Amount"
                     max={holding.availableBalance}
-                    className="w-full bg-black border border-zinc-800 p-3 text-white focus:border-gray-500 outline-none"
+                    className="w-full bg-zinc-100 dark:bg-black border border-zinc-300 dark:border-zinc-800 p-3 text-zinc-900 dark:text-white focus:border-zinc-500 outline-none"
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="text-zinc-400 text-sm block mb-2">Ordinals Address</label>
+                  <label className="text-zinc-600 dark:text-zinc-400 text-sm block mb-2">Ordinals Address</label>
                   <input
                     type="text"
                     value={withdrawAddress}
                     onChange={(e) => setWithdrawAddress(e.target.value)}
                     placeholder="Ordinals address (starts with 1)"
-                    className="w-full bg-black border border-zinc-800 p-3 text-white focus:border-gray-500 outline-none"
+                    className="w-full bg-zinc-100 dark:bg-black border border-zinc-300 dark:border-zinc-800 p-3 text-zinc-900 dark:text-white focus:border-zinc-500 outline-none"
                   />
                 </div>
               </div>
@@ -837,17 +837,17 @@ export default function TokenPage() {
 
         {/* Token Info */}
         <motion.div
-          className="border border-zinc-800 p-6 mb-12 bg-zinc-950"
+          className="border border-zinc-200 dark:border-zinc-800 p-6 mb-12 bg-zinc-50 dark:bg-zinc-950"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
           variants={fadeIn}
           whileHover={{ borderColor: 'rgba(128,128,128,0.4)' }}
         >
-          <h2 className="text-xl font-bold text-white mb-4">Token Details</h2>
+          <h2 className="text-xl font-bold text-zinc-900 dark:text-white mb-4">Token Details</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div>
-              <span className="text-gray-500">Inscription ID:</span>
+              <span className="text-zinc-500">Inscription ID:</span>
               <a
                 href={TOKEN_CONFIG.marketUrl}
                 target="_blank"
@@ -858,7 +858,7 @@ export default function TokenPage() {
               </a>
             </div>
             <div>
-              <span className="text-gray-500">Transaction:</span>
+              <span className="text-zinc-500">Transaction:</span>
               <a
                 href={`https://whatsonchain.com/tx/${TOKEN_CONFIG.txId}`}
                 target="_blank"
@@ -873,7 +873,7 @@ export default function TokenPage() {
 
         {/* Links */}
         <motion.div
-          className="border-t border-zinc-800 pt-12"
+          className="border-t border-zinc-200 dark:border-zinc-800 pt-12"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}

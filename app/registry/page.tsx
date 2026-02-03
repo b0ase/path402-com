@@ -132,14 +132,14 @@ export default function RegistryPage() {
             </Link>
           </motion.div>
           <motion.h1
-            className="text-5xl font-bold tracking-tight mb-4 text-white"
+            className="text-5xl font-bold tracking-tight mb-4 text-zinc-900 dark:text-white"
             variants={fadeIn}
             transition={{ duration: 0.6 }}
           >
             Token Registry
           </motion.h1>
           <motion.p
-            className="text-zinc-400 text-lg"
+            className="text-zinc-600 dark:text-zinc-400 text-lg"
             variants={fadeIn}
             transition={{ delay: 0.2 }}
           >
@@ -166,9 +166,9 @@ export default function RegistryPage() {
                 transition: { duration: 0.2 }
               }}
             >
-              <div className="text-zinc-400 text-sm mb-2">{stat.label}</div>
+              <div className="text-zinc-600 dark:text-zinc-400 text-sm mb-2">{stat.label}</div>
               <motion.div
-                className="text-2xl font-bold text-white"
+                className="text-2xl font-bold text-zinc-900 dark:text-white"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 + i * 0.1 }}
@@ -208,8 +208,8 @@ export default function RegistryPage() {
         >
           <div className="flex items-center justify-between mb-4">
             <div>
-              <div className="text-zinc-400 text-sm mb-1">Treasury</div>
-              <div className="font-mono text-sm text-white">{TOKEN_CONFIG.txId.slice(0, 20)}...</div>
+              <div className="text-zinc-600 dark:text-zinc-400 text-sm mb-1">Treasury</div>
+              <div className="font-mono text-sm text-zinc-900 dark:text-white">{TOKEN_CONFIG.txId.slice(0, 20)}...</div>
             </div>
             <button
               onClick={() => setShowOnChain(!showOnChain)}
@@ -223,7 +223,7 @@ export default function RegistryPage() {
             {/* Database State */}
             <div>
               <div className="text-zinc-500 text-xs uppercase tracking-wider mb-2">Database (Off-Chain)</div>
-              <div className="text-xl font-bold text-white">
+              <div className="text-xl font-bold text-zinc-900 dark:text-white">
                 {loading ? '...' : formatNumber(data?.stats.treasuryBalance || TOKEN_CONFIG.totalSupply)}
               </div>
               <div className="text-zinc-500 text-sm">
@@ -243,7 +243,7 @@ export default function RegistryPage() {
                   <span className="text-yellow-600 dark:text-yellow-400 text-xs">OUT OF SYNC</span>
                 )}
               </div>
-              <div className="text-xl font-bold text-white">
+              <div className="text-xl font-bold text-zinc-900 dark:text-white">
                 {onChainData ? formatNumber(onChainData.onChain.treasuryBalance) : '...'}
               </div>
               <div className="text-zinc-500 text-sm">
@@ -263,7 +263,7 @@ export default function RegistryPage() {
                 exit={{ opacity: 0, height: 0 }}
                 className="mt-6 pt-6 border-t border-zinc-200 dark:border-zinc-800"
               >
-                <div className="text-sm text-zinc-400 mb-4">
+                <div className="text-sm text-zinc-600 dark:text-zinc-400 mb-4">
                   <strong>On-Chain Holders:</strong> {onChainData.onChain.totalHolders}
                 </div>
 
@@ -271,8 +271,8 @@ export default function RegistryPage() {
                   <div className="space-y-2">
                     {onChainData.onChain.holders.map((holder, i) => (
                       <div key={i} className="flex justify-between text-sm">
-                        <span className="font-mono text-zinc-400">{truncateAddress(holder.address)}</span>
-                        <span className="text-white">{formatNumber(holder.balance)}</span>
+                        <span className="font-mono text-zinc-600 dark:text-zinc-400">{truncateAddress(holder.address)}</span>
+                        <span className="text-zinc-900 dark:text-white">{formatNumber(holder.balance)}</span>
                       </div>
                     ))}
                   </div>
@@ -303,14 +303,14 @@ export default function RegistryPage() {
           transition={{ delay: 0.6 }}
         >
           <div className="border-b border-zinc-200 dark:border-zinc-800 px-6 py-4">
-            <h2 className="text-lg font-medium text-white">Token Holders</h2>
+            <h2 className="text-lg font-medium text-zinc-900 dark:text-white">Token Holders</h2>
           </div>
 
           <AnimatePresence mode="wait">
             {loading ? (
               <motion.div
                 key="loading"
-                className="p-12 text-center text-zinc-400"
+                className="p-12 text-center text-zinc-600 dark:text-zinc-400"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -325,7 +325,7 @@ export default function RegistryPage() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
-                <div className="text-zinc-400 mb-4">No token holders yet</div>
+                <div className="text-zinc-600 dark:text-zinc-400 mb-4">No token holders yet</div>
                 <motion.div
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -368,12 +368,12 @@ export default function RegistryPage() {
                         <td className="px-6 py-4 text-zinc-500">#{index + 1}</td>
                         <td className="px-6 py-4">
                           {holder.handle ? (
-                            <span className="text-green-400">@{holder.handle}</span>
+                            <span className="text-green-600 dark:text-green-400">@{holder.handle}</span>
                           ) : (
-                            <span className="font-mono text-sm text-white">{truncateAddress(holder.address)}</span>
+                            <span className="font-mono text-sm text-zinc-900 dark:text-white">{truncateAddress(holder.address)}</span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-right font-mono text-white">
+                        <td className="px-6 py-4 text-right font-mono text-zinc-900 dark:text-white">
                           {formatNumber(holder.balance)}
                         </td>
                         <td className="px-6 py-4 text-right text-zinc-500">
@@ -398,15 +398,15 @@ export default function RegistryPage() {
           transition={{ duration: 0.6 }}
           whileHover={{ borderColor: "rgba(96, 165, 250, 0.5)" }}
         >
-          <h3 className="font-medium mb-4 text-white">Token Information</h3>
+          <h3 className="font-medium mb-4 text-zinc-900 dark:text-white">Token Information</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div>
               <span className="text-zinc-500">Symbol:</span>{' '}
-              <span className="font-mono text-white">{TOKEN_CONFIG.symbol}</span>
+              <span className="font-mono text-zinc-900 dark:text-white">{TOKEN_CONFIG.symbol}</span>
             </div>
             <div>
               <span className="text-zinc-500">Protocol:</span>{' '}
-              <span className="font-mono text-white">{TOKEN_CONFIG.protocol}</span>
+              <span className="font-mono text-zinc-900 dark:text-white">{TOKEN_CONFIG.protocol}</span>
             </div>
             <div className="md:col-span-2">
               <span className="text-zinc-500">Inscription ID:</span>{' '}
@@ -446,7 +446,7 @@ export default function RegistryPage() {
             href={TOKEN_CONFIG.marketUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block px-6 py-3 border border-gray-300 dark:border-gray-600 text-white hover:border-gray-500 dark:hover:border-white transition-colors "
+            className="inline-block px-6 py-3 border border-zinc-300 dark:border-zinc-600 text-zinc-900 dark:text-white hover:border-zinc-500 dark:hover:border-white transition-colors "
             variants={fadeIn}
             whileHover={{ scale: 1.02, x: 4 }}
             whileTap={{ scale: 0.98 }}
