@@ -104,16 +104,25 @@ export default function RegistryPage() {
 
   const formatNumber = (n: number | undefined | null) => (n ?? 0).toLocaleString();
 
+  // Compact format for stats boxes (1B, 500M, etc.)
+  const formatCompact = (n: number | undefined | null) => {
+    const num = n ?? 0;
+    if (num >= 1_000_000_000) return `${(num / 1_000_000_000).toFixed(num % 1_000_000_000 === 0 ? 0 : 1)}B`;
+    if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(num % 1_000_000 === 0 ? 0 : 1)}M`;
+    if (num >= 1_000) return `${(num / 1_000).toFixed(num % 1_000 === 0 ? 0 : 1)}K`;
+    return num.toLocaleString();
+  };
+
   const truncateAddress = (address: string) => {
     if (address.length <= 16) return address;
     return `${address.slice(0, 8)}...${address.slice(-6)}`;
   };
 
   const stats = [
-    { label: "Total Supply", value: formatNumber(TOKEN_CONFIG.totalSupply) },
-    { label: "Circulating", value: loading ? '...' : formatNumber(data?.stats.totalCirculating || 0) },
-    { label: "Total Staked", value: loading ? '...' : formatNumber(data?.stats.totalStaked || 0) },
-    { label: "Holders", value: loading ? '...' : data?.stats.totalHolders || 0 },
+    { label: "Total Supply", value: formatCompact(TOKEN_CONFIG.totalSupply), fullValue: formatNumber(TOKEN_CONFIG.totalSupply) },
+    { label: "Circulating", value: loading ? '...' : formatCompact(data?.stats.totalCirculating || 0), fullValue: loading ? '...' : formatNumber(data?.stats.totalCirculating || 0) },
+    { label: "Total Staked", value: loading ? '...' : formatCompact(data?.stats.totalStaked || 0), fullValue: loading ? '...' : formatNumber(data?.stats.totalStaked || 0) },
+    { label: "Holders", value: loading ? '...' : data?.stats.totalHolders || 0, fullValue: loading ? '...' : data?.stats.totalHolders || 0 },
   ];
 
   return (
@@ -157,7 +166,7 @@ export default function RegistryPage() {
           {stats.map((stat, i) => (
             <motion.div
               key={i}
-              className="border border-zinc-200 dark:border-zinc-800 p-6 bg-zinc-50 dark:bg-zinc-950 "
+              className="border border-zinc-200 dark:border-zinc-800 p-4 bg-zinc-50 dark:bg-zinc-950 overflow-hidden"
               variants={scaleIn}
               transition={{ duration: 0.4, delay: i * 0.1 }}
               whileHover={{
@@ -166,12 +175,13 @@ export default function RegistryPage() {
                 transition: { duration: 0.2 }
               }}
             >
-              <div className="text-zinc-600 dark:text-zinc-400 text-sm mb-2">{stat.label}</div>
+              <div className="text-zinc-600 dark:text-zinc-400 text-xs mb-1">{stat.label}</div>
               <motion.div
-                className="text-2xl font-bold text-zinc-900 dark:text-white"
+                className="text-xl md:text-2xl font-bold text-zinc-900 dark:text-white"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 + i * 0.1 }}
+                title={String(stat.fullValue)}
               >
                 {stat.value}
               </motion.div>
