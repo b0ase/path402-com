@@ -93,3 +93,8 @@ body {
 .animate-fade-in {
   animation: fade-in 0.2s ease-out;
 }
+
+/* Wider page containers (reduce margins across pages) */
+.max-w-4xl {
+  max-width: 64rem;
+}
