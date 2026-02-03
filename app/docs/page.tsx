@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -22,10 +23,19 @@ const scaleIn = {
 };
 
 export default function DocsPage() {
+  const [domainInput, setDomainInput] = useState('');
+  const [handleInput, setHandleInput] = useState('');
+  const [issuerAddressInput, setIssuerAddressInput] = useState('');
+  const [templateResult, setTemplateResult] = useState<string | null>(null);
+  const [verifyResult, setVerifyResult] = useState<string | null>(null);
+  const [issuerError, setIssuerError] = useState<string | null>(null);
+  const [issuerLoading, setIssuerLoading] = useState(false);
+
   const tocItems = [
     { id: "what-is-path402", label: "What is $402?" },
     { id: "addresses", label: "$addresses" },
     { id: "pricing-models", label: "Pricing Models" },
+    { id: "issuer-verification", label: "Issuer Verification" },
     { id: "mcp-server", label: "MCP Server" },
     { id: "tools", label: "Available Tools" },
     { id: "self-funding", label: "Self-Funding Agents" },
@@ -202,6 +212,139 @@ $example.com/$blog/$my-post     → content token (the actual content)`}
                 )}
               </motion.div>
             ))}
+          </div>
+        </motion.section>
+
+        {/* Issuer Verification */}
+        <motion.section
+          id="issuer-verification"
+          className="mb-16"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={fadeIn}
+          transition={{ duration: 0.6 }}
+        >
+          <h2 className="text-3xl font-bold text-zinc-900 dark:text-white mb-6">Issuer Verification</h2>
+          <p className="text-zinc-400 mb-6 leading-relaxed">
+            Issuers must prove domain control (DNS + well-known) and bind it to a BSV address
+            with an on-chain signature. Use this panel to generate the template and check status.
+            Full spec: <Link className="text-blue-400 hover:text-blue-300" href="/docs/domain-verification">Domain Verification</Link>
+          </p>
+
+          <div className="border border-zinc-200 dark:border-zinc-800 p-6 bg-zinc-50 dark:bg-zinc-950">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div>
+                <label className="text-xs uppercase tracking-widest text-zinc-500">Domain</label>
+                <input
+                  className="w-full mt-2 bg-white dark:bg-black border border-zinc-300 dark:border-zinc-700 px-3 py-2 text-sm text-zinc-900 dark:text-white"
+                  placeholder="example.com"
+                  value={domainInput}
+                  onChange={(e) => setDomainInput(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="text-xs uppercase tracking-widest text-zinc-500">Handle</label>
+                <input
+                  className="w-full mt-2 bg-white dark:bg-black border border-zinc-300 dark:border-zinc-700 px-3 py-2 text-sm text-zinc-900 dark:text-white"
+                  placeholder="@handle"
+                  value={handleInput}
+                  onChange={(e) => setHandleInput(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="text-xs uppercase tracking-widest text-zinc-500">Issuer Address</label>
+                <input
+                  className="w-full mt-2 bg-white dark:bg-black border border-zinc-300 dark:border-zinc-700 px-3 py-2 text-sm text-zinc-900 dark:text-white"
+                  placeholder="1ABC..."
+                  value={issuerAddressInput}
+                  onChange={(e) => setIssuerAddressInput(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-3 mb-4">
+              <button
+                className="px-4 py-2 bg-zinc-900 text-white text-xs uppercase tracking-widest"
+                onClick={async () => {
+                  setIssuerLoading(true);
+                  setIssuerError(null);
+                  setTemplateResult(null);
+                  try {
+                    const res = await fetch('/api/domain/verify-template', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        domain: domainInput,
+                        handle: handleInput,
+                        issuer_address: issuerAddressInput,
+                      }),
+                    });
+                    const data = await res.json();
+                    if (!res.ok) {
+                      throw new Error(data.error || 'Failed to generate template');
+                    }
+                    setTemplateResult(JSON.stringify(data, null, 2));
+                  } catch (err) {
+                    setIssuerError(err instanceof Error ? err.message : 'Failed to generate template');
+                  } finally {
+                    setIssuerLoading(false);
+                  }
+                }}
+                disabled={issuerLoading}
+              >
+                {issuerLoading ? 'Generating...' : 'Generate Template'}
+              </button>
+              <button
+                className="px-4 py-2 border border-zinc-300 dark:border-zinc-700 text-xs uppercase tracking-widest text-zinc-700 dark:text-zinc-300"
+                onClick={async () => {
+                  setIssuerLoading(true);
+                  setIssuerError(null);
+                  setVerifyResult(null);
+                  try {
+                    const res = await fetch('/api/domain/verify', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        domain: domainInput,
+                        handle: handleInput,
+                        issuer_address: issuerAddressInput,
+                      }),
+                    });
+                    const data = await res.json();
+                    if (!res.ok) {
+                      throw new Error(data.error || 'Failed to verify domain');
+                    }
+                    setVerifyResult(JSON.stringify(data, null, 2));
+                  } catch (err) {
+                    setIssuerError(err instanceof Error ? err.message : 'Failed to verify domain');
+                  } finally {
+                    setIssuerLoading(false);
+                  }
+                }}
+                disabled={issuerLoading}
+              >
+                Check Verification
+              </button>
+            </div>
+
+            {issuerError && (
+              <div className="text-red-500 text-sm mb-3">{issuerError}</div>
+            )}
+
+            {templateResult && (
+              <div className="mb-4">
+                <div className="text-xs uppercase tracking-widest text-zinc-500 mb-2">Template</div>
+                <pre className="bg-black text-zinc-200 text-xs p-4 overflow-x-auto">{templateResult}</pre>
+              </div>
+            )}
+
+            {verifyResult && (
+              <div>
+                <div className="text-xs uppercase tracking-widest text-zinc-500 mb-2">Verification Result</div>
+                <pre className="bg-black text-zinc-200 text-xs p-4 overflow-x-auto">{verifyResult}</pre>
+              </div>
+            )}
           </div>
         </motion.section>
 

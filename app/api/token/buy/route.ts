@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getOrCreateHolder, createPurchase, processPurchaseImmediate, getTokenStats, PAYMENT_ADDRESS } from '@/lib/store';
 import { getInstance, Connect } from '@handcash/sdk';
+import type { Client as HandcashClient } from '@handcash/sdk/dist/client/client/types.js';
 import { executeTransfer } from '@/lib/bsv20-transfer';
 import { supabase, isDbConnected } from '@/lib/supabase';
 
 // sqrt_decay pricing: price = BASE / sqrt(remaining + 1)
 // Price INCREASES as treasury depletes - rewards early buyers
 const BASE_PRICE_SATS = 223_610; // ~10 sats/token at 500M treasury, 1 BSV = 1% of supply
-const INITIAL_TREASURY = 500_000_000; // 500M for sale
 
 function calculateSqrtDecayPrice(treasuryRemaining: number): number {
   // price = base / sqrt(remaining + 1)
@@ -173,7 +173,7 @@ export async function POST(request: NextRequest) {
 
       // Initialize HandCash SDK and make payment
       const sdk = getInstance({ appId, appSecret });
-      const client = sdk.getAccountClient(authToken);
+      const client = sdk.getAccountClient(authToken) as HandcashClient;
 
       // Convert sats to USD for HandCash payment
       // BSV ~= $17, so sats to USD = sats * 17 / 100_000_000
@@ -182,9 +182,8 @@ export async function POST(request: NextRequest) {
       const usdAmount = Math.max(0.01, Math.round((totalSats * BSV_PRICE_USD) / 1_000_000) / 100);
 
       try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const paymentResult = await Connect.pay({
-          client: client as any,
+          client,
           body: {
             instrumentCurrencyCode: 'BSV',
             denominationCurrencyCode: 'USD',

@@ -12,6 +12,8 @@ export interface VerifyRequest {
   x402Version: number;
   scheme: 'exact' | 'upto';
   network: SupportedNetwork;
+  txId?: string;
+  asset?: string;
   payload: {
     signature: string;
     authorization: {
@@ -19,9 +21,13 @@ export interface VerifyRequest {
       to: string;
       value: string;
       nonce: string;
+      txId?: string;
+      asset?: string;
       validAfter?: string;
       validBefore?: string;
     };
+    txId?: string;
+    asset?: string;
   };
 }
 
@@ -38,6 +44,8 @@ export interface VerificationResult {
   invalidReason?: string;
   txId?: string;
   amount?: number;
+  recipient?: string;
+  sender?: string;
 }
 
 export interface InscriptionResult {
@@ -91,23 +99,59 @@ export const SUPPORTED_ASSETS: Record<SupportedNetwork, string[]> = {
   ethereum: ['USDC', 'ETH', 'USDT'],
 };
 
-// Nonce tracking (in-memory, replace with Redis/DB in production)
+import { supabase, isDbConnected } from '@/lib/supabase';
+import { verifyBsvPaymentTx } from '@/lib/bsv-verify';
+import { createAndBroadcastInscription } from '@/lib/bsv-inscribe';
+
+const X402_NONCE_TTL_SECONDS = parseInt(process.env.X402_NONCE_TTL_SECONDS || '300', 10);
+const X402_VERIFY_REQUIRE_TX = (process.env.X402_VERIFY_REQUIRE_TX || 'true').toLowerCase() === 'true';
+const X402_TREASURY_ADDRESS = (process.env.X402_TREASURY_ADDRESS || process.env.TREASURY_ADDRESS || '').trim();
+const X402_TREASURY_PRIVATE_KEY = (process.env.X402_TREASURY_PRIVATE_KEY || process.env.TREASURY_PRIVATE_KEY || '').trim();
+
+// Nonce tracking fallback (in-memory)
 const usedNonces = new Map<string, Set<string>>();
 
 /**
  * Check if a nonce has already been used (replay protection)
  */
-export function checkNonce(network: SupportedNetwork, nonce: string): boolean {
+export async function checkNonce(network: SupportedNetwork, nonce: string): Promise<boolean> {
+  if (!nonce) return false;
+
+  if (isDbConnected() && supabase) {
+    const now = new Date();
+    const expiresAt = new Date(now.getTime() + X402_NONCE_TTL_SECONDS * 1000).toISOString();
+
+    // Clean expired nonces (best-effort)
+    await supabase.from('x402_nonces').delete().lt('expires_at', now.toISOString());
+
+    const { error } = await supabase
+      .from('x402_nonces')
+      .insert({
+        network,
+        nonce,
+        used_at: now.toISOString(),
+        expires_at: expiresAt,
+      });
+
+    if (error) {
+      // Duplicate nonce or insert failure
+      if (error.code === '23505' || error.message?.toLowerCase().includes('duplicate')) {
+        return false;
+      }
+      console.warn('[x402] nonce insert failed:', error.message);
+      return false;
+    }
+
+    return true;
+  }
+
+  // In-memory fallback
   const key = `${network}`;
   if (!usedNonces.has(key)) {
     usedNonces.set(key, new Set());
   }
-
   const networkNonces = usedNonces.get(key)!;
-  if (networkNonces.has(nonce)) {
-    return false; // Already used
-  }
-
+  if (networkNonces.has(nonce)) return false;
   networkNonces.add(nonce);
   return true;
 }
@@ -155,7 +199,10 @@ export async function createInscription(
   settlementTxId?: string
 ): Promise<InscriptionResult> {
   try {
-    // Create inscription content
+    if (!X402_TREASURY_ADDRESS || !X402_TREASURY_PRIVATE_KEY) {
+      return { success: false, error: 'Treasury keys not configured' };
+    }
+
     const content = {
       type: 'x402_payment_proof',
       version: '1.0.0',
@@ -173,17 +220,29 @@ export async function createInscription(
       facilitator: 'path402.com',
     };
 
-    // TODO: Implement actual BSV inscription
-    // 1. Create OP_RETURN transaction with JSON content
-    // 2. Broadcast to BSV network
-    // 3. Return inscription ID
+    const { txId, inscriptionId } = await createAndBroadcastInscription({
+      data: content,
+      contentType: 'application/json',
+      toAddress: X402_TREASURY_ADDRESS,
+      privateKeyWIF: X402_TREASURY_PRIVATE_KEY,
+    });
 
-    // Mock implementation for development
-    const inscriptionId = `insc_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
-    const txId = `bsv_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
-
-    console.log('[x402] Created inscription:', inscriptionId);
-    console.log('[x402] Content:', JSON.stringify(content, null, 2));
+    if (isDbConnected() && supabase) {
+      await supabase.from('x402_inscriptions').insert({
+        inscription_id: inscriptionId,
+        tx_id: txId,
+        origin_network: originNetwork,
+        origin_tx_id: originTxId,
+        payment_from: payment.from,
+        payment_to: payment.to,
+        payment_amount: payment.amount,
+        payment_asset: payment.asset,
+        signature,
+        settlement_network: settledOn || null,
+        settlement_tx_id: settlementTxId || null,
+        content_json: content,
+      });
+    }
 
     return {
       success: true,
@@ -194,7 +253,7 @@ export async function createInscription(
     console.error('[x402] Inscription error:', error);
     return {
       success: false,
-      error: 'Failed to create inscription',
+      error: error instanceof Error ? error.message : 'Failed to create inscription',
     };
   }
 }
@@ -203,7 +262,31 @@ export async function createInscription(
  * Get inscription statistics
  */
 export async function getInscriptionStats() {
-  // TODO: Query database for real stats
+  if (isDbConnected() && supabase) {
+    const { data } = await supabase
+      .from('x402_inscriptions')
+      .select('origin_network', { count: 'exact' });
+
+    const byChain: Record<SupportedNetwork, number> = {
+      bsv: 0,
+      base: 0,
+      solana: 0,
+      ethereum: 0,
+    };
+
+    (data || []).forEach((row: { origin_network: SupportedNetwork }) => {
+      if (row.origin_network && byChain[row.origin_network] !== undefined) {
+        byChain[row.origin_network] += 1;
+      }
+    });
+
+    return {
+      totalInscriptions: (data || []).length,
+      totalFees: (data || []).length * FEES.inscription,
+      byChain,
+    };
+  }
+
   return {
     totalInscriptions: 0,
     totalFees: 0,
@@ -227,56 +310,101 @@ export async function getInscription(id: string): Promise<{
   fee: number;
   inscription: string;
 } | null> {
-  // TODO: Query database for real inscription
-  // For now return null (not found)
-  console.log('[x402] getInscription called with id:', id);
+  if (isDbConnected() && supabase) {
+    const { data } = await supabase
+      .from('x402_inscriptions')
+      .select('*')
+      .or(`inscription_id.eq.${id},tx_id.eq.${id}`)
+      .single();
+
+    if (!data) return null;
+
+    return {
+      id: data.inscription_id,
+      txId: data.tx_id,
+      blockHeight: null,
+      timestamp: data.created_at,
+      fee: FEES.inscription,
+      inscription: JSON.stringify(data.content_json || {}),
+    };
+  }
+
   return null;
 }
 
 // Network-specific verification functions
 
 async function verifyBSVPayment(payload: VerifyRequest['payload']): Promise<VerificationResult> {
-  // TODO: Verify BSV transaction via WhatsOnChain API
-  // For development, accept all valid-looking signatures
-  if (payload.signature && payload.signature.length > 20) {
-    return {
-      valid: true,
-      amount: parseInt(payload.authorization.value),
-    };
+  const txId = payload.txId || payload.authorization?.txId;
+  const expectedTo = payload.authorization?.to;
+  const expectedAmount = parseInt(payload.authorization?.value || '0');
+
+  if (X402_VERIFY_REQUIRE_TX && !txId) {
+    return { valid: false, invalidReason: 'Missing txId for BSV verification' };
   }
-  return { valid: false, invalidReason: 'Invalid BSV signature' };
+
+  if (!txId || !expectedTo || !expectedAmount) {
+    return { valid: false, invalidReason: 'Missing required payment fields' };
+  }
+
+  const result = await verifyBsvPaymentTx({
+    txId,
+    expectedAddress: expectedTo,
+    minSats: expectedAmount,
+  });
+
+  const verification: VerificationResult = {
+    valid: result.valid,
+    txId,
+    amount: expectedAmount,
+    recipient: expectedTo,
+    sender: payload.authorization?.from,
+    invalidReason: result.valid ? undefined : 'Payment not found on-chain',
+  };
+
+  await recordVerification(networkSafe('bsv'), verification);
+
+  return verification;
 }
 
 async function verifyBasePayment(payload: VerifyRequest['payload']): Promise<VerificationResult> {
-  // TODO: Verify Base transaction via their RPC
-  // Check EIP-712 signature for USDC transfer authorization
-  if (payload.signature && payload.signature.startsWith('0x')) {
-    return {
-      valid: true,
-      amount: parseInt(payload.authorization.value),
-    };
+  const txId = payload.txId || payload.authorization?.txId;
+  if (X402_VERIFY_REQUIRE_TX && !txId) {
+    return { valid: false, invalidReason: 'Missing txId for Base verification' };
   }
-  return { valid: false, invalidReason: 'Invalid Base signature' };
+  return { valid: false, invalidReason: 'Base verification not implemented yet' };
 }
 
 async function verifySolanaPayment(payload: VerifyRequest['payload']): Promise<VerificationResult> {
-  // TODO: Verify Solana transaction via Helius or similar
-  if (payload.signature && payload.signature.length > 40) {
-    return {
-      valid: true,
-      amount: parseInt(payload.authorization.value),
-    };
+  const txId = payload.txId || payload.authorization?.txId;
+  if (X402_VERIFY_REQUIRE_TX && !txId) {
+    return { valid: false, invalidReason: 'Missing txId for Solana verification' };
   }
-  return { valid: false, invalidReason: 'Invalid Solana signature' };
+  return { valid: false, invalidReason: 'Solana verification not implemented yet' };
 }
 
 async function verifyEthereumPayment(payload: VerifyRequest['payload']): Promise<VerificationResult> {
-  // TODO: Verify Ethereum transaction via Alchemy or Infura
-  if (payload.signature && payload.signature.startsWith('0x')) {
-    return {
-      valid: true,
-      amount: parseInt(payload.authorization.value),
-    };
+  const txId = payload.txId || payload.authorization?.txId;
+  if (X402_VERIFY_REQUIRE_TX && !txId) {
+    return { valid: false, invalidReason: 'Missing txId for Ethereum verification' };
   }
-  return { valid: false, invalidReason: 'Invalid Ethereum signature' };
+  return { valid: false, invalidReason: 'Ethereum verification not implemented yet' };
+}
+
+async function recordVerification(network: SupportedNetwork, verification: VerificationResult) {
+  if (!isDbConnected() || !supabase) return;
+
+  await supabase.from('x402_verifications').insert({
+    network,
+    tx_id: verification.txId || null,
+    amount_sats: verification.amount || null,
+    sender: verification.sender || null,
+    recipient: verification.recipient || null,
+    valid: verification.valid,
+    invalid_reason: verification.invalidReason || null,
+  });
+}
+
+function networkSafe(network: SupportedNetwork): SupportedNetwork {
+  return network;
 }

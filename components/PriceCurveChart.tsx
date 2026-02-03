@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import {
   AreaChart,
   Area,
   XAxis,
   YAxis,
   Tooltip,
+  TooltipContentProps,
   ResponsiveContainer,
   ReferenceLine,
   ReferenceDot,
@@ -24,6 +25,14 @@ interface PriceCurveChartProps {
 const BASE_PRICE_SATS = 223_610; // ~10 sats/token at 500M treasury, 1 BSV = 1% of supply
 const TOTAL_TREASURY = 500_000_000;
 
+type ChartPoint = {
+  remaining: number;
+  price: number;
+  priceUsd: number;
+  isPurchaseZone: boolean;
+  label: string;
+};
+
 function calculatePrice(remaining: number): number {
   return Math.ceil(BASE_PRICE_SATS / Math.sqrt(remaining + 1));
 }
@@ -36,17 +45,10 @@ export default function PriceCurveChart({
   showUsd,
 }: PriceCurveChartProps) {
   const [zoomLevel, setZoomLevel] = useState<'full' | 'medium' | 'close'>('medium');
-  const [hoveredPoint, setHoveredPoint] = useState<{ remaining: number; price: number } | null>(null);
 
   // Generate curve data points based on zoom level
   const chartData = useMemo(() => {
-    const data: Array<{
-      remaining: number;
-      price: number;
-      priceUsd: number;
-      isPurchaseZone: boolean;
-      label: string;
-    }> = [];
+    const data: ChartPoint[] = [];
 
     let start: number, end: number, step: number;
 
@@ -121,9 +123,9 @@ export default function PriceCurveChart({
     return `${sats} sats`;
   }
 
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (!active || !payload?.[0]) return null;
-    const data = payload[0].payload;
+  const CustomTooltip = ({ active, payload }: TooltipContentProps<number, string>) => {
+    const data = payload?.[0]?.payload as ChartPoint | undefined;
+    if (!active || !data) return null;
     return (
       <div className="bg-black/90 border border-gray-700 rounded-lg p-3 shadow-xl">
         <div className="text-gray-400 text-xs mb-1">Treasury Remaining</div>
@@ -214,7 +216,7 @@ export default function PriceCurveChart({
               tickLine={{ stroke: '#374151' }}
               width={70}
             />
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={CustomTooltip} />
 
             {/* Main price curve */}
             <Area

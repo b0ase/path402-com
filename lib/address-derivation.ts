@@ -2,7 +2,7 @@
 // Users derive their own BSV address from their HandCash signature
 // This means USER controls the keys, not PATH402
 
-import { createHash, createHmac, randomBytes, createCipheriv, createDecipheriv } from 'crypto';
+import { createHmac, randomBytes, createCipheriv, createDecipheriv } from 'crypto';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const bsv = require('bsv');
 

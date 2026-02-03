@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { signature, timestamp } = body;
+    const { signature } = body;
 
     if (!signature) {
       const ts = new Date().toISOString();

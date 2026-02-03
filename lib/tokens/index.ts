@@ -43,6 +43,8 @@ const DEFAULT_BASE_PRICE = 500;
 const DEFAULT_TREASURY = 500_000_000;
 const DEFAULT_ISSUER_SHARE = 8000; // 80%
 const DEFAULT_FACILITATOR_SHARE = 2000; // 20%
+const DEFAULT_ACCESS_MODE = 'token';
+const DEFAULT_PARENT_SHARE = 5000;
 
 /**
  * Get all active tokens with current prices
@@ -144,12 +146,18 @@ export async function registerToken(
     icon_url: request.icon_url,
     access_url: request.access_url,
     issuer_handle: issuerHandle,
+    issuer_address: request.issuer_address,
     pricing_model: request.pricing_model || 'sqrt_decay',
     base_price_sats: request.base_price_sats || DEFAULT_BASE_PRICE,
     max_supply: request.max_supply,
     treasury_balance: DEFAULT_TREASURY,
     issuer_share_bps: request.issuer_share_bps || DEFAULT_ISSUER_SHARE,
     facilitator_share_bps: DEFAULT_FACILITATOR_SHARE,
+    access_mode: request.access_mode || DEFAULT_ACCESS_MODE,
+    parent_address: request.parent_address,
+    parent_share_bps: request.parent_share_bps ?? DEFAULT_PARENT_SHARE,
+    usage_pricing: request.usage_pricing || null,
+    dividend_policy: request.dividend_policy || null,
   };
 
   const { data, error } = await getSupabase()
@@ -172,7 +180,7 @@ export async function registerToken(
 export async function acquireTokens(
   tokenAddress: string,
   buyerHandle: string,
-  options: { amount?: number; spendSats?: number }
+  options: { amount?: number; spendSats?: number; paymentTxId?: string }
 ): Promise<AcquireTokenResponse> {
   const token = await getToken(tokenAddress);
   if (!token) {
@@ -286,6 +294,7 @@ export async function acquireTokens(
       unit_price_sats: avgPrice,
       issuer_revenue_sats: issuerRevenue,
       facilitator_revenue_sats: facilitatorRevenue,
+      payment_tx_id: options.paymentTxId,
     });
 
   return {

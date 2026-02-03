@@ -674,6 +674,7 @@ Minimum requirements:
 | `$402-compliance` | KYC, staking, dividends, registry | Sites paying dividends |
 | `$402-hierarchy` | Parent/child relationships, revenue flow | Multi-path sites |
 | `$402-containers` | Data embedded in inscriptions | On-chain content |
+| `$402-usage` | Metered access pricing (time/window) | Live streams, APIs, utilities |
 | `$402-keys` | Encryption, key encapsulation | Private/encrypted content |
 | `$402-governance` | Voting rights, proposals | DAOs, community sites |
 
@@ -809,6 +810,23 @@ A fixed-price paywall with no extensions:
 That's it. 4 fields. A complete $402-compliant token.
 
 Everything else—curves, hierarchy, compliance, encryption—is built on top.
+
+### Usage Pricing (Metered Access)
+
+Usage pricing is **independent** from the token price. Tokens confer access rights and ownership; usage pricing charges for **time-based consumption** (e.g., $0.00001 per 100ms, $100 per hour).
+
+```json
+{
+  "usage_pricing": {
+    "enabled": true,
+    "unit_ms": 1000,
+    "price_sats_per_unit": 100,
+    "prepay_ms": 60000,
+    "grace_ms": 2000,
+    "accepted_networks": ["bsv"]
+  }
+}
+```
 
 ---
 

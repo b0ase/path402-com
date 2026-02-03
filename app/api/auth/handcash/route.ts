@@ -1,14 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
 // HandCash OAuth configuration
 const HANDCASH_APP_ID = process.env.HANDCASH_APP_ID?.trim();
 const HANDCASH_AUTH_URL = 'https://market.handcash.io';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(request.url);
-    const redirect = searchParams.get('redirect') || '/token';
-
     if (!HANDCASH_APP_ID) {
       return NextResponse.json({
         error: 'HandCash not configured',

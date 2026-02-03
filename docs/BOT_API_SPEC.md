@@ -424,6 +424,78 @@ ws.onmessage = (event) => {
 | `trending:alert` | High purchase velocity | `path`, `velocity`, `unique_buyers` |
 | `agenda:match` | Content matches subscribed agenda | `path`, `match_score`, `signals` |
 
+## Usage Access APIs (v0)
+
+These endpoints provide **usage-based access** for dynamic streams (video feeds, APIs, compute).
+They are **session-based** (require `x-wallet-handle`) rather than `$402-Sig` auth.
+
+### Get Current Access Window
+
+```http
+GET /api/tokens/{address}/stream
+x-wallet-handle: alice
+```
+
+**Response:**
+```json
+{
+  "token": {
+    "address": "$alice",
+    "access_mode": "usage"
+  },
+  "active": false,
+  "expires_at": null,
+  "total_paid_sats": 0,
+  "usage_pricing": {
+    "unit_ms": 1000,
+    "price_sats_per_unit": 100,
+    "min_payment_sats": 100,
+    "max_payment_sats": 100000,
+    "grace_ms": 5000,
+    "prepay_ms": 60000,
+    "payment_address": "1ISSUER...",
+    "accepted_networks": ["bsv"]
+  }
+}
+```
+
+### Pay to Extend Access Window
+
+```http
+POST /api/tokens/{address}/stream
+x-wallet-handle: alice
+Content-Type: application/json
+
+{
+  "payment_tx_id": "bsv_txid..."
+}
+```
+
+**Success Response:**
+```json
+{
+  "success": true,
+  "token": {
+    "address": "$alice",
+    "access_mode": "usage"
+  },
+  "paid_sats": 500,
+  "grant_ms": 5000,
+  "expires_at": "2026-02-03T22:10:00.000Z",
+  "usage_pricing": {
+    "unit_ms": 1000,
+    "price_sats_per_unit": 100,
+    "accepted_networks": ["bsv"]
+  },
+  "grace_ms": 5000
+}
+```
+
+**Notes**
+- If `access_mode` is `token` or `hybrid`, the caller must hold the token.
+- `payment_tx_id` is validated on-chain against the issuer’s payment address.
+- `402` is returned when payment is missing or token ownership is required.
+
 ## Analytics APIs
 
 ### Content Performance

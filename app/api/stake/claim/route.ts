@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getHolder } from '@/lib/store';
 import { supabase, isDbConnected } from '@/lib/supabase';
+import { sendBsvPayment } from '@/lib/bsv-send';
 
 // POST /api/stake/claim - Claim pending dividends
 export async function POST(request: NextRequest) {
@@ -48,9 +49,19 @@ export async function POST(request: NextRequest) {
       }, { status: 404 });
     }
 
-    // TODO: In production, actually send BSV to the user's address
-    // For now, we just mark claims as claimed
-    // const payoutResult = await sendBsvToAddress(wallet.address, totalAmount);
+    const treasuryKey = process.env.TREASURY_PRIVATE_KEY;
+    if (!treasuryKey) {
+      return NextResponse.json({
+        error: 'Treasury not configured',
+        details: 'Missing TREASURY_PRIVATE_KEY',
+      }, { status: 500 });
+    }
+
+    const payoutResult = await sendBsvPayment({
+      toAddress: wallet.address,
+      amountSats: totalAmount,
+      privateKeyWIF: treasuryKey,
+    });
 
     // Mark all claims as claimed
     const claimIds = pendingClaims.map(c => c.id);
@@ -59,7 +70,7 @@ export async function POST(request: NextRequest) {
       .update({
         status: 'claimed',
         claimed_at: new Date().toISOString(),
-        // claim_tx_id: payoutResult.txId, // When BSV payout is implemented
+        claim_tx_id: payoutResult.txId,
       })
       .in('id', claimIds);
 
@@ -83,7 +94,8 @@ export async function POST(request: NextRequest) {
       claimCount: claimIds.length,
       destinationAddress: wallet.address,
       message: `Successfully claimed ${totalAmount.toLocaleString()} sats in dividends`,
-      note: 'Dividends have been credited. BSV payout coming soon.',
+      txId: payoutResult.txId,
+      note: 'Dividends paid on-chain.',
     });
   } catch (error) {
     console.error('Error claiming dividends:', error);

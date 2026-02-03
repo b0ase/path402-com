@@ -15,8 +15,7 @@ interface TransferResult {
 
 // Create a BSV-20 transfer inscription
 export function createTransferInscription(
-  amount: number,
-  toAddress: string
+  amount: number
 ): { inscription: string; data: object } {
   const transferData = {
     p: 'bsv-20',
@@ -84,7 +83,7 @@ export async function createTransferTransaction(
   }
 
   // Create inscription data
-  const { inscription } = createTransferInscription(amount, toAddress);
+  const { inscription } = createTransferInscription(amount);
   const inscriptionBuffer = Buffer.from(inscription, 'utf8');
 
   // Build transaction manually with BSV v2
@@ -229,6 +228,6 @@ export async function executeTransfer(
 }
 
 // Check if user has a derived on-chain address
-export async function getUserOnChainAddress(handle: string): Promise<string | null> {
+export async function getUserOnChainAddress(): Promise<string | null> {
   return null;
 }

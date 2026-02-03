@@ -55,8 +55,6 @@ export default function AccountPage() {
   const [deriving, setDeriving] = useState(false);
   const [deriveError, setDeriveError] = useState<string | null>(null);
   const [newlyDerivedWif, setNewlyDerivedWif] = useState<string | null>(null); // WIF shown on first derivation
-  const [storedEncryptedWif, setStoredEncryptedWif] = useState<string | null>(null);
-  const [storedSalt, setStoredSalt] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
   const [exportedWallet, setExportedWallet] = useState<ExportedWallet | null>(null);
   const [exportError, setExportError] = useState<string | null>(null);
@@ -201,8 +199,6 @@ export default function AccountPage() {
 
       // Show the WIF to user (only time they'll see it unless they export)
       setNewlyDerivedWif(clientWallet.wif);
-      setStoredEncryptedWif(clientWallet.encryptedWif);
-      setStoredSalt(clientWallet.encryptionSalt);
 
       setDerivedAddress({
         address: clientWallet.address,

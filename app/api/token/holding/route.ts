@@ -21,7 +21,7 @@ async function getTrackedTransferBalance(holderId: string, toAddress: string): P
 export async function GET(request: NextRequest) {
   try {
     // Check headers first (for Yours wallet)
-    let address = request.headers.get('x-wallet-address');
+    const address = request.headers.get('x-wallet-address');
     let handle = request.headers.get('x-wallet-handle');
 
     // Then check cookies (for HandCash)

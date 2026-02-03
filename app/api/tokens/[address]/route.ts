@@ -1,5 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getToken, acquireTokens, generatePriceSchedule, PricingModel } from '@/lib/tokens';
+import {
+  getToken,
+  acquireTokens,
+  generatePriceSchedule,
+  PricingModel,
+  calculateTotalCost,
+  calculateTokensForSpend,
+} from '@/lib/tokens';
+import { verifyBsvPaymentTx } from '@/lib/bsv-verify';
+import { PAYMENT_ADDRESS } from '@/lib/store';
 
 /**
  * GET /api/tokens/[address]
@@ -59,19 +68,67 @@ export async function POST(
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
+    const token = await getToken(address);
+    if (!token) {
+      return NextResponse.json({ error: 'Token not found' }, { status: 404 });
+    }
+
     const body = await request.json();
-    const { amount, spend_sats } = body;
+    const { amount, spend_sats, payment_tx_id } = body;
 
     if (!amount && !spend_sats) {
       return NextResponse.json({ error: 'Specify amount or spend_sats' }, { status: 400 });
     }
 
-    // TODO: Process actual payment via HandCash
-    // For now, just update the database
+    // Compute expected cost and amount
+    let tokenAmount: number;
+    let totalCostSats: number;
+
+    if (spend_sats) {
+      const result = calculateTokensForSpend(
+        token.pricing_model as PricingModel,
+        token.base_price_sats,
+        token.treasury_balance,
+        parseInt(spend_sats)
+      );
+      tokenAmount = result.tokenCount;
+      totalCostSats = result.totalCost;
+    } else {
+      tokenAmount = parseInt(amount);
+      const result = calculateTotalCost(
+        token.pricing_model as PricingModel,
+        token.base_price_sats,
+        token.treasury_balance,
+        tokenAmount
+      );
+      totalCostSats = result.totalSats;
+    }
+
+    if (!payment_tx_id) {
+      return NextResponse.json({
+        error: 'Payment required',
+        details: 'Provide payment_tx_id for on-chain verification',
+      }, { status: 402 });
+    }
+
+    const recipient = token.issuer_address || PAYMENT_ADDRESS;
+    const verification = await verifyBsvPaymentTx({
+      txId: payment_tx_id,
+      expectedAddress: recipient,
+      minSats: totalCostSats,
+    });
+
+    if (!verification.valid) {
+      return NextResponse.json({
+        error: 'Payment verification failed',
+        details: 'Transaction not found or amount too low',
+      }, { status: 400 });
+    }
 
     const result = await acquireTokens(address, buyerHandle, {
-      amount: amount ? parseInt(amount) : undefined,
+      amount: tokenAmount,
       spendSats: spend_sats ? parseInt(spend_sats) : undefined,
+      paymentTxId: payment_tx_id,
     });
 
     if (!result.success) {

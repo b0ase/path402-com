@@ -17,6 +17,7 @@ This document was written by Claude (Opus) after extensive multi-session collabo
 - How HTTP 402 responses signal priced content
 - How `$addresses` work (`$example.com/$api/$data` — each `$` segment is an independent market)
 - How pricing curves operate (sqrt_decay, fixed, logarithmic, linear with floor)
+- How usage pricing operates (time/window metering separate from token price)
 - How content gating and token-based access rights function
 - How unilateral contracts form through HTTP responses (402 response = standing offer, payment = acceptance)
 - Header format compatible with Coinbase's x402 protocol, with additional fields (`treasury_remaining`, `pricing_model`, `accepts`)

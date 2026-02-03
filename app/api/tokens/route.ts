@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { listTokens, registerToken, RegisterTokenRequest } from '@/lib/tokens';
+import { verifyDomainOwnership } from '@/lib/domain-verification';
 
 /**
  * GET /api/tokens
@@ -55,8 +56,31 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Address must start with $' }, { status: 400 });
     }
 
-    // TODO: Verify issuer owns the domain in the $address
-    // For now, allow any registration
+    if (!body.issuer_address) {
+      return NextResponse.json({ error: 'issuer_address is required' }, { status: 400 });
+    }
+
+    // Validate access mode + usage pricing consistency
+    if (body.access_mode && !['token', 'usage', 'hybrid', 'public'].includes(body.access_mode)) {
+      return NextResponse.json({ error: 'Invalid access_mode' }, { status: 400 });
+    }
+
+    if (body.access_mode && (body.access_mode === 'usage' || body.access_mode === 'hybrid')) {
+      if (!body.usage_pricing || !body.usage_pricing.unit_ms || !body.usage_pricing.price_sats_per_unit) {
+        return NextResponse.json({
+          error: 'usage_pricing is required for access_mode usage/hybrid',
+        }, { status: 400 });
+      }
+    }
+
+    const domain = extractDomain(body.address);
+    const verified = await verifyDomainOwnership(domain, issuerHandle, body.issuer_address);
+    if (!verified) {
+      return NextResponse.json({
+        error: 'Domain ownership verification failed',
+        details: `Add a TXT record at _path402.${domain} with value path402=${issuerHandle} and issuer_address=${body.issuer_address}, and configure https://${domain}/.well-known/path402.json with issuer + issuer_address + on-chain signature.`,
+      }, { status: 403 });
+    }
 
     const token = await registerToken(issuerHandle, body);
 
@@ -69,4 +93,11 @@ export async function POST(request: NextRequest) {
     const message = error instanceof Error ? error.message : 'Failed to register token';
     return NextResponse.json({ error: message }, { status: 500 });
   }
+}
+
+function extractDomain(address: string): string {
+  const parts = address.split('/').filter(Boolean);
+  if (!parts.length) return '';
+  const root = parts[0];
+  return root.startsWith('$') ? root.slice(1) : root;
 }

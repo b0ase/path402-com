@@ -62,6 +62,9 @@ X-$402-Model: <pricing_model>
 | `X-$402-Parent` | Parent $path | `$example.com` |
 | `X-$402-Expires` | Quote expiry (ISO 8601) | `2026-02-02T12:00:00Z` |
 | `X-$402-Accepts` | Accepted payment methods | `bsv,base,sol,eth` |
+| `X-$402-Usage-Unit` | Usage billing unit (ms) | `1000` |
+| `X-$402-Usage-Price` | Price per unit (sats) | `100` |
+| `X-$402-Usage-Mode` | `usage` or `hybrid` | `hybrid` |
 
 ### Response Body
 
@@ -73,6 +76,13 @@ X-$402-Model: <pricing_model>
   "pricing_model": "sqrt_decay",
   "treasury_remaining": 499000000,
   "parent": "$example.com",
+  "usage_pricing": {
+    "enabled": true,
+    "unit_ms": 1000,
+    "price_sats_per_unit": 100,
+    "prepay_ms": 60000,
+    "grace_ms": 2000
+  },
   "accepts": ["bsv", "base", "sol", "eth"],
   "discovery_url": "https://example.com/.well-known/$402.json"
 }
@@ -103,6 +113,11 @@ Servers implementing $402 MUST provide a discovery endpoint at `/.well-known/$40
       "parent_share_bps": 5000
     }
   ],
+  "access": {
+    "mode": "hybrid",
+    "token_required": true,
+    "usage_required": true
+  },
   "stakers": [
     {
       "address": "1ABC...",
@@ -115,6 +130,98 @@ Servers implementing $402 MUST provide a discovery endpoint at `/.well-known/$40
     "paymail": "pay@example.com",
     "accepted_currencies": ["BSV", "USDC", "ETH", "SOL"]
   }
+}
+```
+
+## Domain Ownership Verification (Required)
+
+To register a `$address`, issuers MUST prove domain control and bind it to the issuer address:
+
+**1) DNS TXT**
+Add a TXT record at `_path402.<domain>` containing:
+
+```
+path402=<handle>
+issuer_address=<bsv_address>
+```
+
+**2) HTTP Well-Known**
+Host `https://<domain>/.well-known/path402.json`:
+
+```json
+{
+  "issuer": "@handle",
+  "issuer_address": "1ABC...",
+  "domain_message": "path402-domain:example.com",
+  "domain_signature_tx_id": "<bsv_txid>",
+  "domain_signature": "<base64_signature>"
+}
+```
+
+**3) On-Chain Signature**
+`domain_signature_tx_id` MUST point to a BSV transaction containing an inscription with JSON:
+
+```json
+{
+  "p": "$402",
+  "op": "domain-verify",
+  "domain": "example.com",
+  "issuer_address": "1ABC...",
+  "message": "path402-domain:example.com",
+  "signature": "<base64_signature>"
+}
+```
+
+The facilitator verifies the signature on-chain and matches it to `issuer_address`.
+
+See also: **[DOMAIN_VERIFICATION.md](DOMAIN_VERIFICATION.md)** for the full checklist and endpoint reference.
+
+### Helper APIs and CLI
+
+**Generate payload**
+```
+POST /api/domain/verify-payload
+{
+  "domain": "example.com",
+  "issuer_address": "1ABC..."
+}
+```
+
+**Sign message (local)**
+```
+node scripts/domain-sign.ts --wif <WIF> --domain example.com
+```
+
+**Generate self-broadcast template (non-admin)**
+```
+POST /api/domain/verify-template
+{
+  "domain": "example.com",
+  "issuer_address": "1ABC...",
+  "handle": "@handle"
+}
+```
+
+**Broadcast inscription (admin)**
+```
+POST /api/domain/verify-inscribe
+Headers: x-admin-key: <ADMIN_API_KEY>
+Body:
+{
+  "domain": "example.com",
+  "issuer_address": "1ABC...",
+  "signature": "<base64>",
+  "message": "path402-domain:example.com"
+}
+```
+
+**Verify end-to-end**
+```
+POST /api/domain/verify
+{
+  "domain": "example.com",
+  "handle": "@handle",
+  "issuer_address": "1ABC..."
 }
 ```
 
@@ -256,6 +363,23 @@ $402 uses a core + extensions architecture:
   "version": "2.0",
   "path": "$myblog.com",
   "pricing": { "model": "fixed", "price": 500 }
+}
+```
+
+### $402-usage (Metered Access)
+
+Adds usage-based pricing for **time-windowed access**, independent of token price.
+
+```json
+{
+  "usage_pricing": {
+    "enabled": true,
+    "unit_ms": 1000,
+    "price_sats_per_unit": 100,
+    "prepay_ms": 60000,
+    "grace_ms": 2000,
+    "accepted_networks": ["bsv"]
+  }
 }
 ```
 

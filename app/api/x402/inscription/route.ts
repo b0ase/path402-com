@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createInscription } from '@/lib/x402';
+import { createInscription, getInscription } from '@/lib/x402';
 
 /**
  * GET /api/x402/inscription
@@ -23,24 +23,25 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  // TODO: Look up inscription in database
-  // For now, return mock data
+  const inscription = await getInscription(id);
+  if (!inscription) {
+    return NextResponse.json({ error: 'Inscription not found' }, { status: 404 });
+  }
+
+  let content: object = {};
+  try {
+    content = JSON.parse(inscription.inscription || '{}');
+  } catch {
+    content = {};
+  }
+
   return NextResponse.json({
-    inscription_id: id,
-    txId: `bsv_mock_${id}`,
+    inscription_id: inscription.id,
+    txId: inscription.txId,
     content_type: 'application/json',
-    content: {
-      type: 'x402_payment_proof',
-      version: '1.0.0',
-      origin: {
-        network: 'base',
-        txId: '0x...',
-      },
-      timestamp: new Date().toISOString(),
-      facilitator: 'path402.com',
-    },
-    explorer_url: `https://whatsonchain.com/tx/bsv_mock_${id}`,
-    created_at: new Date().toISOString(),
+    content,
+    explorer_url: `https://whatsonchain.com/tx/${inscription.txId}`,
+    created_at: inscription.timestamp,
   });
 }
 

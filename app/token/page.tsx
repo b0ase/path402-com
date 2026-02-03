@@ -261,7 +261,7 @@ export default function TokenPage() {
         },
       });
       setHolding(await holdingRes.json());
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: 'Staking failed' });
     } finally {
       setLoading(false);
@@ -299,7 +299,7 @@ export default function TokenPage() {
         },
       });
       setHolding(await holdingRes.json());
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: 'Unstaking failed' });
     } finally {
       setLoading(false);
@@ -334,7 +334,7 @@ export default function TokenPage() {
       setMessage({ type: 'success', text: `Withdrawal of ${amount.toLocaleString()} tokens initiated!` });
       setWithdrawAmount('');
       setWithdrawAddress('');
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: 'Withdrawal failed' });
     } finally {
       setLoading(false);
@@ -364,7 +364,7 @@ export default function TokenPage() {
         },
       });
       setHolding(await holdingRes.json());
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: 'Claim failed' });
     } finally {
       setLoading(false);

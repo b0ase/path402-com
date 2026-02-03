@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import type { WalletState, WalletProvider as WalletProviderType, YoursWallet } from '@/lib/types';
+import type { WalletState, YoursWallet } from '@/lib/types';
 
 interface WalletContextType {
   wallet: WalletState;

@@ -23,6 +23,8 @@
 | **[CODEBASE_MAP.md](CODEBASE_MAP.md)** | Complete codebase architecture, file purposes, API reference |
 | **[PRD-TOKEN-CUSTODY-STAKING.md](PRD-TOKEN-CUSTODY-STAKING.md)** | Product requirements for the custody and staking system |
 | **[INDEXER.md](INDEXER.md)** | Self-hosted BSV-20 token indexer (polls treasury, updates balances) |
+| **[RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md)** | Production deploy + npm publish checklist |
+| **[DEPLOY_PLAYBOOK.md](DEPLOY_PLAYBOOK.md)** | Staging + production deploy playbook with environment checks |
 
 ## For Bots & Speculators
 
@@ -38,6 +40,7 @@
 | **[PROTOCOL_VISION.md](PROTOCOL_VISION.md)** | Canonical $402 protocol (10 steps) | ✓ Source of truth |
 | **[TREE_MODEL.md](TREE_MODEL.md)** | The 6 rules: paths, revenue flow, non-dilution, roots as index funds | ✓ New |
 | **[$402-STANDARD.md]($402-STANDARD.md)** | HTTP 402 implementation spec v2.0.0 | ✓ Aligned |
+| **[DOMAIN_VERIFICATION.md](DOMAIN_VERIFICATION.md)** | DNS + well-known + on-chain signature proof for issuers | ✓ New |
 | **[PRICING_CURVES.md](PRICING_CURVES.md)** | Library of pricing curves for token issuers | ✓ Aligned |
 | **[ARCHITECTURE.md](ARCHITECTURE.md)** | Five-layer architecture | ✓ Aligned |
 | **[PATHD_ARCHITECTURE.md](PATHD_ARCHITECTURE.md)** | $pathd daemon, PoW20, visibility/accountability | ✓ Updated |

@@ -3,7 +3,29 @@
  */
 
 export type PricingModel = 'sqrt_decay' | 'fixed' | 'linear_decay';
+export type AccessMode = 'token' | 'usage' | 'hybrid' | 'public';
 export type TxType = 'acquire' | 'transfer' | 'serve' | 'stake' | 'unstake';
+
+export interface UsagePricing {
+  enabled?: boolean;
+  unit_ms: number;
+  price_sats_per_unit: number;
+  prepay_ms?: number;
+  grace_ms?: number;
+  min_payment_sats?: number;
+  max_payment_sats?: number;
+  accepted_networks?: string[];
+  payment_address?: string;
+}
+
+export interface DividendPolicy {
+  enabled?: boolean;
+  stake_required?: boolean;
+  kyc_required?: boolean;
+  issuer_share_bps?: number;
+  stakers_share_bps?: number;
+  facilitator_share_bps?: number;
+}
 
 export interface Token {
   id: string;
@@ -33,6 +55,14 @@ export interface Token {
   // Revenue split (basis points)
   issuer_share_bps: number;
   facilitator_share_bps: number;
+
+  // Access + usage
+  access_mode?: AccessMode;
+  parent_address?: string;
+  parent_share_bps?: number;
+  inscription_id?: string;
+  usage_pricing?: UsagePricing;
+  dividend_policy?: DividendPolicy;
 
   // Status
   is_active: boolean;
@@ -103,6 +133,32 @@ export interface TokenServe {
   served_at: string;
 }
 
+export interface TokenUsageSession {
+  id: string;
+  token_address: string;
+  viewer_handle?: string;
+  viewer_address?: string;
+  expires_at: string;
+  last_payment_tx_id?: string;
+  total_paid_sats: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TokenUsagePayment {
+  id: string;
+  token_address: string;
+  viewer_handle?: string;
+  viewer_address?: string;
+  payment_tx_id: string;
+  paid_sats: number;
+  unit_ms: number;
+  price_sats_per_unit: number;
+  grant_ms: number;
+  expires_at: string;
+  created_at: string;
+}
+
 // API Request/Response types
 
 export interface RegisterTokenRequest {
@@ -116,6 +172,12 @@ export interface RegisterTokenRequest {
   base_price_sats?: number;
   max_supply?: number;
   issuer_share_bps?: number;
+  issuer_address?: string;
+  access_mode?: AccessMode;
+  parent_address?: string;
+  parent_share_bps?: number;
+  usage_pricing?: UsagePricing;
+  dividend_policy?: DividendPolicy;
 }
 
 export interface AcquireTokenRequest {

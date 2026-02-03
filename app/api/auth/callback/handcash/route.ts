@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getInstance, Connect } from '@handcash/sdk';
+import type { Client as HandcashClient } from '@handcash/sdk/dist/client/client/types.js';
 import { getOrCreateHolder } from '@/lib/store';
 
 export async function GET(request: NextRequest) {
@@ -37,7 +38,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Get account client for this user
-    const client = sdk.getAccountClient(authToken);
+    const client = sdk.getAccountClient(authToken) as HandcashClient;
 
     // Log authToken format for debugging (first/last chars only for security)
     console.log('AuthToken format:', {
@@ -48,10 +49,9 @@ export async function GET(request: NextRequest) {
     });
 
     // Fetch user profile using SDK
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let result;
     try {
-      result = await Connect.getCurrentUserProfile({ client: client as any });
+      result = await Connect.getCurrentUserProfile({ client });
       console.log('HandCash profile result:', JSON.stringify(result, null, 2));
     } catch (profileError: unknown) {
       const errMsg = profileError instanceof Error ? profileError.message : String(profileError);

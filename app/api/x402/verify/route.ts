@@ -21,6 +21,8 @@ export async function POST(request: NextRequest) {
     const body: VerifyRequest & { inscribe?: boolean } = await request.json();
 
     const { x402Version, scheme, network, payload, inscribe = true } = body;
+    const txId = body.txId || payload?.txId || payload?.authorization?.txId;
+    const asset = body.asset || payload?.authorization?.asset || 'USDC';
 
     // Validate request
     if (x402Version !== 1) {
@@ -53,7 +55,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check nonce hasn't been used (replay protection)
-    if (!checkNonce(network, payload.authorization.nonce)) {
+    if (!await checkNonce(network, payload.authorization.nonce)) {
       return NextResponse.json({
         valid: false,
         invalidReason: 'Nonce already used',
@@ -61,6 +63,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify the payment on the origin chain
+    // Pass through optional txId for on-chain verification
+    if (txId) {
+      payload.txId = txId;
+    }
+
     const verification = await verifyPayment(network, payload);
 
     if (!verification.valid) {
@@ -75,14 +82,22 @@ export async function POST(request: NextRequest) {
     let inscriptionTxId: string | undefined;
 
     if (inscribe) {
+      const originTxId = verification.txId || txId;
+      if (!originTxId) {
+        return NextResponse.json({
+          valid: false,
+          invalidReason: 'Missing origin txId for inscription',
+        }, { status: 400 });
+      }
+
       const inscription = await createInscription(
         network,
-        `pending-${Date.now()}`, // In production: actual origin tx ID
+        originTxId,
         {
           from: payload.authorization.from,
           to: payload.authorization.to,
           amount: payload.authorization.value,
-          asset: 'USDC', // In production: derive from payload
+          asset,
         },
         payload.signature
       );
@@ -95,6 +110,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       valid: true,
+      txId: verification.txId,
+      amount: verification.amount,
+      sender: verification.sender,
+      recipient: verification.recipient,
       inscriptionId,
       inscriptionTxId,
       fee: {

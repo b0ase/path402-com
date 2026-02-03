@@ -6,11 +6,13 @@
 
 ## Overview
 
-This document specifies how content creators inscribe leaves (content) onto the $402 tree. Each inscription creates a tradeable bearer share representing access to that content.
+This document specifies how creators inscribe **access tokens** (leaves) onto the $402 tree. Each inscription creates a tradeable bearer share representing **access rights**, not necessarily the content itself. The content can be a live stream, a dynamic API, or an off-chain feed that changes over time.
+
+**Pointer-first principle:** inscriptions are **pointers + policy**, not content blobs. Embedding data on-chain is optional and only used when you explicitly want immutable content.
 
 ## Inscription Format
 
-### Minimal Inscription
+### Minimal Inscription (Pointer-Only, Recommended)
 
 ```json
 {
@@ -18,8 +20,9 @@ This document specifies how content creators inscribe leaves (content) onto the 
   "op": "inscribe",
   "path": "$example.com/$blog/$my-article",
   "parent": "$example.com/$blog",
-  "content_type": "text/markdown",
-  "content": "# My Article\n\nThe actual content here...",
+  "class": "access",
+  "access_mode": "hybrid",
+  "access_url": "https://example.com/blog/my-article",
   "pricing": {
     "model": "sqrt_decay",
     "base": 1000
@@ -27,7 +30,7 @@ This document specifies how content creators inscribe leaves (content) onto the 
 }
 ```
 
-### Full Inscription
+### Full Inscription (Pointer-Only + Metadata)
 
 ```json
 {
@@ -38,13 +41,8 @@ This document specifies how content creators inscribe leaves (content) onto the 
   "parent": "$example.com/$blog",
   "parent_share_bps": 5000,
 
-  "content": {
-    "type": "text/markdown",
-    "encoding": "utf-8",
-    "data": "# My Article\n\nThe actual content here...",
-    "hash": "sha256:abc123...",
-    "size_bytes": 4500
-  },
+  "class": "access",
+  "access_url": "https://example.com/blog/my-article",
 
   "metadata": {
     "title": "My Article Title",
@@ -60,6 +58,15 @@ This document specifies how content creators inscribe leaves (content) onto the 
     "base": 1000,
     "floor": 10,
     "ceiling": 100000
+  },
+
+  "usage_pricing": {
+    "enabled": true,
+    "unit_ms": 1000,
+    "price_sats_per_unit": 100,
+    "prepay_ms": 60000,
+    "grace_ms": 2000,
+    "min_payment_sats": 100
   },
 
   "supply": {
@@ -86,10 +93,22 @@ This document specifies how content creators inscribe leaves (content) onto the 
 | `op` | string | Operation: `"inscribe"` |
 | `path` | string | Full $path including domain |
 | `parent` | string | Parent $path (receives 50%) |
-| `content` | object/string | The actual content |
+| `class` | string | `"access"` for pointer-only tokens (default) |
 | `pricing` | object | Pricing curve definition |
 
-### Content Object
+### Access URL (Pointer-Only)
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `access_url` | string | URL where the content is served |
+
+### Access Mode (Optional)
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `access_mode` | string | `token`, `usage`, `hybrid`, or `public` |
+
+### On-Chain Content Object (Optional, $402-containers)
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -120,7 +139,9 @@ This document specifies how content creators inscribe leaves (content) onto the 
 | `controversy` | number | 0-100 controversy score | Viral potential |
 | `exclusivity` | string | `public`, `limited`, `exclusive` | Scarcity signal |
 
-## Content Types
+## Content Types (Optional)
+
+If you are using **pointer-only access tokens** (`class: "access"` + `access_url`), you can ignore this section. These content objects are only required when you choose the `$402-containers` extension to embed data on-chain.
 
 ### Text Content
 
@@ -171,6 +192,32 @@ This document specifies how content creators inscribe leaves (content) onto the 
   }
 }
 ```
+
+## Usage Pricing (Streaming / Metered Access)
+
+Usage pricing is **separate** from the token price. Tokens confer access rights; usage pricing charges for **consumption over time**. This enables both ultra-high-frequency services (e.g. electricity metering) and long-window services (e.g. hourly live streams).
+
+```json
+{
+  "usage_pricing": {
+    "enabled": true,
+    "unit_ms": 10,
+    "price_sats_per_unit": 1,
+    "prepay_ms": 5000,
+    "grace_ms": 500,
+    "min_payment_sats": 10,
+    "max_payment_sats": 1000000,
+    "accepted_networks": ["bsv"]
+  }
+}
+```
+
+**Notes:**
+- `unit_ms` defines the billing resolution (10ms, 1s, 1h, etc.)
+- `price_sats_per_unit` defines the price per unit
+- `prepay_ms` caps how far ahead a client can prepay
+- `grace_ms` allows a short delay before cutting access
+- This does **not** mint/burn tokens by default
 
 ## Pricing Strategies
 

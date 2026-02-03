@@ -240,7 +240,6 @@ export async function getTokenStats() {
     const allHolders = holders || [];
 
     // Separate treasury holder from regular holders
-    const treasuryHolder = allHolders.find(h => h.address === 'operator');
     const regularHolders = allHolders.filter(h => h.address !== 'operator');
 
     // Calculate from holder balances (single source of truth)
@@ -395,6 +394,31 @@ export async function confirmPurchase(purchaseId: string, txId: string): Promise
   }
 
   return true;
+}
+
+export async function getPurchaseById(purchaseId: string): Promise<TokenPurchase | null> {
+  if (isDbConnected() && supabase) {
+    const { data } = await supabase
+      .from('path402_purchases')
+      .select('*')
+      .eq('id', purchaseId)
+      .single();
+
+    if (!data) return null;
+
+    return {
+      id: data.id,
+      holderId: data.holder_id,
+      amount: data.amount,
+      priceSats: data.price_sats,
+      totalPaidSats: data.total_paid_sats,
+      status: data.status,
+      txId: data.tx_id,
+      createdAt: data.created_at,
+    };
+  }
+
+  return memoryStore.purchases.find((p) => p.id === purchaseId) || null;
 }
 
 export async function processPurchaseImmediate(

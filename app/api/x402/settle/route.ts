@@ -7,6 +7,7 @@ import {
   type SettleRequest,
   type SupportedNetwork,
 } from '@/lib/x402';
+import { sendBsvPayment } from '@/lib/bsv-send';
 
 /**
  * POST /api/x402/settle
@@ -29,6 +30,7 @@ export async function POST(request: NextRequest) {
       paymentRequirements,
       settleOn = 'bsv', // Default to BSV (cheapest)
     } = body;
+    const txId = body.txId || payload?.txId || payload?.authorization?.txId;
 
     // Validate request
     if (x402Version !== 1) {
@@ -61,7 +63,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check nonce
-    if (!checkNonce(network, payload.authorization.nonce)) {
+    if (!await checkNonce(network, payload.authorization.nonce)) {
       return NextResponse.json({
         success: false,
         error: 'Nonce already used',
@@ -69,6 +71,10 @@ export async function POST(request: NextRequest) {
     }
 
     // First, verify the payment
+    if (txId) {
+      payload.txId = txId;
+    }
+
     const verification = await verifyPayment(network, payload);
 
     if (!verification.valid) {
@@ -84,17 +90,45 @@ export async function POST(request: NextRequest) {
     const inscriptionFee = FEES.inscription;
     const totalFee = settlementFee + inscriptionFee;
 
-    // In production: Actually settle the payment
-    // - If settleOn === 'bsv': Create BSV transaction
-    // - If settleOn === origin network: Submit to that chain
+    let settlementTxId = verification.txId || txId || generateMockTxId();
 
-    // For now: Simulate settlement
-    const mockSettlementTxId = generateMockTxId();
+    if (settleOn === 'bsv') {
+      const treasuryKey = process.env.TREASURY_PRIVATE_KEY || process.env.X402_TREASURY_PRIVATE_KEY;
+      if (!treasuryKey) {
+        return NextResponse.json({
+          success: false,
+          error: 'Treasury not configured',
+        }, { status: 500 });
+      }
+
+      const amountSats = parseInt(paymentRequirements?.amount || payload.authorization.value);
+      const recipient = paymentRequirements?.recipient || payload.authorization.to;
+
+      if (!recipient || !amountSats) {
+        return NextResponse.json({
+          success: false,
+          error: 'Missing recipient or amount for settlement',
+        }, { status: 400 });
+      }
+
+      const payout = await sendBsvPayment({
+        toAddress: recipient,
+        amountSats,
+        privateKeyWIF: treasuryKey,
+      });
+
+      settlementTxId = payout.txId;
+    } else {
+      return NextResponse.json({
+        success: false,
+        error: `Settlement chain not implemented: ${settleOn}`,
+      }, { status: 501 });
+    }
 
     // Inscribe the settlement proof on BSV
     const inscription = await createInscription(
       network,
-      mockSettlementTxId,
+      settlementTxId,
       {
         from: payload.authorization.from,
         to: payload.authorization.to,
@@ -103,7 +137,7 @@ export async function POST(request: NextRequest) {
       },
       payload.signature,
       settleOn,
-      mockSettlementTxId
+      settlementTxId
     );
 
     console.log(`[x402/settle] Payment settled`);
@@ -114,7 +148,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      transaction: mockSettlementTxId,
+      transaction: settlementTxId,
       network: settleOn,
       inscriptionId: inscription.inscriptionId,
       inscriptionTxId: inscription.txId,

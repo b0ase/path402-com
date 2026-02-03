@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { poolAmount, sourceTxId } = body;
+    const { poolAmount } = body;
 
     if (!poolAmount || poolAmount <= 0) {
       return NextResponse.json({ error: 'Invalid pool amount' }, { status: 400 });
