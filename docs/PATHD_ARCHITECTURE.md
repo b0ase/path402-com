@@ -113,6 +113,8 @@ Where solution = $402:ADDRESS:BLOCK_HEADER:NONCE
 
 ### Why PoW for Indexers?
 
+**The purpose of PoW is NOT just to reward work. It's to force operators into the open.**
+
 The same reason Bitcoin uses PoW for miners:
 
 1. **Computational cost** → Forces capital investment
@@ -123,6 +125,82 @@ The same reason Bitcoin uses PoW for miners:
 6. **Regulatory visibility** → Compliance pressure
 
 This is the "Coinbase effect": Coinbase is a giant indexer. It's regulated BECAUSE it's large. PoW20 creates many competing Coinbases.
+
+### Data Vendors Are NOT Neutral
+
+**Critical insight**: BSV the blockchain is neutral. But data vendors (indexers, nodes) are NOT neutral. They have agendas. They have biases.
+
+```
+Examples of biased nodes:
+  → Christian node pushing Christian content
+  → Muslim node pushing Islamic content
+  → Political node pushing propaganda
+  → Corporate node pushing sponsored content
+  → Government node with censorship agenda
+```
+
+**This is not a problem to solve. It's a feature to expose.**
+
+If a $pathd node gets really big, we want to know:
+- **WHO** is running it
+- **WHAT** their agenda is
+- **HOW** they're curating content
+
+PoW forces them into visibility. Big nodes can't hide. Big nodes must identify themselves. Big nodes become accountable.
+
+### The Separation Principle
+
+We don't want one giant "neutral" node. We want many identified nodes:
+
+```
+$pathd-christianity.org  → Christian perspective (identified)
+$pathd-islam.net         → Islamic perspective (identified)
+$pathd-secular.com       → Secular perspective (identified)
+$pathd-china.cn          → Chinese state perspective (identified)
+```
+
+Users can:
+1. Query multiple nodes
+2. Compare results
+3. Understand biases
+4. Make informed choices
+
+**The $402 protocol enforces economic truth (who owns what tokens). Nodes choose what content to serve. Users choose which nodes to trust.**
+
+### The Honesty Incentive
+
+The more a node follows $402 protocol correctly:
+1. **Bigger** → More tokens, more serving capacity
+2. **More visible** → Must identify themselves
+3. **More accountable** → Reputation at stake
+4. **More profitable** → Correct indexing = more revenue
+
+Nodes that lie about token ownership lose trust and revenue. Nodes that serve spam lose users. Economic incentives align with honest behavior.
+
+### PoW vs AI Verification (Experimental)
+
+**Caution**: This section describes an experimental concept, NOT a core protocol feature.
+
+Traditional PoW is "hard to do, easy to verify":
+```
+Mining:     Find nonce where SHA256(block+nonce) < target
+Verify:     Just compute the hash once (trivial)
+```
+
+AI quality assessment is the opposite - "easy to do, hard to verify":
+```
+Assessment: AI scans inscription, rates quality
+Verify:     How do you verify an AI's judgment?
+            Different AIs give different answers.
+            No cryptographic proof of quality.
+```
+
+**Possible future exploration**:
+- AI agents could earn PoW20 for quality curation
+- Scanning inscriptions for: new ideas, coherent signals, spam detection
+- But this is NOT trustlessly verifiable like hash puzzles
+
+**For now, PoW20 rewards computational work (indexing, serving), not quality judgment.**
 
 ## BRC-100 Interface
 

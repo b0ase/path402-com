@@ -693,8 +693,17 @@ Where solution = TICK:ADDRESS:BLOCK_HEADER:NONCE`}
           </pre>
 
           <p className="text-zinc-400 leading-relaxed mb-6">
-            <strong className="text-zinc-900 dark:text-white">Why PoW?</strong> Scale creates compliance. Large indexers can't hide from regulators.
-            This is the same dynamic that makes Bitcoin miners visible and accountable.
+            <strong className="text-zinc-900 dark:text-white">Why PoW?</strong> Not just to reward work. <em className="text-zinc-900 dark:text-white">To force operators into the open.</em>
+          </p>
+
+          <p className="text-zinc-400 leading-relaxed mb-6">
+            BSV is neutral. But data vendors are <strong className="text-zinc-900 dark:text-white">NOT</strong> neutral. They have agendas. They have biases.
+            A Christian node pushes Christian content. A Chinese node follows Chinese censorship. A corporate node promotes sponsors.
+          </p>
+
+          <p className="text-zinc-400 leading-relaxed mb-6">
+            <strong className="text-zinc-900 dark:text-white">This is not a bug—it's a feature we expose.</strong> PoW forces scale. Scale forces visibility.
+            Visibility forces accountability. Big nodes can't hide. Big nodes must identify themselves. Users can compare nodes and choose who to trust.
           </p>
 
           <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">Token as Perpetual Access</h4>

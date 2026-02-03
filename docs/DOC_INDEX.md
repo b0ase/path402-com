@@ -29,10 +29,11 @@
 | Document | Description | Alignment Status |
 |----------|-------------|------------------|
 | **[PROTOCOL_VISION.md](PROTOCOL_VISION.md)** | Canonical $402 protocol (9 steps) | ✓ Source of truth |
+| **[TREE_MODEL.md](TREE_MODEL.md)** | The 6 rules: paths, revenue flow, non-dilution, roots as index funds | ✓ New |
 | **[$402-STANDARD.md]($402-STANDARD.md)** | HTTP 402 implementation spec v2.0.0 | ✓ Aligned |
 | **[PRICING_CURVES.md](PRICING_CURVES.md)** | Library of pricing curves for token issuers | ✓ Aligned |
 | **[ARCHITECTURE.md](ARCHITECTURE.md)** | Five-layer architecture | ✓ Aligned |
-| **[PATHD_ARCHITECTURE.md](PATHD_ARCHITECTURE.md)** | $pathd daemon specification, PoW20, BRC-100 | ✓ New |
+| **[PATHD_ARCHITECTURE.md](PATHD_ARCHITECTURE.md)** | $pathd daemon, PoW20, visibility/accountability | ✓ Updated |
 
 ## Business
 
