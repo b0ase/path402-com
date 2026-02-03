@@ -11,13 +11,13 @@ const mono = JetBrains_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://path402.com'),
-  title: "$402 — The Path Token Standard",
+  title: "$402 — The Path 402 Token Standard",
   description: "Turn any URL into a priced, tokenised market. The protocol for AI-native micropayments on BSV.",
   keywords: ["$402", "path token", "BSV", "micropayments", "AI payments", "tokenization", "HTTP 402"],
   authors: [{ name: "b0ase", url: "https://x.com/b0ase" }],
   creator: "b0ase",
   openGraph: {
-    title: "$402 — The Path Token Standard",
+    title: "$402 — The Path 402 Token Standard",
     description: "Turn any URL into a priced, tokenised market. The protocol for AI-native micropayments on BSV.",
     url: "https://path402.com",
     siteName: "$402 Protocol",
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "$402 — The Path Token Standard",
+    title: "$402 — The Path 402 Token Standard",
     description: "Turn any URL into a priced, tokenised market.",
     creator: "@b0ase",
     site: "@b0ase",
@@ -58,7 +58,7 @@ export default function RootLayout({
                   <div>
                     <h3 className="font-bold mb-4 text-zinc-900 dark:text-white text-sm uppercase tracking-widest">$402</h3>
                     <p className="text-zinc-500 text-sm">
-                      The Path Token Standard for tokenised content and AI-native micropayments.
+                      The Path 402 Token Standard for tokenised content and AI-native micropayments.
                     </p>
                   </div>
                   <div>

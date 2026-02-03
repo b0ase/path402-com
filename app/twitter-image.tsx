@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
 
-export const alt = '$402 — The Path Token Standard';
+export const alt = '$402 — The Path 402 Token Standard';
 export const size = {
   width: 1200,
   height: 630,
@@ -85,7 +85,7 @@ export default async function Image() {
               display: 'flex',
             }}
           >
-            The Path Token Standard
+            The Path 402 Token Standard
           </div>
 
           {/* Subtitle */}

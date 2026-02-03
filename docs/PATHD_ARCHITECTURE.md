@@ -141,6 +141,53 @@ Examples of biased nodes:
 
 **This is not a problem to solve. It's a feature to expose.**
 
+### Curation Through Discovery (BitTorrent Model)
+
+Like a BitTorrent node, if you're running $pathd you're making choices about what to serve. Curation happens at the **discovery** stage through selective purchasing:
+
+```
+Running $pathd:
+  → Run AI agents to scan new inscriptions
+  → Buy tokens to access content samples
+  → Evaluate: Is this valuable? Does it serve my niche?
+
+Decision tree:
+  "This has value" → Buy more, serve it to users
+  "Low quality"    → Ignore, don't index
+  "Against my niche" → Suppress by not serving
+  "Competitor to my agenda" → Optionally buy to suppress
+```
+
+**The network self-organizes into specialized niches:**
+
+```
+$pathd-techblog.com
+  → Agent scans for: programming, AI, startups
+  → Buys: Technical content, research papers
+  → Ignores: Political content, entertainment
+
+$pathd-news.org
+  → Agent scans for: current events, journalism
+  → Buys: Breaking news, investigative reports
+  → Ignores: Old content, spam
+
+$pathd-conservative.net
+  → Agent scans for: political commentary
+  → Buys: Right-leaning analysis
+  → Ignores: Left-leaning content (or buys to suppress)
+```
+
+**Curation is NOT a separate layer. It's built into the discovery economics:**
+
+| Action | Cost | Effect |
+|--------|------|--------|
+| Scan sample | Free (10% preview) | Evaluate quality |
+| Buy to serve | Token price | Gain serving rights |
+| Buy to suppress | Token price | Remove from your index |
+| Ignore | Nothing | Content served by others |
+
+The market reveals what content is valuable through price discovery. Nodes that serve high-demand content earn more. Nodes that serve spam lose users and revenue.
+
 If a $pathd node gets really big, we want to know:
 - **WHO** is running it
 - **WHAT** their agenda is
