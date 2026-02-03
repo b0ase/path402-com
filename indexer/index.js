@@ -7,7 +7,7 @@ const { createClient } = require('@supabase/supabase-js');
 // Configuration
 const CONFIG = {
   treasuryAddress: '1BrbnQon4uZPSxNwt19ozwtgHPDbgvaeD1',
-  tokenTick: '$PATH402',
+  tokenTick: 'PATH402.com',  // Must match on-chain BSV-20 ticker exactly
   pollIntervalMs: 30000, // 30 seconds
   wocApi: 'https://api.whatsonchain.com/v1/bsv/main',
 };
