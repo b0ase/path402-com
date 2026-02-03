@@ -52,7 +52,7 @@ function WhitepaperContent() {
               className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-[10px] uppercase tracking-widest text-zinc-500 mb-8"
               variants={fadeIn}
             >
-              WHITEPAPER_V2.1.0
+              WHITEPAPER_V2.2.0
             </motion.div>
 
             <motion.h1
@@ -814,6 +814,170 @@ Application: $402 Protocol   ← Paths, tokens, dividends`}
         </div>
       </section>
 
+      {/* Step 10: The Content Market */}
+      <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-sm font-bold text-zinc-900 dark:text-white mb-2 uppercase tracking-wide">Step 10</h2>
+          <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-6">The Content Market: Narratives as Assets</h3>
+
+          <p className="text-zinc-400 leading-relaxed mb-6">
+            Content isn't just consumed. It's <strong className="text-zinc-900 dark:text-white">traded</strong>. Each inscription is a speculative asset
+            in a marketplace of ideas. Bots and humans compete to control narratives through economic means.
+          </p>
+
+          <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">The Narrative Game</h4>
+          <p className="text-zinc-400 leading-relaxed mb-4">
+            <strong className="text-zinc-900 dark:text-white">Sellers spread narrative. Buyers can suppress it.</strong>
+          </p>
+
+          <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
+{`Christians SELL Christian content to Muslims
+  → Muslims buy → Muslims read Christian perspective
+  → The seller wins by DISTRIBUTING widely
+
+Threatened party sees damaging content
+  → Races to buy 51%+ of tokens
+  → If successful → Can EMBARGO the content
+  → Suppression is expensive and VISIBLE`}
+          </pre>
+
+          <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">Token Control Thresholds</h4>
+          <div className="overflow-x-auto mb-6">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-zinc-800">
+                  <th className="text-left py-3 text-zinc-500 font-bold uppercase tracking-widest text-[10px]">Stake</th>
+                  <th className="text-left py-3 text-zinc-500 font-bold uppercase tracking-widest text-[10px]">Power</th>
+                </tr>
+              </thead>
+              <tbody className="text-zinc-400">
+                <tr className="border-b border-zinc-800">
+                  <td className="py-3">&lt;50%</td>
+                  <td className="py-3">Access only — can read, cannot control</td>
+                </tr>
+                <tr className="border-b border-zinc-800">
+                  <td className="py-3 text-zinc-900 dark:text-white font-bold">51%</td>
+                  <td className="py-3">Majority — can vote to embargo, control serving</td>
+                </tr>
+                <tr className="border-b border-zinc-800">
+                  <td className="py-3 text-zinc-900 dark:text-white font-bold">67%</td>
+                  <td className="py-3">Supermajority — can change pricing, access rules</td>
+                </tr>
+                <tr>
+                  <td className="py-3 text-zinc-900 dark:text-white font-bold">100%</td>
+                  <td className="py-3">Complete control — name any price, or never serve</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">The Hostile Takeover Race</h4>
+          <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
+{`Damaging content inscribed at t=0
+
+t=1min:  Threatened party detects it
+t=2min:  Starts buying aggressively
+t=3min:  Price rising fast (demand signal)
+t=4min:  Counter-buyers notice the race
+t=5min:  Preservers jump in to block takeover
+t=10min: Who reaches 51% first?
+
+SUPPRESSOR WINS → Content embargoed
+PRESERVERS WIN  → Content spreads widely`}
+          </pre>
+
+          <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">Transparent Censorship</h4>
+          <p className="text-zinc-400 leading-relaxed mb-4">
+            Unlike traditional censorship (invisible), $402 censorship is <strong className="text-zinc-900 dark:text-white">on-chain and visible</strong>:
+          </p>
+
+          <div className="overflow-x-auto mb-6">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-zinc-800">
+                  <th className="text-left py-3 text-zinc-500 font-bold uppercase tracking-widest text-[10px]">Traditional</th>
+                  <th className="text-left py-3 text-zinc-500 font-bold uppercase tracking-widest text-[10px]">$402</th>
+                </tr>
+              </thead>
+              <tbody className="text-zinc-400">
+                <tr className="border-b border-zinc-800">
+                  <td className="py-3">Content disappears</td>
+                  <td className="py-3 text-green-400">Inscription permanent, serving blocked</td>
+                </tr>
+                <tr className="border-b border-zinc-800">
+                  <td className="py-3">Unknown who censored</td>
+                  <td className="py-3 text-green-400">Buyer on-chain record</td>
+                </tr>
+                <tr className="border-b border-zinc-800">
+                  <td className="py-3">No recourse</td>
+                  <td className="py-3 text-green-400">Counter-buyers can race</td>
+                </tr>
+                <tr>
+                  <td className="py-3">Free to censor</td>
+                  <td className="py-3 text-green-400">Suppression is expensive</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">The Economics of Suppression</h4>
+          <p className="text-zinc-400 leading-relaxed mb-4">
+            Suppressing content is <strong className="text-zinc-900 dark:text-white">expensive</strong> — and the creator gets paid:
+          </p>
+
+          <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
+{`To acquire 51% of 1,000,000 tokens (sqrt_decay):
+  First 100k tokens:  ~95,000,000 sats
+  Next 200k tokens:   ~160,000,000 sats
+  Next 210k tokens:   ~136,000,000 sats
+  ─────────────────────────────────────
+  Total: ~391,000,000 sats (~$40,000)
+
+The creator receives payment for every token sold.
+Suppression FUNDS the person being silenced.`}
+          </pre>
+
+          <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">Bots as First Movers</h4>
+          <p className="text-zinc-400 leading-relaxed mb-4">
+            Bots dominate the early market because they're faster:
+          </p>
+
+          <div className="overflow-x-auto mb-6">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-zinc-800">
+                  <th className="text-left py-3 text-zinc-500 font-bold uppercase tracking-widest text-[10px]">Human</th>
+                  <th className="text-left py-3 text-zinc-500 font-bold uppercase tracking-widest text-[10px]">Bot</th>
+                </tr>
+              </thead>
+              <tbody className="text-zinc-400">
+                <tr className="border-b border-zinc-800">
+                  <td className="py-3">Reads one article</td>
+                  <td className="py-3 text-green-400">Scans thousands/second</td>
+                </tr>
+                <tr className="border-b border-zinc-800">
+                  <td className="py-3">Emotional decisions</td>
+                  <td className="py-3 text-green-400">Pure agenda optimization</td>
+                </tr>
+                <tr className="border-b border-zinc-800">
+                  <td className="py-3">Sleeps 8 hours</td>
+                  <td className="py-3 text-green-400">24/7 operation</td>
+                </tr>
+                <tr>
+                  <td className="py-3">Misses early pricing</td>
+                  <td className="py-3 text-green-400">Catches every mint</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p className="text-zinc-400 leading-relaxed">
+            <strong className="text-zinc-900 dark:text-white">The result:</strong> A speculative content market where economic demand
+            is the quality signal. Multiple agendas compete through capital. The agenda war becomes visible, economic, and honest.
+          </p>
+        </div>
+      </section>
+
       {/* Implementation */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
         <div className="max-w-4xl mx-auto">
@@ -938,7 +1102,7 @@ X-$402-Model: sqrt_decay
             </a>.
           </p>
           <p className="text-zinc-600 text-xs uppercase tracking-widest">
-            Version 2.1.0 · February 2026 · <a href="https://path402.com" className="text-blue-400 hover:text-blue-300 transition-colors">path402.com</a>
+            Version 2.2.0 · February 2026 · <a href="https://path402.com" className="text-blue-400 hover:text-blue-300 transition-colors">path402.com</a>
           </p>
         </div>
       </section>

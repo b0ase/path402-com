@@ -407,6 +407,66 @@ No separate classes. The path is open to everyone.`}
         </div>
       </section>
 
+      {/* The Content Market */}
+      <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={staggerContainer}
+          >
+            <motion.h2
+              className="text-[10px] font-bold text-zinc-500 mb-6 uppercase tracking-widest"
+              variants={fadeIn}
+            >
+              The Content Market
+            </motion.h2>
+            <motion.p
+              className="text-zinc-600 dark:text-zinc-400 mb-6 max-w-2xl"
+              variants={fadeIn}
+            >
+              Content isn't just consumed—it's <strong className="text-zinc-900 dark:text-white">traded</strong>.
+              Sellers spread narrative. Hostile buyers can suppress it. Control 51%+ of tokens to embargo content.
+            </motion.p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <motion.div
+                className="border border-zinc-200 dark:border-zinc-800 p-6 bg-zinc-50 dark:bg-zinc-950"
+                variants={scaleIn}
+              >
+                <div className="text-xs font-bold text-zinc-900 dark:text-white uppercase tracking-widest mb-2">Spread Narrative</div>
+                <p className="text-zinc-500 text-sm">SELL your content to opposing camps. They pay to become informed by YOUR worldview. Distribution = conversion.</p>
+              </motion.div>
+              <motion.div
+                className="border border-zinc-200 dark:border-zinc-800 p-6 bg-zinc-50 dark:bg-zinc-950"
+                variants={scaleIn}
+              >
+                <div className="text-xs font-bold text-zinc-900 dark:text-white uppercase tracking-widest mb-2">Suppress Threats</div>
+                <p className="text-zinc-500 text-sm">Race to BUY 51%+ of threatening content. Embargo it. But it's expensive—and the creator gets paid.</p>
+              </motion.div>
+            </div>
+            <motion.div
+              className="border border-zinc-200 dark:border-zinc-800 p-6 bg-zinc-50 dark:bg-zinc-950"
+              variants={fadeIn}
+            >
+              <div className="grid grid-cols-4 gap-4 text-center">
+                {[
+                  { stake: "<50%", power: "Access only" },
+                  { stake: "51%", power: "Can embargo" },
+                  { stake: "67%", power: "Change pricing" },
+                  { stake: "100%", power: "Full control" },
+                ].map((item, i) => (
+                  <div key={i}>
+                    <div className="text-lg font-bold text-zinc-900 dark:text-white">{item.stake}</div>
+                    <div className="text-[10px] text-zinc-500 uppercase tracking-widest">{item.power}</div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Agent Workflow */}
       <section className="py-16 px-6">
         <div className="max-w-4xl mx-auto">

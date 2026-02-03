@@ -9,10 +9,23 @@ This directory contains archived versions of the $402 Whitepaper.
 | **v1.0.0** | Feb 3, 2026 | Initial whitepaper - "Unilateral Token Contracts" |
 | **v2.0.0** | Feb 3, 2026 | Complete rewrite - 8-step model with flywheel |
 | **v2.1.0** | Feb 3, 2026 | Added Step 9: Network Incentives ($pathd, PoW20, BRC-100) |
+| **v2.2.0** | Feb 3, 2026 | Added Step 10: The Content Market (narratives, hostile takeovers, transparent censorship) |
 
 ## Changelog
 
-### v2.1.0 (Current)
+### v2.2.0 (Current)
+
+Added the speculative content market dynamics:
+
+- **Added**: Step 10 - The Content Market: Narratives as Assets
+- **Added**: Token control thresholds (51% embargo, 67% pricing, 100% full control)
+- **Added**: Hostile takeover race mechanics (suppressors vs preservers)
+- **Added**: Transparent censorship model (on-chain, visible, expensive)
+- **Added**: Narrative game explanation (sellers spread, buyers suppress)
+- **Added**: Economics of suppression (expensive, funds the creator)
+- **Updated**: Landing page with Content Market section
+
+### v2.1.0
 
 Added network layer and incentives:
 
