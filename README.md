@@ -20,6 +20,7 @@ The name combines:
 | **[BUSINESS_MODEL.md](docs/BUSINESS_MODEL.md)** | Revenue model and economics |
 | **[CODEBASE_MAP.md](docs/CODEBASE_MAP.md)** | Developer guide to the codebase |
 | **[PRD-TOKEN-CUSTODY-STAKING.md](docs/PRD-TOKEN-CUSTODY-STAKING.md)** | Staking system requirements |
+| **[INDEXER.md](docs/INDEXER.md)** | Self-hosted BSV-20 token indexer |
 
 ## Pages
 

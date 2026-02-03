@@ -5,6 +5,7 @@ import Link from "next/link";
 import { WalletProvider } from "@/components/WalletProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Navbar } from "@/components/Navbar";
+import { Sticky402Button } from "@/components/Sticky402Button";
 
 const mono = JetBrains_Mono({ subsets: ["latin"] });
 
@@ -48,6 +49,7 @@ export default function RootLayout({
           <WalletProvider>
             <Navbar />
             {children}
+            <Sticky402Button />
 
             {/* Footer */}
             <footer className="border-t border-zinc-200 dark:border-zinc-800 py-16 mt-20 bg-white dark:bg-black">

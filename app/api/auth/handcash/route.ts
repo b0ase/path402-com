@@ -26,6 +26,9 @@ export async function GET(request: NextRequest) {
     const callbackUrl = `${baseUrl}/api/auth/callback/handcash`;
     authUrl.searchParams.set('redirectUrl', callbackUrl);
 
+    // Request PAY permission for token purchases
+    authUrl.searchParams.set('permissions', 'PAY');
+
     return NextResponse.redirect(authUrl.toString());
   } catch (error) {
     console.error('HandCash auth error:', error);

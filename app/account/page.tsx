@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useWallet } from '@/components/WalletProvider';
+import { deriveWalletClientSide, decryptWifClientSide } from '@/lib/client-wallet';
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -20,6 +21,9 @@ const staggerContainer = {
 
 interface Holding {
   balance: number;
+  onChainBalance: number;
+  dbBalance: number;
+  ordinalsAddress: string | null;
   stakedBalance: number;
   availableBalance: number;
   pendingDividends: number;
@@ -37,6 +41,11 @@ interface DerivedAddress {
   tier: number;
 }
 
+interface ExportedWallet {
+  wif: string;
+  address: string;
+}
+
 export default function AccountPage() {
   const { wallet, disconnect } = useWallet();
   const [holding, setHolding] = useState<Holding | null>(null);
@@ -45,14 +54,48 @@ export default function AccountPage() {
   const [derivedAddress, setDerivedAddress] = useState<DerivedAddress | null>(null);
   const [deriving, setDeriving] = useState(false);
   const [deriveError, setDeriveError] = useState<string | null>(null);
+  const [newlyDerivedWif, setNewlyDerivedWif] = useState<string | null>(null); // WIF shown on first derivation
+  const [storedEncryptedWif, setStoredEncryptedWif] = useState<string | null>(null);
+  const [storedSalt, setStoredSalt] = useState<string | null>(null);
+  const [exporting, setExporting] = useState(false);
+  const [exportedWallet, setExportedWallet] = useState<ExportedWallet | null>(null);
+  const [exportError, setExportError] = useState<string | null>(null);
+  const [withdrawing, setWithdrawing] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState('');
+  const [withdrawResult, setWithdrawResult] = useState<{ txId: string; amount: number } | null>(null);
+  const [withdrawError, setWithdrawError] = useState<string | null>(null);
 
   useEffect(() => {
     if (wallet.connected) {
       fetchAccountData();
+      // Check if user already has a derived wallet
+      if (wallet.handle && wallet.provider === 'handcash') {
+        checkExistingWallet();
+      }
     } else {
       setLoading(false);
     }
   }, [wallet.connected, wallet.handle, wallet.address]);
+
+  const checkExistingWallet = async () => {
+    try {
+      const res = await fetch('/api/account/derive', {
+        headers: {
+          'x-wallet-handle': wallet.handle!,
+          'x-wallet-provider': 'handcash',
+        },
+      });
+      const data = await res.json();
+      if (data.hasExistingWallet && data.existingAddress) {
+        setDerivedAddress({
+          address: data.existingAddress,
+          tier: 1,
+        });
+      }
+    } catch (error) {
+      console.error('Failed to check existing wallet:', error);
+    }
+  };
 
   const fetchAccountData = async () => {
     try {
@@ -94,6 +137,8 @@ export default function AccountPage() {
 
     setDeriving(true);
     setDeriveError(null);
+    setNewlyDerivedWif(null);
+    setExportedWallet(null);
 
     try {
       // Step 1: Get the message to sign
@@ -103,7 +148,17 @@ export default function AccountPage() {
           'x-wallet-provider': 'handcash',
         },
       });
-      const { message } = await messageRes.json();
+      const { message, hasExistingWallet, existingAddress } = await messageRes.json();
+
+      // If wallet already exists, just show it
+      if (hasExistingWallet && existingAddress) {
+        setDerivedAddress({
+          address: existingAddress,
+          tier: 1,
+        });
+        setDeriving(false);
+        return;
+      }
 
       // Step 2: Sign the message via HandCash
       const signRes = await fetch('/api/auth/sign', {
@@ -119,33 +174,178 @@ export default function AccountPage() {
 
       const { signature } = await signRes.json();
 
-      // Step 3: Derive address from signature
-      const deriveRes = await fetch('/api/account/derive', {
+      // Step 3: DERIVE WALLET CLIENT-SIDE - WIF never leaves browser unencrypted
+      const clientWallet = await deriveWalletClientSide(signature, wallet.handle);
+
+      // Step 4: Send ONLY address, publicKey, encryptedWif, salt to server (NO WIF!)
+      const storeRes = await fetch('/api/account/store-wallet', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-wallet-handle': wallet.handle,
           'x-wallet-provider': 'handcash',
         },
-        body: JSON.stringify({ signature }),
+        body: JSON.stringify({
+          address: clientWallet.address,
+          publicKey: clientWallet.publicKey,
+          encryptedWif: clientWallet.encryptedWif,
+          encryptionSalt: clientWallet.encryptionSalt,
+          // NOTE: WIF is NOT sent to server!
+        }),
       });
 
-      if (!deriveRes.ok) {
-        const err = await deriveRes.json();
-        throw new Error(err.error || 'Failed to derive address');
+      if (!storeRes.ok) {
+        const err = await storeRes.json();
+        throw new Error(err.error || 'Failed to store wallet');
       }
 
-      const result = await deriveRes.json();
+      // Show the WIF to user (only time they'll see it unless they export)
+      setNewlyDerivedWif(clientWallet.wif);
+      setStoredEncryptedWif(clientWallet.encryptedWif);
+      setStoredSalt(clientWallet.encryptionSalt);
+
       setDerivedAddress({
-        address: result.address,
-        publicKey: result.publicKey,
-        tier: result.tier,
+        address: clientWallet.address,
+        publicKey: clientWallet.publicKey,
+        tier: 1,
       });
     } catch (error) {
       console.error('Failed to derive address:', error);
       setDeriveError(error instanceof Error ? error.message : 'Failed to derive address');
     } finally {
       setDeriving(false);
+    }
+  };
+
+  const exportPrivateKey = async () => {
+    if (!wallet.handle || wallet.provider !== 'handcash') {
+      setExportError('HandCash connection required');
+      return;
+    }
+
+    setExporting(true);
+    setExportError(null);
+    setExportedWallet(null);
+
+    try {
+      // Get encrypted wallet data from server (server never decrypts)
+      const walletRes = await fetch('/api/wallet/encrypted', {
+        headers: {
+          'x-wallet-handle': wallet.handle,
+          'x-wallet-provider': 'handcash',
+        },
+      });
+
+      if (!walletRes.ok) {
+        const err = await walletRes.json();
+        throw new Error(err.error || 'Failed to get wallet data');
+      }
+
+      const { encryptedWif, encryptionSalt, address } = await walletRes.json();
+
+      // DECRYPT CLIENT-SIDE - server never sees the WIF
+      const wif = await decryptWifClientSide(encryptedWif, wallet.handle, encryptionSalt);
+
+      setExportedWallet({
+        wif,
+        address,
+      });
+    } catch (error) {
+      console.error('Failed to export private key:', error);
+      setExportError(error instanceof Error ? error.message : 'Failed to export private key');
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const withdrawToMyAddress = async () => {
+    if (!wallet.handle || wallet.provider !== 'handcash' || !derivedAddress) {
+      setWithdrawError('HandCash connection and derived address required');
+      return;
+    }
+
+    const amount = parseInt(withdrawAmount);
+    if (!amount || amount <= 0) {
+      setWithdrawError('Enter a valid amount');
+      return;
+    }
+
+    const availableBalance = holding ? holding.balance - holding.stakedBalance : 0;
+    if (amount > availableBalance) {
+      setWithdrawError(`Maximum available: ${availableBalance.toLocaleString()}`);
+      return;
+    }
+
+    setWithdrawing(true);
+    setWithdrawError(null);
+    setWithdrawResult(null);
+
+    try {
+      const timestamp = new Date().toISOString();
+      const destination = derivedAddress.address;
+
+      // Step 1: Get the message to sign
+      const messageRes = await fetch('/api/token/withdraw', {
+        headers: {
+          'x-wallet-handle': wallet.handle,
+          'x-wallet-provider': 'handcash',
+        },
+      });
+
+      if (!messageRes.ok) {
+        const err = await messageRes.json();
+        throw new Error(err.error || 'Failed to get withdraw info');
+      }
+
+      // Step 2: Sign the withdrawal message
+      const withdrawMessage = `Withdraw ${amount.toLocaleString()} PATH402 to ${destination}. Timestamp: ${timestamp}`;
+      const signRes = await fetch('/api/auth/sign', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: withdrawMessage }),
+      });
+
+      if (!signRes.ok) {
+        const err = await signRes.json();
+        throw new Error(err.error || 'Failed to sign message');
+      }
+
+      const { signature } = await signRes.json();
+
+      // Step 3: Execute withdrawal
+      const withdrawRes = await fetch('/api/token/withdraw', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-wallet-handle': wallet.handle,
+          'x-wallet-provider': 'handcash',
+        },
+        body: JSON.stringify({
+          amount,
+          destination,
+          signature,
+          timestamp,
+        }),
+      });
+
+      if (!withdrawRes.ok) {
+        const err = await withdrawRes.json();
+        throw new Error(err.error || 'Withdrawal failed');
+      }
+
+      const result = await withdrawRes.json();
+      setWithdrawResult({
+        txId: result.txId,
+        amount: result.amount,
+      });
+      setWithdrawAmount('');
+      // Refresh account data
+      fetchAccountData();
+    } catch (error) {
+      console.error('Withdrawal failed:', error);
+      setWithdrawError(error instanceof Error ? error.message : 'Withdrawal failed');
+    } finally {
+      setWithdrawing(false);
     }
   };
 
@@ -250,10 +450,10 @@ export default function AccountPage() {
                   You control this address. Tokens sent here are yours.
                 </p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => navigator.clipboard.writeText(derivedAddress.address)}
-                  className="px-4 py-2 text-sm border border-zinc-200 dark:border-zinc-800 text-zinc-400 hover:text-zinc-900 dark:text-white hover:border-gray-500 transition-colors "
+                  className="px-4 py-2 text-sm border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:border-gray-500 transition-colors"
                 >
                   Copy Address
                 </button>
@@ -261,11 +461,135 @@ export default function AccountPage() {
                   href={`https://whatsonchain.com/address/${derivedAddress.address}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-4 py-2 text-sm border border-zinc-200 dark:border-zinc-800 text-zinc-400 hover:text-zinc-900 dark:text-white hover:border-gray-500 transition-colors "
+                  className="px-4 py-2 text-sm border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:border-gray-500 transition-colors"
                 >
                   View on Explorer
                 </a>
+                <button
+                  onClick={exportPrivateKey}
+                  disabled={exporting}
+                  className="px-4 py-2 text-sm border border-yellow-500/50 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-500/10 disabled:opacity-50 transition-colors"
+                >
+                  {exporting ? 'Signing...' : 'Export Private Key'}
+                </button>
               </div>
+
+              {exportError && (
+                <div className="mt-4 p-3 bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 text-sm">
+                  {exportError}
+                </div>
+              )}
+
+              {/* Show WIF immediately after derivation - generated client-side, never sent to server */}
+              {newlyDerivedWif && (
+                <div className="mt-4 p-4 bg-green-500/10 border border-green-500/30">
+                  <div className="text-green-600 dark:text-green-400 text-sm font-medium mb-2">
+                    🔐 Your Private Key (Generated in your browser - SAVE IT NOW!)
+                  </div>
+                  <div className="p-3 bg-zinc-200 dark:bg-zinc-900 font-mono text-xs break-all text-zinc-900 dark:text-white select-all">
+                    {newlyDerivedWif}
+                  </div>
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    <button
+                      onClick={() => navigator.clipboard.writeText(newlyDerivedWif)}
+                      className="px-3 py-1.5 text-xs border border-green-500/50 text-green-600 dark:text-green-400 hover:bg-green-500/10 transition-colors"
+                    >
+                      Copy WIF
+                    </button>
+                    <button
+                      onClick={() => {
+                        const walletData = {
+                          site: 'path402.com',
+                          wallet: 'PATH402 Token Wallet',
+                          handle: wallet.handle,
+                          address: derivedAddress?.address,
+                          wif: newlyDerivedWif,
+                          network: 'mainnet',
+                          exportedAt: new Date().toISOString(),
+                          security: 'This key was generated in your browser. The server never saw it.',
+                        };
+                        const blob = new Blob([JSON.stringify(walletData, null, 2)], { type: 'application/json' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `path402-wallet-${wallet.handle}-${new Date().toISOString().split('T')[0]}.json`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                      }}
+                      className="px-3 py-1.5 text-xs border border-green-500/50 text-green-600 dark:text-green-400 hover:bg-green-500/10 transition-colors"
+                    >
+                      Download JSON
+                    </button>
+                    <button
+                      onClick={() => setNewlyDerivedWif(null)}
+                      className="px-3 py-1.5 text-xs border border-zinc-300 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
+                    >
+                      I've Saved It
+                    </button>
+                  </div>
+                  <p className="text-xs text-green-600 dark:text-green-500 mt-3">
+                    ✓ Your private key was generated entirely in your browser. It was NEVER sent to our servers.
+                  </p>
+                </div>
+              )}
+
+              {exportedWallet && !newlyDerivedWif && (
+                <div className="mt-4 p-4 bg-yellow-500/10 border border-yellow-500/30">
+                  <div className="text-yellow-600 dark:text-yellow-400 text-sm font-medium mb-2">
+                    ⚠️ Private Key (WIF) - Keep this secret!
+                  </div>
+                  <div className="p-3 bg-zinc-200 dark:bg-zinc-900 font-mono text-xs break-all text-zinc-900 dark:text-white select-all">
+                    {exportedWallet.wif}
+                  </div>
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(exportedWallet.wif);
+                      }}
+                      className="px-3 py-1.5 text-xs border border-yellow-500/50 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-500/10 transition-colors"
+                    >
+                      Copy WIF
+                    </button>
+                    <button
+                      onClick={() => {
+                        const walletData = {
+                          site: 'path402.com',
+                          wallet: 'PATH402 Token Wallet',
+                          handle: wallet.handle,
+                          address: exportedWallet.address,
+                          wif: exportedWallet.wif,
+                          network: 'mainnet',
+                          exportedAt: new Date().toISOString(),
+                          warning: 'Keep this file secure! Anyone with this WIF can spend your tokens.',
+                        };
+                        const blob = new Blob([JSON.stringify(walletData, null, 2)], { type: 'application/json' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `path402-wallet-${wallet.handle}-${new Date().toISOString().split('T')[0]}.json`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                      }}
+                      className="px-3 py-1.5 text-xs border border-green-500/50 text-green-600 dark:text-green-400 hover:bg-green-500/10 transition-colors"
+                    >
+                      Download JSON
+                    </button>
+                    <button
+                      onClick={() => setExportedWallet(null)}
+                      className="px-3 py-1.5 text-xs border border-zinc-300 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
+                    >
+                      Hide
+                    </button>
+                  </div>
+                  <p className="text-xs text-zinc-500 mt-3">
+                    Import this WIF into any BSV wallet (ElectrumSV, Simply Cash, etc.) to control your tokens directly.
+                  </p>
+                </div>
+              )}
             </div>
           ) : (
             <div className="space-y-4">
@@ -369,28 +693,49 @@ export default function AccountPage() {
           {loading ? (
             <div className="text-zinc-400">Loading...</div>
           ) : holding && holding.balance > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
+            <div className="space-y-6">
+              {/* Total Balance - Big Number */}
+              <div className="text-center py-4 border-b border-zinc-200 dark:border-zinc-800">
                 <div className="text-sm text-zinc-400 mb-1">Total Balance</div>
-                <div className="text-2xl font-bold text-zinc-900 dark:text-white">
+                <div className="text-4xl font-bold text-zinc-900 dark:text-white">
                   {formatNumber(holding.balance)}
                 </div>
                 <div className="text-sm text-zinc-500">PATH402</div>
               </div>
-              <div>
-                <div className="text-sm text-zinc-400 mb-1">Available</div>
-                <div className="text-2xl font-bold text-zinc-900 dark:text-white">
-                  {formatNumber(holding.availableBalance)}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* On-Chain Balance */}
+                <div className="p-4 bg-green-500/10 border border-green-500/30">
+                  <div className="text-sm text-green-400 mb-1">On-Chain (You Control)</div>
+                  <div className="text-2xl font-bold text-green-400">
+                    {formatNumber(holding.onChainBalance)}
+                  </div>
+                  <div className="text-xs text-zinc-500 mt-1">
+                    At your derived address
+                  </div>
                 </div>
-                <div className="text-sm text-zinc-500">unstaked</div>
-              </div>
-              <div>
-                <div className="text-sm text-zinc-400 mb-1">Staked</div>
-                <div className="text-2xl font-bold text-purple-400">
-                  {formatNumber(holding.stakedBalance)}
+
+                {/* Database Balance - Pending Withdrawal */}
+                <div className="p-4 bg-yellow-500/10 border border-yellow-500/30">
+                  <div className="text-sm text-yellow-400 mb-1">Pending Withdrawal</div>
+                  <div className="text-2xl font-bold text-yellow-400">
+                    {formatNumber(holding.dbBalance)}
+                  </div>
+                  <div className="text-xs text-zinc-500 mt-1">
+                    {holding.dbBalance > 0 ? 'Use Withdraw below to claim' : 'All tokens on-chain'}
+                  </div>
                 </div>
-                <div className="text-sm text-zinc-500">earning dividends</div>
               </div>
+
+              {holding.stakedBalance > 0 && (
+                <div className="p-4 bg-purple-500/10 border border-purple-500/30">
+                  <div className="text-sm text-purple-400 mb-1">Staked</div>
+                  <div className="text-2xl font-bold text-purple-400">
+                    {formatNumber(holding.stakedBalance)}
+                  </div>
+                  <div className="text-xs text-zinc-500 mt-1">earning dividends</div>
+                </div>
+              )}
             </div>
           ) : (
             <div className="text-center py-8">
@@ -410,10 +755,82 @@ export default function AccountPage() {
           )}
         </motion.div>
 
+        {/* Withdraw to On-Chain Address */}
+        {derivedAddress && holding && holding.availableBalance > 0 && (
+          <motion.div
+            className="border border-zinc-200 dark:border-zinc-800 p-6 mb-8 bg-zinc-50 dark:bg-zinc-950"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35 }}
+            whileHover={{ borderColor: "rgba(96, 165, 250, 0.5)" }}
+          >
+            <h2 className="text-lg font-semibold text-zinc-900 dark:text-white mb-4">Withdraw to On-Chain</h2>
+            <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
+              Transfer tokens from your database balance to your derived on-chain address.
+              Once on-chain, you control them with your private key.
+            </p>
+
+            <div className="flex gap-3 items-end mb-4">
+              <div className="flex-1">
+                <label className="text-sm text-zinc-500 mb-1 block">Amount</label>
+                <input
+                  type="number"
+                  value={withdrawAmount}
+                  onChange={(e) => setWithdrawAmount(e.target.value)}
+                  placeholder={`Max: ${holding.availableBalance.toLocaleString()}`}
+                  className="w-full px-4 py-2 bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-white font-mono focus:outline-none focus:border-blue-500"
+                />
+              </div>
+              <button
+                onClick={() => setWithdrawAmount(holding.availableBalance.toString())}
+                className="px-3 py-2 text-sm border border-zinc-300 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
+              >
+                Max
+              </button>
+              <button
+                onClick={withdrawToMyAddress}
+                disabled={withdrawing || !withdrawAmount}
+                className="px-6 py-2 bg-green-600 text-white font-medium hover:bg-green-700 disabled:opacity-50 transition-colors"
+              >
+                {withdrawing ? 'Signing...' : 'Withdraw'}
+              </button>
+            </div>
+
+            <div className="text-xs text-zinc-500">
+              Destination: <code className="bg-zinc-200 dark:bg-zinc-800 px-1">{derivedAddress.address}</code>
+            </div>
+
+            {withdrawError && (
+              <div className="mt-4 p-3 bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 text-sm">
+                {withdrawError}
+              </div>
+            )}
+
+            {withdrawResult && (
+              <div className="mt-4 p-4 bg-green-500/10 border border-green-500/30">
+                <div className="text-green-600 dark:text-green-400 font-medium mb-2">
+                  Withdrawal successful!
+                </div>
+                <div className="text-sm text-zinc-600 dark:text-zinc-400 mb-2">
+                  {withdrawResult.amount.toLocaleString()} PATH402 sent to your on-chain address.
+                </div>
+                <a
+                  href={`https://whatsonchain.com/tx/${withdrawResult.txId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:underline text-sm"
+                >
+                  View Transaction →
+                </a>
+              </div>
+            )}
+          </motion.div>
+        )}
+
         {/* Market Stats */}
         {stats && (
           <motion.div
-            className="border border-zinc-200 dark:border-zinc-800 p-6 mb-8 bg-zinc-50 dark:bg-zinc-950 "
+            className="border border-zinc-200 dark:border-zinc-800 p-6 mb-8 bg-zinc-50 dark:bg-zinc-950"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}

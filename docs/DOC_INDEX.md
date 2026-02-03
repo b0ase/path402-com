@@ -12,6 +12,7 @@
 |----------|-------------|
 | **[CODEBASE_MAP.md](CODEBASE_MAP.md)** | Complete codebase architecture, file purposes, API reference |
 | **[PRD-TOKEN-CUSTODY-STAKING.md](PRD-TOKEN-CUSTODY-STAKING.md)** | Product requirements for the custody and staking system |
+| **[INDEXER.md](INDEXER.md)** | Self-hosted BSV-20 token indexer (polls treasury, updates balances) |
 
 ## Protocol Specification
 
