@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getOrCreateHolder, createPurchase, processPurchaseImmediate, getTokenStats, TREASURY_PAYMAIL, PAYMENT_ADDRESS } from '@/lib/store';
+import { getOrCreateHolder, createPurchase, processPurchaseImmediate, getTokenStats, PAYMENT_ADDRESS } from '@/lib/store';
 import { getInstance, Connect } from '@handcash/sdk';
+import { executeTransfer } from '@/lib/bsv20-transfer';
+import { supabase, isDbConnected } from '@/lib/supabase';
 
 // sqrt_decay pricing: price = BASE / sqrt(remaining + 1)
 // Price INCREASES as treasury depletes - rewards early buyers
@@ -114,6 +116,20 @@ export async function POST(request: NextRequest) {
       handle || undefined
     );
 
+    // For HandCash, check if user has derived ordinals address
+    let ordinalsAddress: string | null = null;
+    if (provider === 'handcash' && handle && isDbConnected() && supabase) {
+      const { data: wallet } = await supabase
+        .from('user_wallets')
+        .select('address')
+        .eq('handle', handle)
+        .single();
+
+      if (wallet) {
+        ordinalsAddress = wallet.address;
+      }
+    }
+
     if (provider === 'yours') {
       // For Yours Wallet, create pending purchase and return payment details
       const purchase = await createPurchase(holder.id, tokenAmount, avgPrice);
@@ -180,9 +196,31 @@ export async function POST(request: NextRequest) {
         // Payment succeeded, credit tokens in database
         const purchase = await processPurchaseImmediate(holder.id, tokenAmount, avgPrice);
 
-        // Tokens are credited to database immediately
-        // On-chain BSV-20 transfer happens via separate withdrawal flow
-        // User must first derive their ordinals address in Account settings
+        // If user has a derived ordinals address, transfer tokens on-chain
+        let transferTxId: string | null = null;
+        let transferError: string | null = null;
+
+        if (ordinalsAddress) {
+          console.log(`Transferring ${tokenAmount} tokens to ${ordinalsAddress}`);
+          const transferResult = await executeTransfer(tokenAmount, ordinalsAddress);
+
+          if (transferResult.success && transferResult.txId) {
+            transferTxId = transferResult.txId;
+            console.log(`BSV-20 transfer successful: ${transferTxId}`);
+
+            // Update purchase with transfer txid
+            if (isDbConnected() && supabase) {
+              await supabase
+                .from('path402_purchases')
+                .update({ transfer_tx_id: transferTxId })
+                .eq('id', purchase.id);
+            }
+          } else {
+            // Transfer failed - tokens are still in database, user can withdraw later
+            transferError = transferResult.error || 'Unknown transfer error';
+            console.error('BSV-20 transfer failed:', transferError);
+          }
+        }
 
         return NextResponse.json({
           purchaseId: purchase.id,
@@ -194,8 +232,15 @@ export async function POST(request: NextRequest) {
           treasuryRemaining,
           status: 'confirmed',
           txId: paymentResult.data?.transactionId,
+          transferTxId,
+          transferError,
           newBalance: holder.balance + tokenAmount,
-          note: 'Tokens credited to your account. Withdraw to your ordinals address from Account page.',
+          ordinalsAddress,
+          note: ordinalsAddress
+            ? (transferTxId
+                ? `Tokens transferred to your ordinals address: ${ordinalsAddress}`
+                : `Payment confirmed. Token transfer pending - withdraw from Account page.`)
+            : 'Tokens credited. Derive your ordinals address in Account to receive on-chain.',
         });
       } catch (paymentError) {
         console.error('HandCash payment exception:', paymentError);

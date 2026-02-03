@@ -10,11 +10,26 @@ The name combines:
 - **$PATH** — the namespace/directory concept (every `$address` is a path)
 - **402** — HTTP 402 Payment Required (the response that triggers payment)
 
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** | Five-layer system architecture |
+| **[$402-STANDARD.md](docs/$402-STANDARD.md)** | Protocol specification |
+| **[TOKEN_CUSTODY_GUIDE.md](docs/TOKEN_CUSTODY_GUIDE.md)** | User guide for token holders |
+| **[BUSINESS_MODEL.md](docs/BUSINESS_MODEL.md)** | Revenue model and economics |
+| **[CODEBASE_MAP.md](docs/CODEBASE_MAP.md)** | Developer guide to the codebase |
+| **[PRD-TOKEN-CUSTODY-STAKING.md](docs/PRD-TOKEN-CUSTODY-STAKING.md)** | Staking system requirements |
+
 ## Pages
 
 - `/` — Homepage with protocol overview
+- `/token` — Buy, stake, and manage $PATH402 tokens
+- `/account` — User dashboard and holdings
+- `/registry` — Cap table and holder registry
 - `/docs` — Full documentation
-- `/exchange` — Token discovery and acquisition
+- `/exchange` — Token marketplace
+- `/whitepaper` — Protocol whitepaper
 
 ## Ecosystem
 

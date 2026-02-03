@@ -1,56 +1,215 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getHolder } from '@/lib/store';
+import { getHolder, updateHolderBalance } from '@/lib/store';
+import { supabase, isDbConnected } from '@/lib/supabase';
+import { decryptWif, verifySignatureOwnership, SIGN_MESSAGES } from '@/lib/address-derivation';
+import { createTransferTransaction } from '@/lib/bsv20-transfer';
 
+const WHATSONCHAIN_API = 'https://api.whatsonchain.com/v1/bsv/main';
+
+// Broadcast a transaction
+async function broadcastTransaction(txHex: string): Promise<string> {
+  const response = await fetch(`${WHATSONCHAIN_API}/tx/raw`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ txhex: txHex }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Broadcast failed: ${error}`);
+  }
+
+  const txId = await response.text();
+  return txId.replace(/"/g, '');
+}
+
+// GET /api/token/withdraw - Get message to sign for withdrawal
+export async function GET(request: NextRequest) {
+  const handle = request.headers.get('x-wallet-handle');
+
+  if (!handle) {
+    return NextResponse.json({ error: 'Handle required' }, { status: 400 });
+  }
+
+  // Check if user has a wallet
+  if (!isDbConnected() || !supabase) {
+    return NextResponse.json({ error: 'Database not connected' }, { status: 503 });
+  }
+
+  const { data: wallet } = await supabase
+    .from('user_wallets')
+    .select('address')
+    .eq('handle', handle)
+    .single();
+
+  if (!wallet) {
+    return NextResponse.json({
+      error: 'No wallet found',
+      details: 'You need to derive an ordinals address first.',
+      deriveUrl: '/api/account/derive',
+    }, { status: 404 });
+  }
+
+  // Get holder balance
+  const holder = await getHolder(undefined, handle);
+  const availableBalance = holder ? holder.balance - holder.stakedBalance : 0;
+
+  return NextResponse.json({
+    address: wallet.address,
+    availableBalance,
+    instructions: [
+      '1. Specify amount and destination address',
+      '2. Sign the withdrawal message with HandCash',
+      '3. POST the signature to complete the withdrawal',
+      '4. Tokens will be transferred on-chain to destination',
+    ],
+  });
+}
+
+// POST /api/token/withdraw - Execute withdrawal with signature
 export async function POST(request: NextRequest) {
   try {
-    const address = request.headers.get('x-wallet-address');
     const handle = request.headers.get('x-wallet-handle');
     const provider = request.headers.get('x-wallet-provider');
 
-    const holder = await getHolder(address || undefined, handle || undefined);
-
-    if (!holder) {
-      return NextResponse.json({ error: 'Wallet not connected or no tokens held' }, { status: 401 });
+    if (!handle || provider !== 'handcash') {
+      return NextResponse.json({ error: 'HandCash connection required' }, { status: 401 });
     }
 
     const body = await request.json();
-    const { amount, destinationAddress } = body;
+    const { amount, destination, signature, timestamp } = body;
 
+    // Validate inputs
     if (!amount || amount <= 0) {
       return NextResponse.json({ error: 'Invalid amount' }, { status: 400 });
     }
 
-    if (!destinationAddress) {
+    if (!destination) {
       return NextResponse.json({ error: 'Destination address required' }, { status: 400 });
+    }
+
+    // Validate BSV address format (simple check)
+    if (!destination.match(/^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/)) {
+      return NextResponse.json({ error: 'Invalid BSV address format' }, { status: 400 });
+    }
+
+    if (!signature) {
+      const ts = timestamp || new Date().toISOString();
+      return NextResponse.json({
+        error: 'Signature required',
+        message: SIGN_MESSAGES.withdraw(amount, destination, ts),
+        timestamp: ts,
+      }, { status: 400 });
+    }
+
+    // Get holder and check balance
+    const holder = await getHolder(undefined, handle);
+    if (!holder) {
+      return NextResponse.json({ error: 'No tokens held' }, { status: 400 });
     }
 
     const availableBalance = holder.balance - holder.stakedBalance;
     if (amount > availableBalance) {
       return NextResponse.json({
-        error: 'Insufficient available balance. Unstake tokens first if needed.',
+        error: 'Insufficient available balance',
+        details: 'Unstake tokens first if needed.',
         availableBalance,
         requestedAmount: amount,
       }, { status: 400 });
     }
 
-    // TODO: Implement actual BSV-20 token transfer
-    // This would involve:
-    // 1. Creating a BSV transaction
-    // 2. Transferring the ordinals/inscriptions to the destination address
-    // 3. Updating the holder's balance in our database
-    // 4. Recording the withdrawal transaction
+    // Get user's wallet
+    if (!isDbConnected() || !supabase) {
+      return NextResponse.json({ error: 'Database not connected' }, { status: 503 });
+    }
 
-    // For now, return a placeholder response
+    const { data: wallet, error: walletError } = await supabase
+      .from('user_wallets')
+      .select('address, encrypted_wif, encryption_salt')
+      .eq('handle', handle)
+      .single();
+
+    if (walletError || !wallet) {
+      return NextResponse.json({
+        error: 'Wallet not found',
+        details: 'Derive your ordinals address first in Account settings.',
+      }, { status: 404 });
+    }
+
+    // Verify signature ownership
+    if (!verifySignatureOwnership(signature, handle, wallet.address)) {
+      return NextResponse.json({
+        error: 'Invalid signature',
+        details: 'The signature does not match your wallet.',
+      }, { status: 403 });
+    }
+
+    // Decrypt WIF
+    let wif: string;
+    try {
+      wif = decryptWif(wallet.encrypted_wif, signature, wallet.encryption_salt);
+    } catch (decryptError) {
+      console.error('WIF decryption failed:', decryptError);
+      return NextResponse.json({
+        error: 'Decryption failed',
+        details: 'Could not decrypt your private key.',
+      }, { status: 500 });
+    }
+
+    // Create and sign the transfer transaction
+    let txHex: string;
+    let txId: string;
+    try {
+      const result = await createTransferTransaction(amount, destination, wif);
+      txHex = result.txHex;
+      txId = result.txId;
+    } catch (txError) {
+      console.error('Transaction creation failed:', txError);
+      return NextResponse.json({
+        error: 'Transaction creation failed',
+        details: txError instanceof Error ? txError.message : 'Unknown error',
+      }, { status: 500 });
+    }
+
+    // Broadcast the transaction
+    let broadcastTxId: string;
+    try {
+      broadcastTxId = await broadcastTransaction(txHex);
+    } catch (broadcastError) {
+      console.error('Broadcast failed:', broadcastError);
+      return NextResponse.json({
+        error: 'Broadcast failed',
+        details: broadcastError instanceof Error ? broadcastError.message : 'Unknown error',
+        txId, // Return the txId even if broadcast failed, for debugging
+      }, { status: 500 });
+    }
+
+    // Update database balance
+    await updateHolderBalance(holder.id, -amount);
+
+    // Record the withdrawal
+    await supabase.from('path402_withdrawals').insert({
+      holder_id: holder.id,
+      amount,
+      destination,
+      tx_id: broadcastTxId,
+      from_address: wallet.address,
+    });
+
     return NextResponse.json({
-      success: false,
-      message: 'Token withdrawals are coming soon. Your tokens are safe in your account.',
-      note: 'On-chain BSV-20 token transfers require inscription-based transfers which are being implemented.',
-      availableBalance,
-      requestedAmount: amount,
-      destinationAddress,
+      success: true,
+      txId: broadcastTxId,
+      amount,
+      destination,
+      fromAddress: wallet.address,
+      newBalance: holder.balance - amount,
+      explorerUrl: `https://whatsonchain.com/tx/${broadcastTxId}`,
     });
   } catch (error) {
     console.error('Error processing withdrawal:', error);
-    return NextResponse.json({ error: 'Withdrawal failed' }, { status: 500 });
+    return NextResponse.json({
+      error: 'Withdrawal failed',
+      details: error instanceof Error ? error.message : 'Unknown error',
+    }, { status: 500 });
   }
 }

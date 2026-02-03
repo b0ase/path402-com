@@ -1,8 +1,14 @@
 declare module 'bsv' {
   export class PrivateKey {
+    constructor(data?: string | Buffer);
     static fromWIF(wif: string): PrivateKey;
+    static fromBuffer(buf: Buffer): PrivateKey;
+    static fromHex(hex: string): PrivateKey;
+    toWIF(): string;
+    toBuffer(): Buffer;
     toAddress(): Address;
     toPublicKey(): PublicKey;
+    toString(): string;
   }
 
   export class PublicKey {

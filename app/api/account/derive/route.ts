@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { deriveAddressFromSignature, getDerivationMessage } from '@/lib/address-derivation';
+import {
+  deriveWalletFromSignature,
+  SIGN_MESSAGES,
+} from '@/lib/address-derivation';
 import { supabase, isDbConnected } from '@/lib/supabase';
 
 // POST /api/account/derive
 // Derives a user's on-chain address from their HandCash signature
+// Returns the WIF private key on first derivation (user should save it!)
 export async function POST(request: NextRequest) {
   try {
     const handle = request.headers.get('x-wallet-handle');
@@ -17,70 +21,125 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { signature } = body;
+    const { signature, timestamp } = body;
 
     if (!signature) {
+      const ts = new Date().toISOString();
       return NextResponse.json(
-        { error: 'Signature required', message: getDerivationMessage(handle) },
+        {
+          error: 'Signature required',
+          message: SIGN_MESSAGES.derive(handle, ts),
+          timestamp: ts,
+        },
         { status: 400 }
       );
     }
 
-    // Derive address from signature
-    const { address, publicKey } = deriveAddressFromSignature(signature, handle);
+    // Derive full wallet from signature (includes WIF)
+    const wallet = deriveWalletFromSignature(signature, handle);
 
-    // Store/update in database
+    // Check if this wallet already exists
+    let isNewWallet = true;
+    let holderId: string | null = null;
+
     if (isDbConnected() && supabase) {
-      // Check if user already has a derived address
-      const { data: existing } = await supabase
-        .from('path402_holders')
-        .select('id, ordinals_address')
+      // Check if user already has a derived wallet
+      const { data: existingWallet } = await supabase
+        .from('user_wallets')
+        .select('id, address')
         .eq('handle', handle)
         .single();
 
-      if (existing) {
-        // Update with derived address
+      if (existingWallet) {
+        isNewWallet = false;
+
+        // Verify the signature produces the same address
+        if (existingWallet.address !== wallet.address) {
+          return NextResponse.json(
+            {
+              error: 'Signature mismatch',
+              details: 'This signature produces a different address than your existing wallet. Make sure you sign the exact message.',
+              expectedAddress: existingWallet.address,
+              derivedAddress: wallet.address,
+            },
+            { status: 400 }
+          );
+        }
+      }
+
+      // Get or create holder record
+      const { data: holder } = await supabase
+        .from('path402_holders')
+        .select('id')
+        .eq('handle', handle)
+        .single();
+
+      if (holder) {
+        holderId = holder.id;
+
+        // Update holder with ordinals address
         await supabase
           .from('path402_holders')
           .update({
-            ordinals_address: address,
-            address: address, // Use derived address as primary
+            ordinals_address: wallet.address,
             updated_at: new Date().toISOString(),
           })
-          .eq('id', existing.id);
+          .eq('id', holder.id);
+      }
+
+      // Store wallet if new
+      if (isNewWallet) {
+        await supabase.from('user_wallets').insert({
+          handle,
+          address: wallet.address,
+          public_key: wallet.publicKey,
+          encrypted_wif: wallet.encryptedWif,
+          encryption_salt: wallet.encryptionSalt,
+          holder_id: holderId,
+        });
       } else {
-        // Create new holder with derived address
+        // Update last accessed
         await supabase
-          .from('path402_holders')
-          .insert({
-            handle,
-            provider: 'handcash',
-            address: address,
-            ordinals_address: address,
-          });
+          .from('user_wallets')
+          .update({ last_accessed_at: new Date().toISOString() })
+          .eq('handle', handle);
       }
     }
 
-    return NextResponse.json({
+    // Build response
+    const response: Record<string, unknown> = {
       success: true,
-      address,
-      publicKey,
+      address: wallet.address,
+      publicKey: wallet.publicKey,
       handle,
-      tier: 1, // All new accounts are Tier 1 (no KYC)
-      message: 'Address derived successfully. You control this address.',
+      isNewWallet,
+      tier: 1, // Tier 1 = no KYC, basic holder
       capabilities: {
         receive: true,
         hold: true,
         transfer: true,
-        stake: false, // Coming soon - requires KYC
-        dividends: false, // Coming soon - requires KYC
-        voting: false, // Coming soon - requires KYC
+        stake: false, // Requires KYC
+        dividends: false, // Requires staking
+        voting: false, // Requires staking
       },
-    });
+    };
+
+    // Only return WIF on first derivation!
+    // User MUST save this - we cannot decrypt it without their signature
+    if (isNewWallet) {
+      response.wif = wallet.wif;
+      response.warning = 'SAVE YOUR PRIVATE KEY! This is the only time it will be shown. You can recover it later by signing the same message.';
+      response.message = 'New wallet created. Your private key (WIF) is shown above. Save it securely!';
+    } else {
+      response.message = 'Wallet verified. Your address has been confirmed.';
+      response.recoveryNote = 'Need your private key? Use the Export function which will ask you to sign a message.';
+    }
+
+    return NextResponse.json(response);
   } catch (error) {
     console.error('Error deriving address:', error);
     return NextResponse.json(
-      { error: 'Failed to derive address' },
+      { error: 'Failed to derive address', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
@@ -98,13 +157,42 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  const timestamp = new Date().toISOString();
+  const message = SIGN_MESSAGES.derive(handle, timestamp);
+
+  // Check if user already has a wallet
+  let hasExistingWallet = false;
+  let existingAddress: string | null = null;
+
+  if (isDbConnected() && supabase) {
+    const { data: existing } = await supabase
+      .from('user_wallets')
+      .select('address')
+      .eq('handle', handle)
+      .single();
+
+    if (existing) {
+      hasExistingWallet = true;
+      existingAddress = existing.address;
+    }
+  }
+
   return NextResponse.json({
-    message: getDerivationMessage(handle),
-    instructions: [
-      '1. Sign this message with your HandCash wallet',
-      '2. Send the signature to POST /api/account/derive',
-      '3. Your unique PATH402 address will be derived',
-      '4. You control this address - PATH402 never has your keys',
-    ],
+    message,
+    timestamp,
+    hasExistingWallet,
+    existingAddress,
+    instructions: hasExistingWallet
+      ? [
+          '1. Sign this message to verify ownership of your wallet',
+          '2. Your existing address will be confirmed',
+          '3. Use Export Private Key if you need your WIF',
+        ]
+      : [
+          '1. Sign this message with your HandCash wallet',
+          '2. A unique BSV address will be derived from your signature',
+          '3. IMPORTANT: Save the private key (WIF) shown after signing!',
+          '4. You control this address - PATH402 never has your unencrypted keys',
+        ],
   });
 }

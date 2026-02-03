@@ -2,96 +2,224 @@
 // Users derive their own BSV address from their HandCash signature
 // This means USER controls the keys, not PATH402
 
-import { createHash } from 'crypto';
+import { createHash, createHmac, randomBytes, createCipheriv, createDecipheriv } from 'crypto';
+import bsv from 'bsv';
 
-// Derive a deterministic BSV address from a HandCash signature
-// The signature is over a known message, so it's reproducible
+// Version prefix for key derivation (allows future upgrades)
+const DERIVATION_VERSION = 'PATH402-v1';
+
+// Encryption algorithm for WIF storage
+const ENCRYPTION_ALGORITHM = 'aes-256-gcm';
+const IV_LENGTH = 12; // GCM recommended IV length
+const AUTH_TAG_LENGTH = 16;
+
+export interface DerivedWallet {
+  address: string;        // BSV P2PKH address (starts with "1")
+  publicKey: string;      // Hex public key
+  wif: string;            // WIF private key (ONLY returned to user, never stored unencrypted)
+  encryptedWif: string;   // WIF encrypted with signature-derived key
+  encryptionSalt: string; // Salt used for encryption key derivation
+}
+
+/**
+ * Derive a deterministic BSV wallet from a HandCash signature.
+ *
+ * Key derivation:
+ * 1. seed = HMAC-SHA256(key: DERIVATION_VERSION, data: signature + handle)
+ * 2. privateKey = seed (first 32 bytes)
+ * 3. address = P2PKH(publicKey(privateKey))
+ *
+ * Encryption:
+ * 1. encryptionKey = HMAC-SHA256(key: salt, data: signature)
+ * 2. encryptedWif = AES-256-GCM(wif, encryptionKey, iv)
+ */
+export function deriveWalletFromSignature(signature: string, handle: string): DerivedWallet {
+  // Derive seed using HMAC-SHA256
+  const seed = createHmac('sha256', DERIVATION_VERSION)
+    .update(signature + handle)
+    .digest();
+
+  // Create private key from seed (first 32 bytes)
+  // BSV SDK accepts Buffer for private key construction
+  const privateKey = bsv.PrivateKey.fromBuffer(seed.slice(0, 32));
+
+  // Derive public key and address
+  const publicKey = privateKey.toPublicKey();
+  const address = privateKey.toAddress();
+
+  // Get WIF (Wallet Import Format) - this is what user needs to export
+  const wif = privateKey.toWIF();
+
+  // Encrypt the WIF for storage
+  const salt = randomBytes(32).toString('hex');
+  const encryptedWif = encryptWif(wif, signature, salt);
+
+  return {
+    address: address.toString(),
+    publicKey: publicKey.toString(),
+    wif,  // Only return this once to the user!
+    encryptedWif,
+    encryptionSalt: salt,
+  };
+}
+
+/**
+ * Encrypt WIF using AES-256-GCM with a signature-derived key.
+ *
+ * This allows users to decrypt their WIF by re-signing the same message.
+ * We never store the unencrypted WIF or the signature.
+ */
+function encryptWif(wif: string, signature: string, salt: string): string {
+  // Derive encryption key from signature using salt
+  const encryptionKey = createHmac('sha256', salt)
+    .update(signature)
+    .digest();
+
+  // Generate random IV
+  const iv = randomBytes(IV_LENGTH);
+
+  // Encrypt with AES-256-GCM
+  const cipher = createCipheriv(ENCRYPTION_ALGORITHM, encryptionKey, iv);
+
+  let encrypted = cipher.update(wif, 'utf8');
+  encrypted = Buffer.concat([encrypted, cipher.final()]);
+
+  const authTag = cipher.getAuthTag();
+
+  // Combine IV + authTag + encrypted data
+  const combined = Buffer.concat([iv, authTag, encrypted]);
+
+  return combined.toString('base64');
+}
+
+/**
+ * Decrypt WIF using the user's signature.
+ *
+ * User must sign the same derivation message to decrypt their WIF.
+ */
+export function decryptWif(encryptedWif: string, signature: string, salt: string): string {
+  // Derive encryption key from signature using salt
+  const encryptionKey = createHmac('sha256', salt)
+    .update(signature)
+    .digest();
+
+  // Parse the combined data
+  const combined = Buffer.from(encryptedWif, 'base64');
+
+  const iv = combined.slice(0, IV_LENGTH);
+  const authTag = combined.slice(IV_LENGTH, IV_LENGTH + AUTH_TAG_LENGTH);
+  const encrypted = combined.slice(IV_LENGTH + AUTH_TAG_LENGTH);
+
+  // Decrypt with AES-256-GCM
+  const decipher = createDecipheriv(ENCRYPTION_ALGORITHM, encryptionKey, iv);
+  decipher.setAuthTag(authTag);
+
+  let decrypted = decipher.update(encrypted);
+  decrypted = Buffer.concat([decrypted, decipher.final()]);
+
+  return decrypted.toString('utf8');
+}
+
+/**
+ * Verify that a signature produces the expected address.
+ *
+ * Used to confirm user owns the wallet before allowing operations.
+ */
+export function verifySignatureOwnership(
+  signature: string,
+  handle: string,
+  expectedAddress: string
+): boolean {
+  try {
+    const seed = createHmac('sha256', DERIVATION_VERSION)
+      .update(signature + handle)
+      .digest();
+
+    const privateKey = bsv.PrivateKey.fromBuffer(seed.slice(0, 32));
+    const derivedAddress = privateKey.toAddress().toString();
+
+    return derivedAddress === expectedAddress;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Re-derive wallet from signature (for recovery or export).
+ *
+ * Returns the same wallet if signature is correct.
+ */
+export function recoverWalletFromSignature(
+  signature: string,
+  handle: string,
+  expectedAddress: string
+): DerivedWallet | null {
+  const wallet = deriveWalletFromSignature(signature, handle);
+
+  if (wallet.address !== expectedAddress) {
+    return null; // Signature doesn't match
+  }
+
+  return wallet;
+}
+
+/**
+ * Message templates for signing operations.
+ */
+export const SIGN_MESSAGES = {
+  /**
+   * Message for initial wallet derivation.
+   */
+  derive: (handle: string, timestamp: string) =>
+    `I am creating my PATH402 wallet for @${handle}. Timestamp: ${timestamp}`,
+
+  /**
+   * Message for staking tokens.
+   */
+  stake: (amount: number, timestamp: string) =>
+    `I am staking ${amount.toLocaleString()} PATH402 tokens. I agree to provide KYC. Timestamp: ${timestamp}`,
+
+  /**
+   * Message for unstaking tokens.
+   */
+  unstake: (amount: number, timestamp: string) =>
+    `I am unstaking ${amount.toLocaleString()} PATH402 tokens. Timestamp: ${timestamp}`,
+
+  /**
+   * Message for withdrawing tokens.
+   */
+  withdraw: (amount: number, destination: string, timestamp: string) =>
+    `Withdraw ${amount.toLocaleString()} PATH402 to ${destination}. Timestamp: ${timestamp}`,
+
+  /**
+   * Message for exporting private key.
+   */
+  export: (timestamp: string) =>
+    `Export my PATH402 private key. Timestamp: ${timestamp}`,
+};
+
+// Legacy function for backwards compatibility
 export function deriveAddressFromSignature(signature: string, handle: string): {
   address: string;
   publicKey: string;
 } {
-  // Create deterministic seed from signature
-  // signature + handle ensures uniqueness per user
-  const seed = createHash('sha256')
-    .update(`PATH402-${handle}-${signature}`)
-    .digest();
-
-  // For now, we'll use a simplified derivation
-  // In production, this should use proper secp256k1 key derivation
-  // The signature itself contains the user's public key info
-
-  // Hash the seed to get a "pseudo" private key
-  const privateKeyHash = createHash('sha256')
-    .update(seed)
-    .digest('hex');
-
-  // Derive address from the hash (simplified - use proper BSV libs in production)
-  // This creates a deterministic but unique address per user
-  const addressHash = createHash('ripemd160')
-    .update(createHash('sha256').update(seed).digest())
-    .digest();
-
-  // Convert to Base58Check (simplified version)
-  const address = base58CheckEncode(addressHash, 0x00); // 0x00 = mainnet P2PKH
-
+  const wallet = deriveWalletFromSignature(signature, handle);
   return {
-    address,
-    publicKey: privateKeyHash.slice(0, 66), // Placeholder - should be actual pubkey
+    address: wallet.address,
+    publicKey: wallet.publicKey,
   };
 }
 
-// Base58 alphabet (Bitcoin style)
-const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-
-function base58CheckEncode(payload: Buffer, version: number): string {
-  // Add version byte
-  const versionedPayload = Buffer.concat([Buffer.from([version]), payload]);
-
-  // Double SHA256 for checksum
-  const checksum = createHash('sha256')
-    .update(createHash('sha256').update(versionedPayload).digest())
-    .digest()
-    .slice(0, 4);
-
-  // Concatenate
-  const fullPayload = Buffer.concat([versionedPayload, checksum]);
-
-  // Convert to Base58
-  let num = BigInt('0x' + fullPayload.toString('hex'));
-  let result = '';
-  const zero = BigInt(0);
-  const fiftyEight = BigInt(58);
-
-  while (num > zero) {
-    const remainder = Number(num % fiftyEight);
-    num = num / fiftyEight;
-    result = BASE58_ALPHABET[remainder] + result;
-  }
-
-  // Add leading '1's for leading zero bytes
-  for (const byte of fullPayload) {
-    if (byte === 0) {
-      result = '1' + result;
-    } else {
-      break;
-    }
-  }
-
-  return result;
-}
-
-// Message to sign for address derivation
+// Legacy function for backwards compatibility
 export function getDerivationMessage(handle: string): string {
-  return `I am deriving my PATH402 address for @${handle}. This signature proves I control this account.`;
+  return SIGN_MESSAGES.derive(handle, new Date().toISOString());
 }
 
-// Verify a signature matches a handle (simplified)
-// In production, use proper signature verification
+// Legacy function for backwards compatibility
 export function verifyDerivationSignature(
   signature: string,
   handle: string,
   expectedAddress: string
 ): boolean {
-  const derived = deriveAddressFromSignature(signature, handle);
-  return derived.address === expectedAddress;
+  return verifySignatureOwnership(signature, handle, expectedAddress);
 }

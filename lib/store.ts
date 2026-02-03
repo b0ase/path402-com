@@ -183,6 +183,46 @@ export async function getAllHolders(): Promise<TokenHolder[]> {
   return Array.from(memoryStore.holders.values());
 }
 
+// Update holder balance (for withdrawals)
+export async function updateHolderBalance(holderId: string, delta: number): Promise<boolean> {
+  if (isDbConnected() && supabase) {
+    // Get current balance
+    const { data: holder } = await supabase
+      .from('path402_holders')
+      .select('balance')
+      .eq('id', holderId)
+      .single();
+
+    if (!holder) return false;
+
+    const newBalance = Math.max(0, holder.balance + delta);
+
+    const { error } = await supabase
+      .from('path402_holders')
+      .update({
+        balance: newBalance,
+        total_withdrawn: delta < 0 ? supabase.rpc('increment', { x: -delta }) : undefined,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', holderId);
+
+    return !error;
+  }
+
+  // Memory fallback
+  for (const [key, holder] of memoryStore.holders) {
+    if (holder.id === holderId) {
+      holder.balance = Math.max(0, holder.balance + delta);
+      if (delta < 0) {
+        holder.totalWithdrawn = (holder.totalWithdrawn || 0) + (-delta);
+      }
+      memoryStore.holders.set(key, holder);
+      return true;
+    }
+  }
+  return false;
+}
+
 // ============================================================================
 // TOKEN STATS
 // ============================================================================
