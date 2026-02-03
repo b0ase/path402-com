@@ -257,8 +257,8 @@ export default function Home() {
               {[
                 { href: "https://www.npmjs.com/package/path402-mcp-server", title: "path402-mcp-server", desc: "AI agent tools for discovering, evaluating, and acquiring $402 content", tag: "npm", external: true },
                 { href: "https://github.com/b0ase/path402-mcp-server", title: "GitHub Repository", desc: "Source code, issues, and contributions", tag: "github", external: true },
-                { href: "/exchange", title: "Exchange", desc: "Discover and acquire $402 tokens", tag: "marketplace", external: false },
-                { href: "https://b0ase.com/exchange", title: "b0ase.com/exchange", desc: "Live marketplace with real $402 tokens", tag: "live", external: true },
+                { href: "/exchange", title: "Exchange", desc: "Discover and acquire $PATH402 tokens", tag: "marketplace", external: false },
+                { href: "https://b0ase.com/exchange", title: "b0ase.com/exchange", desc: "Live marketplace with real $PATH402 tokens", tag: "live", external: true },
               ].map((item, i) => (
                 <motion.div
                   key={i}

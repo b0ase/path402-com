@@ -132,7 +132,7 @@ export function Sticky402Button() {
       {/* Success notification */}
       {showSuccess && (
         <div className="absolute bottom-full right-0 mb-2 bg-green-500 text-white px-3 py-1 rounded-full text-xs whitespace-nowrap animate-fade-in">
-          +{tokensToReceive.toLocaleString()} $402
+          +{tokensToReceive.toLocaleString()} $PATH402
         </div>
       )}
 
@@ -157,7 +157,7 @@ export function Sticky402Button() {
             inset 0 4px 12px rgba(255, 255, 255, 0.9)
           `,
         }}
-        title={wallet.connected ? `Buy $402 tokens ($0.01 → ${tokensToReceive.toLocaleString()} tokens)` : 'Connect wallet to buy $402'}
+        title={wallet.connected ? `Buy $PATH402 ($0.01 → ${tokensToReceive.toLocaleString()} tokens)` : 'Connect wallet to buy $PATH402'}
       >
         {/* Inner highlight */}
         <span

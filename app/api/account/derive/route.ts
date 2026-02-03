@@ -43,11 +43,11 @@ export async function POST(request: NextRequest) {
     let holderId: string | null = null;
 
     if (isDbConnected() && supabase) {
-      // Check if user already has a derived wallet
+      // Check if user already has a derived wallet (case-insensitive)
       const { data: existingWallet } = await supabase
         .from('user_wallets')
         .select('id, address')
-        .eq('handle', handle)
+        .ilike('handle', handle)
         .single();
 
       if (existingWallet) {
@@ -160,7 +160,7 @@ export async function GET(request: NextRequest) {
   const timestamp = new Date().toISOString();
   const message = SIGN_MESSAGES.derive(handle, timestamp);
 
-  // Check if user already has a wallet
+  // Check if user already has a wallet (case-insensitive)
   let hasExistingWallet = false;
   let existingAddress: string | null = null;
 
@@ -168,7 +168,7 @@ export async function GET(request: NextRequest) {
     const { data: existing } = await supabase
       .from('user_wallets')
       .select('address')
-      .eq('handle', handle)
+      .ilike('handle', handle)
       .single();
 
     if (existing) {

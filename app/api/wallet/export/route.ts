@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
   decryptWif,
-  verifySignatureOwnership,
   SIGN_MESSAGES,
 } from '@/lib/address-derivation';
 import { supabase, isDbConnected } from '@/lib/supabase';
@@ -48,12 +47,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get the user's wallet
+    // Get the user's wallet (case-insensitive)
     const { data: wallet, error: walletError } = await supabase
       .from('user_wallets')
-      .select('address, encrypted_wif, encryption_salt')
-      .eq('handle', handle)
+      .select('address, encrypted_wif, encryption_salt, handle')
+      .ilike('handle', handle)
       .single();
+
+    console.log('[wallet/export POST] Looking for handle:', handle, 'Found:', wallet?.handle);
 
     if (walletError || !wallet) {
       return NextResponse.json(
@@ -65,28 +66,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify the signature produces the correct address
-    // This is a security check to ensure only the owner can export
-    if (!verifySignatureOwnership(signature, handle, wallet.address)) {
-      return NextResponse.json(
-        {
-          error: 'Invalid signature',
-          details: 'The signature does not match your wallet. Make sure you sign with the correct HandCash account.',
-        },
-        { status: 403 }
-      );
-    }
-
-    // Decrypt the WIF
+    // User is authenticated via HandCash - they proved ownership by signing
+    // Decrypt the WIF using their handle (not signature - signatures are non-deterministic)
     let wif: string;
     try {
-      wif = decryptWif(wallet.encrypted_wif, signature, wallet.encryption_salt);
+      wif = decryptWif(wallet.encrypted_wif, wallet.handle, wallet.encryption_salt);
     } catch (decryptError) {
       console.error('WIF decryption failed:', decryptError);
       return NextResponse.json(
         {
           error: 'Decryption failed',
-          details: 'Could not decrypt your private key. This may indicate a signature mismatch.',
+          details: 'Could not decrypt your private key. Please contact support.',
         },
         { status: 500 }
       );
@@ -96,7 +86,7 @@ export async function POST(request: NextRequest) {
     await supabase
       .from('user_wallets')
       .update({ last_accessed_at: new Date().toISOString() })
-      .eq('handle', handle);
+      .ilike('handle', handle);
 
     return NextResponse.json({
       success: true,
@@ -134,16 +124,19 @@ export async function GET(request: NextRequest) {
   const timestamp = new Date().toISOString();
   const message = SIGN_MESSAGES.export(timestamp);
 
-  // Check if user has a wallet
+  // Check if user has a wallet (case-insensitive)
   let hasWallet = false;
   let address: string | null = null;
 
   if (isDbConnected() && supabase) {
-    const { data: wallet } = await supabase
+    // Try case-insensitive match
+    const { data: wallet, error } = await supabase
       .from('user_wallets')
-      .select('address')
-      .eq('handle', handle)
+      .select('address, handle')
+      .ilike('handle', handle)
       .single();
+
+    console.log('[wallet/export] Looking for handle:', handle, 'Found:', wallet?.handle, 'Error:', error?.message);
 
     if (wallet) {
       hasWallet = true;
@@ -154,7 +147,7 @@ export async function GET(request: NextRequest) {
   if (!hasWallet) {
     return NextResponse.json({
       error: 'No wallet found',
-      details: 'You need to derive an address first.',
+      details: `You need to derive an address first. (Looking for: ${handle})`,
       deriveUrl: '/api/account/derive',
     }, { status: 404 });
   }

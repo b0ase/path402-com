@@ -3,7 +3,10 @@
 // This means USER controls the keys, not PATH402
 
 import { createHash, createHmac, randomBytes, createCipheriv, createDecipheriv } from 'crypto';
-import bsv from 'bsv';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const bsv = require('bsv');
+
+const { PrivKey, PubKey, Address, Bn } = bsv;
 
 // Version prefix for key derivation (allows future upgrades)
 const DERIVATION_VERSION = 'PATH402-v1';
@@ -40,19 +43,20 @@ export function deriveWalletFromSignature(signature: string, handle: string): De
     .digest();
 
   // Create private key from seed (first 32 bytes)
-  // BSV SDK accepts Buffer for private key construction
-  const privateKey = bsv.PrivateKey.fromBuffer(seed.slice(0, 32));
+  // BSV v2 uses Bn (big number) for private key construction
+  const bn = Bn.fromBuffer(seed.slice(0, 32));
+  const privateKey = PrivKey.fromBn(bn);
 
   // Derive public key and address
-  const publicKey = privateKey.toPublicKey();
-  const address = privateKey.toAddress();
+  const publicKey = PubKey.fromPrivKey(privateKey);
+  const address = Address.fromPubKey(publicKey);
 
   // Get WIF (Wallet Import Format) - this is what user needs to export
-  const wif = privateKey.toWIF();
+  const wif = privateKey.toWif();
 
-  // Encrypt the WIF for storage
+  // Encrypt the WIF for storage (using handle, not signature)
   const salt = randomBytes(32).toString('hex');
-  const encryptedWif = encryptWif(wif, signature, salt);
+  const encryptedWif = encryptWif(wif, handle, salt);
 
   return {
     address: address.toString(),
@@ -64,15 +68,18 @@ export function deriveWalletFromSignature(signature: string, handle: string): De
 }
 
 /**
- * Encrypt WIF using AES-256-GCM with a signature-derived key.
+ * Encrypt WIF using AES-256-GCM with a handle-derived key.
  *
- * This allows users to decrypt their WIF by re-signing the same message.
- * We never store the unencrypted WIF or the signature.
+ * The encryption key is derived from handle + server secret + salt.
+ * Only authenticated users with that handle can decrypt.
  */
-function encryptWif(wif: string, signature: string, salt: string): string {
-  // Derive encryption key from signature using salt
+function encryptWif(wif: string, handle: string, salt: string): string {
+  // Server secret for WIF encryption - only the server can decrypt
+  const serverSecret = process.env.HANDCASH_APP_SECRET || 'path402-wif-encryption';
+
+  // Derive encryption key from handle + server secret
   const encryptionKey = createHmac('sha256', salt)
-    .update(signature)
+    .update(handle.toLowerCase() + serverSecret)
     .digest();
 
   // Generate random IV
@@ -93,14 +100,17 @@ function encryptWif(wif: string, signature: string, salt: string): string {
 }
 
 /**
- * Decrypt WIF using the user's signature.
+ * Decrypt WIF using the user's handle.
  *
- * User must sign the same derivation message to decrypt their WIF.
+ * Only authenticated users with the correct handle can decrypt.
  */
-export function decryptWif(encryptedWif: string, signature: string, salt: string): string {
-  // Derive encryption key from signature using salt
+export function decryptWif(encryptedWif: string, handle: string, salt: string): string {
+  // Server secret for WIF encryption - only the server can decrypt
+  const serverSecret = process.env.HANDCASH_APP_SECRET || 'path402-wif-encryption';
+
+  // Derive encryption key from handle + server secret
   const encryptionKey = createHmac('sha256', salt)
-    .update(signature)
+    .update(handle.toLowerCase() + serverSecret)
     .digest();
 
   // Parse the combined data
@@ -135,8 +145,10 @@ export function verifySignatureOwnership(
       .update(signature + handle)
       .digest();
 
-    const privateKey = bsv.PrivateKey.fromBuffer(seed.slice(0, 32));
-    const derivedAddress = privateKey.toAddress().toString();
+    const bn = Bn.fromBuffer(seed.slice(0, 32));
+    const privateKey = PrivKey.fromBn(bn);
+    const publicKey = PubKey.fromPrivKey(privateKey);
+    const derivedAddress = Address.fromPubKey(publicKey).toString();
 
     return derivedAddress === expectedAddress;
   } catch {

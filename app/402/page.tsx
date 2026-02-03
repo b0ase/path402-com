@@ -96,7 +96,7 @@ export default function WhitepaperPaywallPage() {
 
       setMessage({
         type: 'success',
-        text: `Payment successful! You received ${data.amount.toLocaleString()} $402 tokens. Downloading PDF...`
+        text: `Payment successful! You received ${data.amount.toLocaleString()} $PATH402 tokens. Downloading PDF...`
       });
 
       // Trigger PDF download
