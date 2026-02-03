@@ -1,0 +1,424 @@
+# Content Inscription Specification
+
+**Version**: 1.0.0
+**Date**: February 3, 2026
+**Status**: Draft
+
+## Overview
+
+This document specifies how content creators inscribe leaves (content) onto the $402 tree. Each inscription creates a tradeable bearer share representing access to that content.
+
+## Inscription Format
+
+### Minimal Inscription
+
+```json
+{
+  "p": "$402",
+  "op": "inscribe",
+  "path": "$example.com/$blog/$my-article",
+  "parent": "$example.com/$blog",
+  "content_type": "text/markdown",
+  "content": "# My Article\n\nThe actual content here...",
+  "pricing": {
+    "model": "sqrt_decay",
+    "base": 1000
+  }
+}
+```
+
+### Full Inscription
+
+```json
+{
+  "p": "$402",
+  "version": "1.0",
+  "op": "inscribe",
+  "path": "$example.com/$blog/$my-article",
+  "parent": "$example.com/$blog",
+  "parent_share_bps": 5000,
+
+  "content": {
+    "type": "text/markdown",
+    "encoding": "utf-8",
+    "data": "# My Article\n\nThe actual content here...",
+    "hash": "sha256:abc123...",
+    "size_bytes": 4500
+  },
+
+  "metadata": {
+    "title": "My Article Title",
+    "description": "One-line summary for bots",
+    "author": "$author.handle",
+    "created_at": "2026-02-03T12:00:00Z",
+    "tags": ["economics", "bitcoin", "prediction"],
+    "language": "en"
+  },
+
+  "pricing": {
+    "model": "sqrt_decay",
+    "base": 1000,
+    "floor": 10,
+    "ceiling": 100000
+  },
+
+  "supply": {
+    "total": 1000000,
+    "available": 500000,
+    "parent_allocation": 500000
+  },
+
+  "signals": {
+    "agenda": ["libertarian", "pro-crypto"],
+    "sentiment": "bullish",
+    "topics": ["monetary-policy", "defi"]
+  }
+}
+```
+
+## Field Reference
+
+### Required Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `p` | string | Protocol identifier: `"$402"` |
+| `op` | string | Operation: `"inscribe"` |
+| `path` | string | Full $path including domain |
+| `parent` | string | Parent $path (receives 50%) |
+| `content` | object/string | The actual content |
+| `pricing` | object | Pricing curve definition |
+
+### Content Object
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `type` | string | MIME type: `text/markdown`, `text/plain`, `application/json`, `image/png` |
+| `encoding` | string | Character encoding: `utf-8`, `base64` |
+| `data` | string | The content itself |
+| `hash` | string | `sha256:` prefixed hash for verification |
+| `size_bytes` | number | Content size |
+
+### Metadata Object (Bot-Critical)
+
+| Field | Type | Description | Bot Use |
+|-------|------|-------------|---------|
+| `title` | string | Human title | Display |
+| `description` | string | One-line summary | Fast scan |
+| `author` | string | Creator $handle | Reputation check |
+| `created_at` | string | ISO 8601 timestamp | Freshness |
+| `tags` | array | Topic tags | Filtering |
+| `language` | string | ISO 639-1 code | Market targeting |
+
+### Signals Object (Speculation-Critical)
+
+| Field | Type | Description | Bot Use |
+|-------|------|-------------|---------|
+| `agenda` | array | Self-declared bias | Agenda matching |
+| `sentiment` | string | `bullish`, `bearish`, `neutral` | Market signal |
+| `topics` | array | Detailed topic taxonomy | Deep filtering |
+| `controversy` | number | 0-100 controversy score | Viral potential |
+| `exclusivity` | string | `public`, `limited`, `exclusive` | Scarcity signal |
+
+## Content Types
+
+### Text Content
+
+```json
+{
+  "content": {
+    "type": "text/markdown",
+    "encoding": "utf-8",
+    "data": "# Article\n\nContent here..."
+  }
+}
+```
+
+### Structured Data
+
+```json
+{
+  "content": {
+    "type": "application/json",
+    "encoding": "utf-8",
+    "data": "{\"predictions\": [{\"asset\": \"BTC\", \"target\": 150000}]}"
+  }
+}
+```
+
+### Binary/Media (Base64)
+
+```json
+{
+  "content": {
+    "type": "image/png",
+    "encoding": "base64",
+    "data": "iVBORw0KGgo...",
+    "hash": "sha256:def456..."
+  }
+}
+```
+
+### Reference (Off-Chain Content)
+
+```json
+{
+  "content": {
+    "type": "reference",
+    "url": "ipfs://Qm...",
+    "hash": "sha256:ghi789...",
+    "size_bytes": 15000000
+  }
+}
+```
+
+## Pricing Strategies
+
+### For Speculation
+
+```json
+{
+  "pricing": {
+    "model": "sqrt_decay",
+    "base": 10000,
+    "floor": 100
+  }
+}
+```
+- High base = early buyers get massive advantage
+- Low floor = late mass adoption still possible
+
+### For Viral Content
+
+```json
+{
+  "pricing": {
+    "model": "sqrt_decay",
+    "base": 100,
+    "floor": 1
+  }
+}
+```
+- Low base = accessible to many
+- Price drops fast = mass distribution
+
+### For Premium/Exclusive
+
+```json
+{
+  "pricing": {
+    "model": "fixed",
+    "price": 50000
+  }
+}
+```
+- Fixed high price = no speculation, pure access
+
+### For Predictions/Research
+
+```json
+{
+  "pricing": {
+    "model": "sqrt_decay",
+    "base": 100000,
+    "variable": "treasury_remaining"
+  }
+}
+```
+- Investment variant: price rises as treasury depletes
+- Rewards early believers in the prediction
+
+## One-Click Inscription Flow
+
+### CLI Tool
+
+```bash
+# Install
+npm install -g $402-inscribe
+
+# Inscribe content
+$402-inscribe \
+  --path "$myblog.com/$articles/$prediction-btc-2027" \
+  --file ./my-article.md \
+  --base-price 5000 \
+  --tags "bitcoin,prediction,2027" \
+  --agenda "crypto-bullish"
+```
+
+### API Endpoint
+
+```http
+POST /api/inscribe
+Content-Type: application/json
+Authorization: Bearer <wallet-signature>
+
+{
+  "path": "$myblog.com/$articles/$prediction-btc-2027",
+  "content": "# My Prediction\n\nBTC will reach...",
+  "content_type": "text/markdown",
+  "pricing": {
+    "model": "sqrt_decay",
+    "base": 5000
+  },
+  "metadata": {
+    "title": "BTC 2027 Prediction",
+    "tags": ["bitcoin", "prediction"],
+    "agenda": ["crypto-bullish"]
+  }
+}
+```
+
+### Response
+
+```json
+{
+  "success": true,
+  "inscription_id": "abc123def456...",
+  "path": "$myblog.com/$articles/$prediction-btc-2027",
+  "tx_id": "bsv:xyz789...",
+  "initial_price_sats": 5000,
+  "tokens_available": 500000,
+  "parent_allocation": 500000,
+  "sample_url": "https://myblog.com/api/$402/sample/prediction-btc-2027"
+}
+```
+
+## Sample Endpoint (Critical for Bots)
+
+Every inscription SHOULD expose a free sample endpoint:
+
+```http
+GET /$402/sample/{path}
+```
+
+Returns truncated content for bot evaluation:
+
+```json
+{
+  "path": "$myblog.com/$articles/$prediction-btc-2027",
+  "inscription_id": "abc123...",
+  "metadata": {
+    "title": "BTC 2027 Prediction",
+    "description": "Analysis predicting BTC at $500k by 2027",
+    "author": "$satoshi",
+    "created_at": "2026-02-03T12:00:00Z",
+    "tags": ["bitcoin", "prediction"],
+    "agenda": ["crypto-bullish"]
+  },
+  "sample": {
+    "preview": "# BTC 2027 Prediction\n\nBased on my analysis of...",
+    "preview_percentage": 10,
+    "full_size_bytes": 4500
+  },
+  "pricing": {
+    "model": "sqrt_decay",
+    "current_price_sats": 4850,
+    "supply_sold": 150,
+    "supply_remaining": 499850
+  },
+  "signals": {
+    "agenda": ["crypto-bullish"],
+    "sentiment": "bullish",
+    "controversy": 75
+  }
+}
+```
+
+## Verification
+
+### Content Hash Verification
+
+```python
+import hashlib
+
+# Verify content matches declared hash
+content_bytes = inscription["content"]["data"].encode("utf-8")
+computed_hash = "sha256:" + hashlib.sha256(content_bytes).hexdigest()
+assert computed_hash == inscription["content"]["hash"]
+```
+
+### Parent Chain Verification
+
+```python
+# Verify parent exists and path is valid child
+parent_inscription = fetch_inscription(inscription["parent"])
+assert inscription["path"].startswith(parent_inscription["path"])
+```
+
+### Pricing Verification
+
+```python
+# Verify current price matches curve
+from math import sqrt
+
+base = inscription["pricing"]["base"]
+supply = inscription["supply"]["total"] - inscription["supply"]["available"]
+expected_price = base / sqrt(supply + 1)
+assert abs(current_price - expected_price) < 1  # Within 1 sat
+```
+
+## Events
+
+Inscriptions emit events for bot monitoring:
+
+| Event | Description | Bot Action |
+|-------|-------------|------------|
+| `inscribed` | New content created | Evaluate + maybe buy |
+| `purchased` | Someone bought tokens | Re-evaluate demand |
+| `price_changed` | Price moved significantly | Arbitrage opportunity |
+| `trending` | High purchase velocity | FOMO signal |
+
+### WebSocket Feed
+
+```javascript
+const ws = new WebSocket("wss://pathd.example.com/events");
+
+ws.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+
+  if (data.type === "inscribed") {
+    // New content - evaluate immediately
+    evaluateAndMaybeBuy(data.path, data.metadata, data.signals);
+  }
+
+  if (data.type === "trending") {
+    // High velocity - consider buying before price rises
+    urgentBuy(data.path);
+  }
+};
+```
+
+## Best Practices
+
+### For Content Creators
+
+1. **Declare your agenda** — Bots filter by agenda, hidden bias = less discovery
+2. **Write clear descriptions** — Bots scan descriptions, not full content
+3. **Tag accurately** — Wrong tags = wrong audience = no demand
+4. **Price for your goal** — High base for speculation, low base for distribution
+
+### For Nodes
+
+1. **Expose sample endpoints** — Bots need to evaluate before buying
+2. **Stream events** — Real-time feeds attract bot traffic
+3. **Cache aggressively** — Bots query frequently
+4. **Rate limit fairly** — Don't block legitimate speculation
+
+### For Bots
+
+1. **Scan samples first** — Don't buy blind
+2. **Check agenda alignment** — Only buy what serves your narrative
+3. **Monitor velocity** — High purchase rate = rising price
+4. **Diversify** — Spread across multiple agendas to hedge
+
+---
+
+## Related Documents
+
+- [TREE_MODEL.md](TREE_MODEL.md) - The 6 rules of the $402 tree
+- [PRICING_CURVES.md](PRICING_CURVES.md) - sqrt_decay and other models
+- [BOT_API_SPEC.md](BOT_API_SPEC.md) - Full bot API reference
+
+---
+
+**Last Updated**: February 3, 2026

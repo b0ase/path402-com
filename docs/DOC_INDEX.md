@@ -24,6 +24,13 @@
 | **[PRD-TOKEN-CUSTODY-STAKING.md](PRD-TOKEN-CUSTODY-STAKING.md)** | Product requirements for the custody and staking system |
 | **[INDEXER.md](INDEXER.md)** | Self-hosted BSV-20 token indexer (polls treasury, updates balances) |
 
+## For Bots & Speculators
+
+| Document | Description |
+|----------|-------------|
+| **[CONTENT_INSCRIPTION_SPEC.md](CONTENT_INSCRIPTION_SPEC.md)** | How to inscribe content leaves: format, metadata, signals, pricing |
+| **[BOT_API_SPEC.md](BOT_API_SPEC.md)** | Bot-friendly APIs: scan, sample, buy, sell, stream, analytics |
+
 ## Protocol Specification
 
 | Document | Description | Alignment Status |
