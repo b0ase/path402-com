@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://path402.com'),
   title: "$402 — The Path 402 Token Protocol",
   description: "Turn any URL into a priced, tokenised market. The protocol for AI-native micropayments on BSV.",
-  keywords: ["$402", "path token", "BSV", "micropayments", "AI payments", "tokenization", "HTTP 402"],
+  keywords: ["$402", "path token", "BSV", "micropayments", "AI payments", "tokenization", "HTTP 402", "MCP", "AI agents"],
   authors: [{ name: "b0ase", url: "https://x.com/b0ase" }],
   creator: "b0ase",
   openGraph: {
@@ -35,6 +35,12 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  other: {
+    "ai-content-declaration": "This website provides tokenised content services for AI agents via MCP",
+    "ai-integration": "MCP server available via npm: path402-mcp-server",
+    "ai-plugin": "https://path402.com/.well-known/ai-plugin.json",
+    "llms-txt": "https://path402.com/llms.txt",
+  },
 };
 
 export default function RootLayout({
@@ -44,6 +50,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="ai-plugin" href="https://path402.com/.well-known/ai-plugin.json" />
+        <link rel="alternate" type="text/plain" href="https://path402.com/llms.txt" title="LLMs.txt" />
+      </head>
       <body className={mono.className}>
         <ThemeProvider>
           <WalletProvider>
