@@ -56,11 +56,18 @@ function WhitepaperContent() {
             </motion.div>
 
             <motion.h1
-              className="text-5xl md:text-6xl font-black uppercase tracking-tighter mb-6"
+              className="text-5xl md:text-6xl font-black uppercase tracking-tighter mb-2"
               variants={fadeIn}
             >
-              $<span className="text-zinc-500">402</span> Protocol
+              $<span className="text-zinc-500">402</span>
             </motion.h1>
+
+            <motion.p
+              className="text-xs text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.3em] mb-4"
+              variants={fadeIn}
+            >
+              The Path 402 Token Protocol
+            </motion.p>
 
             <motion.p
               className="text-zinc-400 max-w-2xl mb-4 text-lg"

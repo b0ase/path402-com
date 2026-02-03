@@ -54,10 +54,13 @@ export default function AcademicWhitepaper() {
 
         {/* Title Block */}
         <header className="text-center mb-8">
-          <h1 className="text-2xl font-bold mb-4">
+          <h1 className="text-2xl font-bold mb-2">
             $402: A Path-Based Token Protocol for<br />
             Tokenized Web Content
           </h1>
+          <p className="text-sm text-gray-500 tracking-widest mb-4">
+            THE PATH 402 TOKEN PROTOCOL
+          </p>
           <p className="text-base mb-2">
             b0ase<br />
             <a href="mailto:hello@b0ase.com" className="text-blue-600">hello@b0ase.com</a>
