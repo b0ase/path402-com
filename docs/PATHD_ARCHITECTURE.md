@@ -1,0 +1,436 @@
+# $pathd Architecture
+
+**Version**: 1.0.0
+**Date**: February 3, 2026
+**Status**: Specification
+
+## Overview
+
+`$pathd` is the indexing and serving daemon for the $402 network. It plays the same role in the $402 ecosystem that `bitcoind` plays in Bitcoin: the core software that nodes run to participate in the network.
+
+```
+Bitcoin Network          $402 Network
+─────────────────        ─────────────────
+bitcoind                 $pathd
+  - Indexes blocks         - Indexes $402 tokens
+  - Validates txs          - Validates ownership
+  - Relays txs             - Serves content
+  - Earns BTC              - Earns $402
+```
+
+## Architecture
+
+### Layer Stack
+
+```
+Layer 0: BitcoinSV           ← 1M+ TPS base layer (payment rails)
+    ↓
+Layer 1: BSV-21 + PoW20      ← Token standard + mining rewards
+    ↓
+Layer 2: $pathd Network      ← Indexers serving paid content
+    ↓
+Interface: BRC-100           ← Browser ↔ $pathd communication
+    ↓
+Application: $402 Protocol   ← Paths, tokens, dividends
+```
+
+### Core Functions
+
+$pathd performs four essential functions:
+
+| Function | Description | Computation |
+|----------|-------------|-------------|
+| **INDEX** | Reads BSV blockchain, tracks all $402 tokens | O(blocks) |
+| **VALIDATE** | Confirms token ownership before serving | O(1) |
+| **SERVE** | Delivers content to verified token holders | O(content size) |
+| **EARN** | Receives $402 rewards via PoW20 | O(difficulty) |
+
+## Token Economics
+
+### Token as Perpetual Access
+
+The $402 token model works like a shareholder meeting pass:
+
+| Shareholder Meeting | $402 Token |
+|---------------------|------------|
+| Share certificate | BSV-21 token |
+| Entry to meeting | Access to content |
+| Not burned on entry | **Not burned on access** |
+| Dynamic information | Dynamic content stream |
+| Resellable share | Tradeable token |
+
+**Key insight**: The token is a **perpetual pass** because the content is a **living stream**. Unlike a movie ticket (one-time access), it's like a gym membership (ongoing access while you hold it).
+
+### Why Not Burn Tokens on Access?
+
+1. **Content is dynamic** - New updates, like shareholder meeting minutes
+2. **Perpetual value** - Holders benefit from ongoing content stream
+3. **Secondary market** - Tokens remain tradeable
+4. **Dividend alignment** - Holders earn from new buyers
+
+### Staking Mechanics
+
+```
+1 token staked = Can serve 1 access
+
+Staker holds 100 tokens:
+  → Can serve 100 concurrent accesses
+  → Earns share of fees from those accesses
+  → Sells 50 tokens → Can only serve 50 accesses
+
+Incentive alignment:
+  → No token = No serving rights = No revenue
+  → More tokens = More serving capacity = More revenue
+```
+
+## PoW20 Integration
+
+### Reward Mechanism
+
+$pathd nodes earn $402 tokens through PoW20 (proof-of-work token minting):
+
+```
+1. $pathd node indexes blockchain         → computational work
+2. $pathd node serves content to users    → network work
+3. $pathd node solves hash puzzle         → proof of work
+4. Node earns $402 tokens                 → reward
+
+Formula: double_sha256(solution) < difficulty
+
+Where solution = $402:ADDRESS:BLOCK_HEADER:NONCE
+```
+
+### PoW20 Parameters
+
+| Parameter | Value | Description |
+|-----------|-------|-------------|
+| `p` | `bsv-20` | Protocol identifier |
+| `op` | `deploy+mint` | BSV-21 operation |
+| `tick` | `$402` | Token identifier |
+| `difficulty` | 4 | Leading zeros required |
+| `block_reward` | 1000 | Tokens per successful mine |
+| `halving_interval` | 210000 | Blocks between halvings |
+
+### Why PoW for Indexers?
+
+The same reason Bitcoin uses PoW for miners:
+
+1. **Computational cost** → Forces capital investment
+2. **Capital investment** → Economies of scale
+3. **Economies of scale** → Large operations
+4. **Large operations** → Physical presence
+5. **Physical presence** → Regulatory visibility
+6. **Regulatory visibility** → Compliance pressure
+
+This is the "Coinbase effect": Coinbase is a giant indexer. It's regulated BECAUSE it's large. PoW20 creates many competing Coinbases.
+
+## BRC-100 Interface
+
+### Browser as Wallet
+
+The browser acts as a wallet, holding $402 tokens. Communication with $pathd uses the BRC-100 standard:
+
+```
+┌──────────────┐         BRC-100          ┌──────────────┐
+│              │◄────────────────────────►│              │
+│   BROWSER    │    wallet-app spec       │    $pathd    │
+│   (wallet)   │                          │   (server)   │
+│              │                          │              │
+│  Holds:      │         Request:         │  Validates:  │
+│  - $402 tokens│     "I hold 5 $BLOG"    │  - Ownership │
+│  - Identity  │         Response:        │  - Serves    │
+│              │     "Access granted"     │    content   │
+└──────────────┘                          └──────────────┘
+```
+
+### BRC-100 Methods Used
+
+| Method | Purpose | $pathd Usage |
+|--------|---------|--------------|
+| `createAction` | Construct transactions | Token transfers |
+| `createSignature` | Prove ownership | Access verification |
+| `listOutputs` | Query token holdings | Check balances |
+| `acquireCertificate` | Identity verification | KYC for staking |
+| `verifySignature` | Validate proofs | Content access |
+
+### Access Flow
+
+```
+1. User requests content from $pathd node
+2. $pathd requests signature via BRC-100
+3. Browser signs challenge with token private key
+4. $pathd verifies signature against BSV-21 UTXO
+5. If valid: Content served
+6. If invalid: 402 Payment Required response
+```
+
+## Installation
+
+### npm (Recommended)
+
+```bash
+npm install -g pathd
+pathd start
+```
+
+### From Source
+
+```bash
+git clone https://github.com/path402/pathd
+cd pathd
+npm install
+npm run build
+npm link
+pathd start
+```
+
+### Docker
+
+```bash
+docker run -d \
+  --name pathd \
+  -p 8402:8402 \
+  -v pathd-data:/data \
+  path402/pathd:latest
+```
+
+## Configuration
+
+### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PATHD_PORT` | 8402 | HTTP server port |
+| `PATHD_DATA_DIR` | `~/.pathd` | Data directory |
+| `PATHD_BSV_NODE` | `https://api.whatsonchain.com` | BSV node endpoint |
+| `PATHD_WALLET_KEY` | (required) | Node wallet private key |
+| `PATHD_POW_ENABLED` | `true` | Enable PoW20 mining |
+| `PATHD_POW_THREADS` | `4` | Mining thread count |
+
+### Config File
+
+`~/.pathd/config.json`:
+
+```json
+{
+  "port": 8402,
+  "bsvNode": "https://api.whatsonchain.com",
+  "indexing": {
+    "startBlock": 800000,
+    "batchSize": 100
+  },
+  "pow": {
+    "enabled": true,
+    "threads": 4,
+    "difficulty": 4
+  },
+  "serving": {
+    "maxConcurrent": 1000,
+    "rateLimit": 100
+  }
+}
+```
+
+## API Reference
+
+### Discovery
+
+```http
+GET /.well-known/$402.json
+```
+
+Returns network discovery information:
+
+```json
+{
+  "$402_version": "2.1",
+  "node": {
+    "id": "pathd-abc123",
+    "stake": 50000,
+    "uptime": 99.9
+  },
+  "tokens": [
+    {
+      "path": "$example.com",
+      "price_sats": 4500,
+      "supply": 1000000
+    }
+  ]
+}
+```
+
+### Token Query
+
+```http
+GET /api/tokens/:path
+```
+
+Returns token details:
+
+```json
+{
+  "path": "$example.com/$blog",
+  "inscription_id": "abc123...",
+  "pricing": {
+    "model": "sqrt_decay",
+    "base": 500,
+    "current": 450
+  },
+  "supply": {
+    "total": 1000000,
+    "available": 499000
+  }
+}
+```
+
+### Access Verification
+
+```http
+POST /api/verify
+Content-Type: application/json
+
+{
+  "path": "$example.com/$blog",
+  "signature": "base64...",
+  "pubkey": "02abc..."
+}
+```
+
+Returns:
+
+```json
+{
+  "access": true,
+  "tokens_held": 5,
+  "content_url": "https://cdn.example.com/blog/..."
+}
+```
+
+### Content Serving
+
+```http
+GET /content/:path
+X-$402-Signature: base64...
+X-$402-Pubkey: 02abc...
+```
+
+Returns content if signature is valid, otherwise:
+
+```http
+HTTP/1.1 402 Payment Required
+X-$402-Price: 4500
+X-$402-Token: $example.com/$blog
+```
+
+## Network Topology
+
+### Node Discovery
+
+$pathd nodes discover each other through:
+
+1. **DNS Seeds** - Hardcoded seed nodes
+2. **Peer Exchange** - Active nodes share peer lists
+3. **BSV Inscriptions** - Node announcements on-chain
+
+### Gossip Protocol
+
+```
+Node A indexes new $402 token
+  → Broadcasts to connected peers
+  → Peers validate and rebroadcast
+  → Network converges on same state
+```
+
+### Consensus
+
+There is no consensus required between $pathd nodes. Each node:
+
+1. Reads the same BSV blockchain
+2. Applies the same validation rules
+3. Arrives at the same token state
+
+**The ledger IS the state machine. Indexers are caches.**
+
+## Security
+
+### Access Control
+
+- All content access requires valid token signature
+- Signatures are verified against live BSV UTXOs
+- Replay attacks prevented by nonce/timestamp
+
+### DDoS Protection
+
+- Rate limiting per IP and per token
+- Proof-of-token required for heavy operations
+- Stake-weighted priority queuing
+
+### Key Management
+
+- Node private keys stored encrypted at rest
+- HSM support for enterprise deployments
+- Multi-sig support for treasury operations
+
+## Monitoring
+
+### Metrics Endpoint
+
+```http
+GET /metrics
+```
+
+Prometheus-compatible metrics:
+
+```
+pathd_indexed_blocks_total 850000
+pathd_tokens_tracked 12500
+pathd_content_served_bytes_total 1.2e12
+pathd_pow_hashes_computed_total 1e15
+pathd_$402_earned_total 50000
+```
+
+### Health Check
+
+```http
+GET /health
+```
+
+```json
+{
+  "status": "healthy",
+  "indexed_block": 850000,
+  "peers": 42,
+  "uptime_seconds": 86400
+}
+```
+
+## Roadmap
+
+### v1.0 (Q1 2026)
+- [x] BSV-21 token indexing
+- [x] Basic content serving
+- [x] BRC-100 signature verification
+- [ ] PoW20 mining integration
+
+### v1.1 (Q2 2026)
+- [ ] Peer-to-peer networking
+- [ ] Hierarchical path support
+- [ ] Stake-weighted content delivery
+
+### v2.0 (Q3 2026)
+- [ ] Native MCP server integration
+- [ ] AI agent optimization
+- [ ] Enterprise clustering
+
+## References
+
+1. [BSV-21 Token Standard](https://docs.1satordinals.com/fungible-tokens/bsv-21)
+2. [PoW-20 Protocol](https://protocol.pow20.io/)
+3. [BRC-100 Wallet Interface](https://bsv.brc.dev/wallet/0100)
+4. [$402 Protocol Whitepaper](https://path402.com/whitepaper)
+5. [Bitcoin: A Peer-to-Peer Electronic Cash System](https://bitcoin.org/bitcoin.pdf)
+
+---
+
+**Last Updated**: February 3, 2026
+**Maintained By**: PATH402 Team

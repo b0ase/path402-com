@@ -258,6 +258,7 @@ No separate classes. The path is open to everyone.`}
             </motion.h2>
             <div className="space-y-3">
               {[
+                { href: "/pathd", title: "$pathd", desc: "Network daemon: index, validate, serve, earn. Power the $402 network.", tag: "daemon", external: false },
                 { href: "https://www.npmjs.com/package/path402-mcp-server", title: "path402-mcp-server", desc: "AI agent tools for discovering, evaluating, and acquiring $402 content", tag: "npm", external: true },
                 { href: "https://github.com/b0ase/path402-mcp-server", title: "GitHub Repository", desc: "Source code, issues, and contributions", tag: "github", external: true },
                 { href: "/exchange", title: "Exchange", desc: "Discover and acquire $PATH402 tokens", tag: "marketplace", external: false },
@@ -303,6 +304,71 @@ No separate classes. The path is open to everyone.`}
                 </motion.div>
               ))}
             </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* $pathd Daemon */}
+      <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={staggerContainer}
+          >
+            <motion.h2
+              className="text-[10px] font-bold text-zinc-500 mb-6 uppercase tracking-widest"
+              variants={fadeIn}
+            >
+              Network Node
+            </motion.h2>
+            <motion.div
+              className="border border-zinc-200 dark:border-zinc-800 p-8 bg-zinc-50 dark:bg-zinc-950"
+              variants={fadeIn}
+            >
+              <div className="flex items-start justify-between mb-6">
+                <div>
+                  <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-2">$pathd</h3>
+                  <p className="text-zinc-500">
+                    The indexing and serving daemon for the $402 network.
+                    Like <code className="text-zinc-900 dark:text-white bg-zinc-100 dark:bg-zinc-900 px-2 py-1 border border-zinc-200 dark:border-zinc-800">bitcoind</code> for Bitcoin.
+                  </p>
+                </div>
+                <span className="text-blue-600 dark:text-blue-400 font-mono text-[10px] uppercase tracking-widest bg-blue-50 dark:bg-blue-950 px-3 py-1 border border-blue-200 dark:border-blue-800">
+                  Coming Soon
+                </span>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                {[
+                  { title: "INDEX", desc: "Track all $402 tokens on BSV" },
+                  { title: "VALIDATE", desc: "Confirm ownership before serving" },
+                  { title: "SERVE", desc: "Deliver content to token holders" },
+                  { title: "EARN", desc: "Receive $402 via PoW20" },
+                ].map((item, i) => (
+                  <motion.div
+                    key={i}
+                    className="text-center p-4 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black"
+                    variants={scaleIn}
+                    transition={{ duration: 0.3, delay: i * 0.05 }}
+                  >
+                    <div className="text-xs font-bold text-zinc-900 dark:text-white uppercase tracking-widest mb-1">{item.title}</div>
+                    <p className="text-[10px] text-zinc-500">{item.desc}</p>
+                  </motion.div>
+                ))}
+              </div>
+              <div className="flex flex-wrap gap-4">
+                <pre className="flex-1 bg-white dark:bg-black p-4 font-mono text-sm text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800">
+                  npm install -g pathd
+                </pre>
+                <Link
+                  href="/docs/PATHD_ARCHITECTURE"
+                  className="inline-flex items-center gap-2 px-6 py-4 bg-zinc-900 dark:bg-white text-white dark:text-black font-bold uppercase tracking-widest text-xs hover:bg-zinc-700 dark:hover:bg-zinc-200 transition-colors"
+                >
+                  Read the Spec
+                </Link>
+              </div>
+            </motion.div>
           </motion.div>
         </div>
       </section>

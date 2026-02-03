@@ -52,7 +52,7 @@ function WhitepaperContent() {
               className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-[10px] uppercase tracking-widest text-zinc-500 mb-8"
               variants={fadeIn}
             >
-              WHITEPAPER_V2.0.0
+              WHITEPAPER_V2.1.0
             </motion.div>
 
             <motion.h1
@@ -645,6 +645,166 @@ Stake:      path402_stake, path402_serve`}
         </div>
       </section>
 
+      {/* Step 9: Network Incentives */}
+      <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-sm font-bold text-zinc-900 dark:text-white mb-2 uppercase tracking-wide">Step 9</h2>
+          <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-6">Network Incentives: The $pathd Daemon</h3>
+
+          <p className="text-zinc-400 leading-relaxed mb-6">
+            Bitcoin has <span className="font-mono text-blue-400">bitcoind</span>. The $402 network has <span className="font-mono text-blue-400">$pathd</span>.
+          </p>
+
+          <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">What is $pathd?</h4>
+          <p className="text-zinc-400 leading-relaxed mb-4">
+            The <strong className="text-zinc-900 dark:text-white">$pathd daemon</strong> is the indexing and serving software that powers the $402 network.
+            Anyone can download and run it. Those who do become <em className="text-zinc-900 dark:text-white">network nodes</em>.
+          </p>
+
+          <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
+{`$pathd does four things:
+
+1. INDEXES  → Reads BSV blockchain, tracks all $402 tokens
+2. VALIDATES → Confirms token ownership before serving content
+3. SERVES   → Delivers content to verified token holders
+4. EARNS    → Receives $402 rewards for computational work`}
+          </pre>
+
+          <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">PoW20: Proof of Work for Indexers</h4>
+          <p className="text-zinc-400 leading-relaxed mb-6">
+            How do we incentivize people to run $pathd? The same way Bitcoin incentivizes miners: <strong className="text-zinc-900 dark:text-white">proof of work</strong>.
+          </p>
+
+          <p className="text-zinc-400 leading-relaxed mb-4">
+            PoW20 is a BSV-21 feature that requires hash puzzles to mint tokens. The $402 protocol uses PoW20 to reward indexers:
+          </p>
+
+          <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
+{`PoW20 Reward Mechanism:
+
+1. $pathd node indexes blockchain         → computational work
+2. $pathd node serves content to users    → network work
+3. $pathd node solves hash puzzle         → proof of work
+4. Node earns $402 tokens                 → reward
+
+Formula: double_sha256(solution) < difficulty
+
+Where solution = TICK:ADDRESS:BLOCK_HEADER:NONCE`}
+          </pre>
+
+          <p className="text-zinc-400 leading-relaxed mb-6">
+            <strong className="text-zinc-900 dark:text-white">Why PoW?</strong> Scale creates compliance. Large indexers can't hide from regulators.
+            This is the same dynamic that makes Bitcoin miners visible and accountable.
+          </p>
+
+          <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">Token as Perpetual Access</h4>
+          <p className="text-zinc-400 leading-relaxed mb-4">
+            The token model works like a <strong className="text-zinc-900 dark:text-white">shareholder meeting pass</strong>:
+          </p>
+
+          <div className="overflow-x-auto mb-6">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-zinc-800">
+                  <th className="text-left py-3 text-zinc-500 font-bold uppercase tracking-widest text-[10px]">Shareholder Meeting</th>
+                  <th className="text-left py-3 text-zinc-500 font-bold uppercase tracking-widest text-[10px]">$402 Token</th>
+                </tr>
+              </thead>
+              <tbody className="text-zinc-400">
+                <tr className="border-b border-zinc-800">
+                  <td className="py-3">Share certificate</td>
+                  <td className="py-3">BSV-21 token</td>
+                </tr>
+                <tr className="border-b border-zinc-800">
+                  <td className="py-3">Entry to meeting</td>
+                  <td className="py-3">Access to content</td>
+                </tr>
+                <tr className="border-b border-zinc-800">
+                  <td className="py-3">Not burned on entry</td>
+                  <td className="py-3 text-green-400">Not burned on access</td>
+                </tr>
+                <tr className="border-b border-zinc-800">
+                  <td className="py-3">Dynamic information</td>
+                  <td className="py-3">Dynamic content stream</td>
+                </tr>
+                <tr>
+                  <td className="py-3">Resellable share</td>
+                  <td className="py-3 text-green-400">Tradeable token</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p className="text-zinc-400 leading-relaxed mb-6">
+            The token is a <strong className="text-zinc-900 dark:text-white">perpetual pass</strong> because the content is a <strong className="text-zinc-900 dark:text-white">living stream</strong>.
+            Shareholder meetings provide ongoing value as long as you hold shares. $402 content works the same way.
+          </p>
+
+          <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">Browser as Wallet (BRC-100)</h4>
+          <p className="text-zinc-400 leading-relaxed mb-4">
+            How does the browser talk to $pathd? Through the <span className="font-mono text-blue-400">BRC-100</span> wallet interface.
+          </p>
+
+          <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
+{`┌──────────────┐         BRC-100          ┌──────────────┐
+│              │◄────────────────────────►│              │
+│   BROWSER    │    wallet-app spec       │    $pathd    │
+│   (wallet)   │                          │   (server)   │
+│              │                          │              │
+│  Holds:      │         Request:         │  Validates:  │
+│  - $402 tokens│     "I hold 5 $BLOG"    │  - Ownership │
+│  - Identity  │         Response:        │  - Serves    │
+│              │     "Access granted"     │    content   │
+└──────────────┘                          └──────────────┘`}
+          </pre>
+
+          <p className="text-zinc-400 leading-relaxed mb-4">
+            BRC-100 defines:
+          </p>
+          <ul className="space-y-2 text-zinc-400 mb-6">
+            <li className="flex gap-3">
+              <span className="text-blue-400">→</span>
+              <span><strong className="text-zinc-900 dark:text-white">createAction</strong> — Construct transactions</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="text-blue-400">→</span>
+              <span><strong className="text-zinc-900 dark:text-white">createSignature</strong> — Prove ownership</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="text-blue-400">→</span>
+              <span><strong className="text-zinc-900 dark:text-white">listOutputs</strong> — Query token holdings</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="text-blue-400">→</span>
+              <span><strong className="text-zinc-900 dark:text-white">acquireCertificate</strong> — Identity verification</span>
+            </li>
+          </ul>
+
+          <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">The Complete Stack</h4>
+          <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
+{`Layer 0: BitcoinSV           ← 1M+ TPS base layer
+    ↓
+Layer 1: BSV-21 + PoW20      ← Token standard + mining
+    ↓
+Layer 2: $pathd Network      ← Indexers serving content
+    ↓
+Interface: BRC-100           ← Browser ↔ $pathd
+    ↓
+Application: $402 Protocol   ← Paths, tokens, dividends`}
+          </pre>
+
+          <div className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-center">
+            <p className="text-zinc-500 text-sm mb-2">Download and run:</p>
+            <p className="text-zinc-900 dark:text-white text-lg font-mono">
+              npm install -g pathd
+            </p>
+            <p className="text-zinc-500 text-sm mt-2">
+              Become a node. Earn $402. Power the network.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Implementation */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
         <div className="max-w-4xl mx-auto">
@@ -752,6 +912,9 @@ X-$402-Model: sqrt_decay
             <li>[3] Coinbase (2024). x402 Protocol Specification.</li>
             <li>[4] Anthropic (2024). Model Context Protocol (MCP).</li>
             <li>[5] PATH402.com (2026). Protocol Vision Document.</li>
+            <li>[6] 1Sat Ordinals (2024). BSV-21 Token Standard. docs.1satordinals.com</li>
+            <li>[7] POW-20 Protocol (2024). Layer-1 tokens backed by proof-of-work. protocol.pow20.io</li>
+            <li>[8] BSV Association (2025). BRC-100 Wallet-to-Application Interface. bsv.brc.dev/wallet/0100</li>
           </ol>
         </div>
       </section>
@@ -766,7 +929,7 @@ X-$402-Model: sqrt_decay
             </a>.
           </p>
           <p className="text-zinc-600 text-xs uppercase tracking-widest">
-            Version 2.0.0 · February 2026 · <a href="https://path402.com" className="text-blue-400 hover:text-blue-300 transition-colors">path402.com</a>
+            Version 2.1.0 · February 2026 · <a href="https://path402.com" className="text-blue-400 hover:text-blue-300 transition-colors">path402.com</a>
           </p>
         </div>
       </section>

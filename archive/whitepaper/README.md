@@ -8,10 +8,22 @@ This directory contains archived versions of the $402 Whitepaper.
 |---------|------|-------------|
 | **v1.0.0** | Feb 3, 2026 | Initial whitepaper - "Unilateral Token Contracts" |
 | **v2.0.0** | Feb 3, 2026 | Complete rewrite - 8-step model with flywheel |
+| **v2.1.0** | Feb 3, 2026 | Added Step 9: Network Incentives ($pathd, PoW20, BRC-100) |
 
 ## Changelog
 
-### v2.0.0 (Current)
+### v2.1.0 (Current)
+
+Added network layer and incentives:
+
+- **Added**: Step 9 - Network Incentives: The $pathd Daemon
+- **Added**: PoW20 reward mechanism for indexers
+- **Added**: BRC-100 wallet-app interface for browser↔$pathd communication
+- **Added**: Token as perpetual access model (shareholder meeting analogy)
+- **Added**: Complete layer stack diagram (BSV → BSV-21 → $pathd → BRC-100 → $402)
+- **Added**: References to BSV-21, PoW20, and BRC-100 specifications
+
+### v2.0.0
 
 Complete rewrite focused on clarity and the flywheel model:
 

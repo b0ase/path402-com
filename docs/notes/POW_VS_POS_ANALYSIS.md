@@ -215,3 +215,54 @@ A whitepaper that:
 - Has maths to back it up
 - Resolves PoW vs PoS: HYBRID model where both serve different purposes
 - Explains the regulatory compliance through scale dynamic
+
+---
+
+## Resolution (February 3, 2026)
+
+### Decision: Hybrid Model Adopted
+
+After extensive research, the $402 whitepaper v2.1.0 now includes **Step 9: Network Incentives** which resolves the PoW vs PoS tension:
+
+**PoW20 for Infrastructure Rewards:**
+- $pathd nodes earn $402 tokens by solving hash puzzles
+- Computational work = indexing + serving + validation
+- Formula: `double_sha256(solution) < difficulty`
+- Forces scale → forces compliance (the "Coinbase effect")
+
+**PoS for Fee Distribution:**
+- Stakers lock tokens → become partners
+- Partners earn entry fees + dividends
+- KYC required for dividend tier
+- Existing model preserved
+
+### Key Insight: Token as Perpetual Access
+
+The token model works like a **shareholder meeting pass**:
+- Token = entry ticket (not burned on access)
+- Content = dynamic stream (like meeting updates)
+- Resellable = secondary market exists
+- Staking = serving rights + dividends
+
+### Complete Stack
+
+```
+Layer 0: BitcoinSV           ← 1M+ TPS base layer
+    ↓
+Layer 1: BSV-21 + PoW20      ← Token standard + mining
+    ↓
+Layer 2: $pathd Network      ← Indexers serving content
+    ↓
+Interface: BRC-100           ← Browser ↔ $pathd
+    ↓
+Application: $402 Protocol   ← Paths, tokens, dividends
+```
+
+### Implementation
+
+- **Whitepaper v2.1.0**: Added Step 9 with full specification
+- **PATHD_ARCHITECTURE.md**: Created detailed daemon specification
+- **Landing page**: Added $pathd section with download button
+- **DOC_INDEX.md**: Updated to 9 steps, added $pathd docs
+
+**Status**: RESOLVED

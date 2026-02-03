@@ -4,7 +4,7 @@
 
 | Document | Description |
 |----------|-------------|
-| **[PROTOCOL_VISION.md](PROTOCOL_VISION.md)** | **START HERE** — The $402 protocol vision in 8 steps: Bearer Shares, Compliance, Pricing Curves, Paths as Entities, Hierarchical Ownership, Extensibility, Staking Partners, AI Agents |
+| **[PROTOCOL_VISION.md](PROTOCOL_VISION.md)** | **START HERE** — The $402 protocol vision in 9 steps: Bearer Shares, Compliance, Pricing Curves, Paths as Entities, Hierarchical Ownership, Extensibility, Staking Partners, AI Agents, Network Incentives |
 
 > **Note**: PROTOCOL_VISION.md is the authoritative source for the $402 protocol design. Other documents may contain older terminology or partial implementations. When in doubt, defer to PROTOCOL_VISION.md.
 
@@ -28,10 +28,11 @@
 
 | Document | Description | Alignment Status |
 |----------|-------------|------------------|
-| **[PROTOCOL_VISION.md](PROTOCOL_VISION.md)** | Canonical $402 protocol (8 steps) | ✓ Source of truth |
+| **[PROTOCOL_VISION.md](PROTOCOL_VISION.md)** | Canonical $402 protocol (9 steps) | ✓ Source of truth |
 | **[$402-STANDARD.md]($402-STANDARD.md)** | HTTP 402 implementation spec v2.0.0 | ✓ Aligned |
 | **[PRICING_CURVES.md](PRICING_CURVES.md)** | Library of pricing curves for token issuers | ✓ Aligned |
 | **[ARCHITECTURE.md](ARCHITECTURE.md)** | Five-layer architecture | ✓ Aligned |
+| **[PATHD_ARCHITECTURE.md](PATHD_ARCHITECTURE.md)** | $pathd daemon specification, PoW20, BRC-100 | ✓ New |
 
 ## Business
 
@@ -61,6 +62,8 @@
 **Protocol docs**: [path402.com/docs](https://path402.com/docs)
 
 **MCP server**: [npmjs.com/package/path402-mcp-server](https://www.npmjs.com/package/path402-mcp-server)
+
+**$pathd daemon**: [path402.com/pathd](https://path402.com/pathd)
 
 ---
 
