@@ -394,6 +394,7 @@ No separate classes. The path is open to everyone.`}
             </motion.h2>
             <div className="space-y-3">
               {[
+                { href: "/download", title: "Desktop Client", desc: "Download the $402 daemon for Mac, Windows, Linux", tag: "download", external: false },
                 { href: "https://www.npmjs.com/package/path402", title: "path402", desc: "MCP server + daemon + CLI in one package", tag: "npm", external: true },
                 { href: "https://github.com/b0ase/path402", title: "GitHub", desc: "Source code, issues, and contributions", tag: "github", external: true },
                 { href: "/exchange", title: "Exchange", desc: "Discover and acquire $402 tokens", tag: "marketplace", external: false },
