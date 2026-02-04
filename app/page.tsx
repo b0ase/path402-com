@@ -68,7 +68,7 @@ export default function Home() {
               variants={fadeIn}
               transition={{ duration: 0.6, delay: 0.25 }}
             >
-              Access Tokens for the Open Web
+              PATH 402 TOKEN PROTOCOL
             </motion.p>
 
             <motion.p
@@ -76,7 +76,7 @@ export default function Home() {
               variants={fadeIn}
               transition={{ duration: 0.6, delay: 0.3 }}
             >
-              Mint an access token for anything addressable: your attention, your API, your content.
+              Turn any URL into a shareholder business
             </motion.p>
 
             <motion.p
@@ -85,7 +85,7 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.35 }}
             >
               Put a <code className="text-zinc-900 dark:text-white bg-zinc-100 dark:bg-zinc-900 px-2 py-1 border border-zinc-200 dark:border-zinc-800">$</code> in front of any path
-              and it becomes a tokenized market. Whether that path points to a person, a domain, or an API—
+              and it becomes a tokenized asset. Whether that path points to a person, a domain, or an API—
               tokens gate access, payment flows to holders.
             </motion.p>
 
