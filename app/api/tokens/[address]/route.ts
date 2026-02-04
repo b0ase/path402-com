@@ -74,7 +74,11 @@ export async function POST(
     }
 
     const body = await request.json();
-    const { amount, spend_sats, payment_tx_id } = body;
+    let { amount, spend_sats, payment_tx_id } = body;
+
+    if (!payment_tx_id) {
+      payment_tx_id = request.headers.get('x-bsv-payment-txid');
+    }
 
     if (!amount && !spend_sats) {
       return NextResponse.json({ error: 'Specify amount or spend_sats' }, { status: 400 });
@@ -105,10 +109,19 @@ export async function POST(
     }
 
     if (!payment_tx_id) {
+      const recipient = token.issuer_address || PAYMENT_ADDRESS;
       return NextResponse.json({
         error: 'Payment required',
         details: 'Provide payment_tx_id for on-chain verification',
-      }, { status: 402 });
+      }, {
+        status: 402,
+        headers: {
+          'x-bsv-payment-amount': totalCostSats.toString(),
+          'x-bsv-payment-destination': recipient,
+          'x-bsv-payment-desc': `Purchase ${tokenAmount} ${token.name || token.address}`,
+          'content-type': 'application/json'
+        }
+      });
     }
 
     const recipient = token.issuer_address || PAYMENT_ADDRESS;

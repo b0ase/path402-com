@@ -108,13 +108,28 @@ export async function POST(
     }
 
     const body = await request.json();
-    const { payment_tx_id } = body;
+    let { payment_tx_id } = body;
+
+    if (!payment_tx_id) {
+      payment_tx_id = request.headers.get('x-bsv-payment-txid');
+    }
+
+    const minPayment = usagePricing.min_payment_sats || usagePricing.price_sats_per_unit;
+    const recipient = usagePricing.payment_address || token.issuer_address || PAYMENT_ADDRESS;
 
     if (!payment_tx_id) {
       return NextResponse.json({
         error: 'Payment required',
         details: 'Provide payment_tx_id for BSV verification',
-      }, { status: 402 });
+      }, {
+        status: 402,
+        headers: {
+          'x-bsv-payment-amount': minPayment.toString(),
+          'x-bsv-payment-destination': recipient,
+          'x-bsv-payment-desc': `Stream access for ${token.address} (${usagePricing.unit_ms}ms block)`,
+          'content-type': 'application/json'
+        }
+      });
     }
 
     const supabase = getSupabase();
@@ -134,9 +149,6 @@ export async function POST(
         }, { status: 402 });
       }
     }
-
-    const minPayment = usagePricing.min_payment_sats || usagePricing.price_sats_per_unit;
-    const recipient = usagePricing.payment_address || token.issuer_address || PAYMENT_ADDRESS;
 
     const verification = await verifyBsvPaymentTx({
       txId: payment_tx_id,

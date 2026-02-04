@@ -24,6 +24,7 @@ const PAGE_CATEGORIES: PageCategory[] = [
     icon: FaBook,
     pages: [
       { path: '/', title: 'Home', description: 'The $402 Protocol - tokenize any URL path' },
+      { path: '/blog', title: 'Blog', description: 'Protocol insights and attention economy essays' },
       { path: '/whitepaper', title: 'Whitepaper', description: 'Technical specification and economics' },
       { path: '/whitepaper/academic', title: 'Academic Paper', description: 'Formal academic specification' },
       { path: '/docs', title: 'Documentation', description: 'Integration guides and API reference' },

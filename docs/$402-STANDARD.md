@@ -1,6 +1,6 @@
 # The $402 Standard
 
-**Version**: 3.0.0
+**Version**: 3.1.0 (BRC-Aligned)
 **Status**: Living Document
 **Reference Implementation**: [PATH402.com](https://path402.com)
 **Canonical Vision**: [PROTOCOL_VISION.md](PROTOCOL_VISION.md)
@@ -8,561 +8,155 @@
 
 ## Abstract
 
-The $402 standard defines a protocol for tokenized attention markets. It enables:
+The $402 standard defines a protocol for tokenized attention markets and content serving, strictly built upon the Bitcoin SV BRC ecosystem. It enables:
 
-1. **Content Tokenization**: Turn URL paths into shareholder businesses
-2. **Personal Tokenization**: Mint individual tokens for time-based access
-
-Using HTTP 402 "Payment Required" responses, $402 enables machine-readable pricing, token-gated content access, hierarchical ownership, staking partnerships, and personal attention markets.
-
-### BSV Standards Alignment
-
-On BSV, the **preferred** HTTP 402 payment handshake is **BRC‑105**, and mutual authentication can be handled by **BRC‑103/104**. Path402 remains compatible with multi‑chain x402 flows, but BSV integrations should target the BRC stack for ecosystem interoperability.
+1.  **Content Tokenization**: Turn URL paths into shareholder businesses using **BRC-105** payment challenges.
+2.  **Authenticated Sessions**: Secure, peer-to-peer data exchange using **BRC-103/104**.
+3.  **Decentralized Discovery**: Topic-based state discovery using **BRC-22/24** overlays.
+4.  **Operator Incentives (EARN)**: A unique Proof-of-Serve layer for ensuring network quality.
 
 ## Core Concepts
 
-### $addresses
+### 1. The UX Convention: `$path`
 
-Every `$path` is an economic entity:
+To users, the protocol presents as a URL convention:
 
 ```
 $example.com                    → Site-level entity
 $example.com/$blog              → Blog section entity
-$example.com/$blog/$premium     → Premium content entity
-$example.com/$api               → API access entity
 ```
 
-The `$` prefix means: "this path is a shareholder business."
+**Note**: This `$` prefix is a **non-normative UX convention** for humans. The underlying technical mechanism is the standard HTTP 402 handshake (BRC-105).
 
-### The Flywheel
+### 2. The Wallet Interface (BRC-100)
 
+Applications accessing $402 content interact with wallets via the **BRC-100** standard (Vendor-neutral Wallet-to-Application Interface). This handles identity, signing, and transaction creation.
+
+---
+
+## Payments (BRC-105)
+
+When a client requests paid content, the server MUST return an HTTP 402 response conforming to **BRC-105**.
+
+### The Handshake
+
+**1. Client Request**
+```http
+GET /premium-content HTTP/1.1
+Host: example.com
+Accept: application/json
 ```
-Buy Access → Stake Tokens → Run Infrastructure → Earn Revenue → New Buyers Repeat
-```
 
-Every role is the same person at different stages. No separate classes.
-
-## HTTP 402 Response
-
-When content requires payment, servers MUST return HTTP 402 with the following headers:
+**2. Server Challenge (HTTP 402)**
+The server returns `402 Payment Required` with `BRC-105` specific headers/body defining the payment terms.
 
 ```http
 HTTP/1.1 402 Payment Required
 Content-Type: application/json
-X-$402-Version: 2.0.0
-X-$402-Price: <price_in_sats>
-X-$402-Token: <$path>
-X-$402-Model: <pricing_model>
+x-bsv-payment-amount: 5000
+x-bsv-payment-destination: 1BrbnQon4uZPSxNwt19ozwtgHPDbgvaeD1
+x-bsv-payment-desc: "Access to premium blog post"
 ```
 
-### Required Headers
+*Note: Servers MAY support legacy BRC-41 headers for backward compatibility, but BRC-105 is normative.*
 
-| Header | Description | Example |
-|--------|-------------|---------|
-| `X-$402-Version` | Protocol version | `2.0.0` |
-| `X-$402-Price` | Price in satoshis | `5000` |
-| `X-$402-Token` | $path for this content | `$example.com/$blog` |
+### Payment Instruments
 
-### Optional Headers
+The "ticket" for access can be any spendable instrument validated by the server, including:
+*   BSV Satoshis (standard)
+*   **$PATH402 Tokens** (BSV-20 / Native)
+*   Access Tokens (minted by the creator)
 
-| Header | Description | Example |
-|--------|-------------|---------|
-| `X-$402-Model` | Pricing model | `sqrt_decay` |
-| `X-$402-Treasury` | Remaining treasury | `499000000` |
-| `X-$402-Parent` | Parent $path | `$example.com` |
-| `X-$402-Expires` | Quote expiry (ISO 8601) | `2026-02-02T12:00:00Z` |
-| `X-$402-Accepts` | Accepted payment methods | `bsv,base,sol,eth` |
-| `X-$402-Usage-Unit` | Usage billing unit (ms) | `1000` |
-| `X-$402-Usage-Price` | Price per unit (sats) | `100` |
-| `X-$402-Usage-Mode` | `usage` or `hybrid` | `hybrid` |
-
-### Response Body
-
-```json
-{
-  "error": "payment_required",
-  "price_sats": 5000,
-  "token": "$example.com/$blog",
-  "pricing_model": "sqrt_decay",
-  "treasury_remaining": 499000000,
-  "parent": "$example.com",
-  "usage_pricing": {
-    "enabled": true,
-    "unit_ms": 1000,
-    "price_sats_per_unit": 100,
-    "prepay_ms": 60000,
-    "grace_ms": 2000
-  },
-  "accepts": ["bsv", "base", "sol", "eth"],
-  "discovery_url": "https://example.com/.well-known/$402.json"
-}
-```
-
-## Discovery Protocol
-
-Servers implementing $402 MUST provide a discovery endpoint at `/.well-known/$402.json`:
-
-```json
-{
-  "$402_version": "2.0.0",
-  "extensions": ["$402-curves", "$402-hierarchy", "$402-compliance"],
-  "root": {
-    "path": "$example.com",
-    "inscription_id": "abc123...",
-    "pricing": {
-      "model": "sqrt_decay",
-      "base": 100000000,
-      "current_price": 4472
-    }
-  },
-  "children": [
-    {
-      "path": "$example.com/$blog",
-      "inscription_id": "def456...",
-      "parent_inscription": "abc123...",
-      "parent_share_bps": 5000
-    }
-  ],
-  "access": {
-    "mode": "hybrid",
-    "token_required": true,
-    "usage_required": true
-  },
-  "stakers": [
-    {
-      "address": "1ABC...",
-      "staked": 1000000,
-      "indexer_endpoint": "https://indexer.example.com/api"
-    }
-  ],
-  "payment": {
-    "address": "1BrbnQon4uZPSxNwt19ozwtgHPDbgvaeD1",
-    "paymail": "pay@example.com",
-    "accepted_currencies": ["BSV", "USDC", "ETH", "SOL"]
-  }
-}
-```
-
-## Domain Ownership Verification (Required)
-
-To register a `$address`, issuers MUST prove domain control and bind it to the issuer address:
-
-**1) DNS TXT**
-Add a TXT record at `_path402.<domain>` containing:
-
-```
-path402=<handle>
-issuer_address=<bsv_address>
-```
-
-**2) HTTP Well-Known**
-Host `https://<domain>/.well-known/path402.json`:
-
-```json
-{
-  "issuer": "@handle",
-  "issuer_address": "1ABC...",
-  "domain_message": "path402-domain:example.com",
-  "domain_signature_tx_id": "<bsv_txid>",
-  "domain_signature": "<base64_signature>"
-}
-```
-
-**3) On-Chain Signature**
-`domain_signature_tx_id` MUST point to a BSV transaction containing an inscription with JSON:
-
-```json
-{
-  "p": "$402",
-  "op": "domain-verify",
-  "domain": "example.com",
-  "issuer_address": "1ABC...",
-  "message": "path402-domain:example.com",
-  "signature": "<base64_signature>"
-}
-```
-
-The facilitator verifies the signature on-chain and matches it to `issuer_address`.
-
-See also: **[DOMAIN_VERIFICATION.md](DOMAIN_VERIFICATION.md)** for the full checklist and endpoint reference.
-
-### Helper APIs and CLI
-
-**Generate payload**
-```
-POST /api/domain/verify-payload
-{
-  "domain": "example.com",
-  "issuer_address": "1ABC..."
-}
-```
-
-**Sign message (local)**
-```
-node scripts/domain-sign.ts --wif <WIF> --domain example.com
-```
-
-**Generate self-broadcast template (non-admin)**
-```
-POST /api/domain/verify-template
-{
-  "domain": "example.com",
-  "issuer_address": "1ABC...",
-  "handle": "@handle"
-}
-```
-
-**Broadcast inscription (admin)**
-```
-POST /api/domain/verify-inscribe
-Headers: x-admin-key: <ADMIN_API_KEY>
-Body:
-{
-  "domain": "example.com",
-  "issuer_address": "1ABC...",
-  "signature": "<base64>",
-  "message": "path402-domain:example.com"
-}
-```
-
-**Verify end-to-end**
-```
-POST /api/domain/verify
-{
-  "domain": "example.com",
-  "handle": "@handle",
-  "issuer_address": "1ABC..."
-}
-```
-
-## Pricing Models
-
-### sqrt_decay (Default)
-
-Price changes based on square root of supply or treasury.
-
-**Investment variant** (early buyers get cheap tokens):
-```json
-{
-  "model": "sqrt_decay",
-  "formula": "base / sqrt(treasury_remaining + 1)",
-  "direction": "price_increases_as_treasury_depletes",
-  "base": 100000000
-}
-```
-
-**Content variant** (early buyers pay premium):
-```json
-{
-  "model": "sqrt_decay",
-  "formula": "base / sqrt(supply + 1)",
-  "direction": "price_decreases_as_supply_grows",
-  "base": 10000
-}
-```
-
-### fixed
-
-Constant price regardless of supply:
-```json
-{
-  "model": "fixed",
-  "price": 1000
-}
-```
-
-### Other Models
-
-- `linear` — Price changes linearly
-- `exponential` — Price changes exponentially
-- `bonding_curve` — AMM-style bonding curve
-
-## Hierarchical Ownership
-
-### The 50% Rule
-
-When a child path is created, 50% of tokens go to the parent by default:
-
-```json
-{
-  "p": "$402",
-  "op": "create",
-  "path": "$example.com/$blog",
-  "parent": "$example.com",
-  "parent_share_bps": 5000,
-  "pricing": {
-    "model": "sqrt_decay",
-    "base": 10000000
-  }
-}
-```
-
-### Revenue Flow
-
-Entry fees flow UP the hierarchy:
-- 50% to current path shareholders
-- 50% to parent path (which splits recursively)
-
-### Root Access
-
-Majority shareholder in root has access to all children.
-
-## Staking Partners
-
-### Requirements
-
-To become a staking partner:
-
-```json
-{
-  "p": "$402",
-  "op": "stake",
-  "path": "$example.com",
-  "amount": 1000000,
-  "commitment": {
-    "indexer_endpoint": "https://my-indexer.com/api",
-    "uptime_sla": 0.99
-  }
-}
-```
-
-### Staker Responsibilities
-
-| Responsibility | Description |
-|----------------|-------------|
-| Run indexer | Track token movements on-chain |
-| Maintain registry | Serve shareholder data via API |
-| Index children | Discover new child path inscriptions |
-| Uptime commitment | Keep infrastructure available |
-
-### Staker Revenue
-
-| Source | Description |
-|--------|-------------|
-| Entry fees | Share of new token purchases (70%) |
-| Child fees | Share of child path creation fees |
-| API fees | Revenue from registry queries |
-| Dividends | Proportional to staked amount |
-
-### Slashing
-
-| Violation | Consequence |
-|-----------|-------------|
-| Offline >24h | Warning |
-| Offline >7d | 10% slash |
-| False data | Full slash + ban |
-
-## Two-Tier Token System
-
-| Tier | KYC | Dividends | Can Trade | Can Stake |
-|------|-----|-----------|-----------|-----------|
-| **Bearer** | No | No | Yes | No |
-| **Staker** | Yes | Yes | Yes | Yes |
-
-Anyone can hold and trade. Only KYC'd users can stake and receive dividends.
-
-## Extensions
-
-$402 uses a core + extensions architecture:
-
-### Core (Required)
-
-```json
-{
-  "p": "$402",
-  "version": "2.0",
-  "path": "$myblog.com",
-  "pricing": { "model": "fixed", "price": 500 }
-}
-```
-
-### $402-usage (Metered Access)
-
-Adds usage-based pricing for **time-windowed access**, independent of token price.
-
-```json
-{
-  "usage_pricing": {
-    "enabled": true,
-    "unit_ms": 1000,
-    "price_sats_per_unit": 100,
-    "prepay_ms": 60000,
-    "grace_ms": 2000,
-    "accepted_networks": ["bsv"]
-  }
-}
-```
-
-### Standard Extensions
-
-| Extension | What It Adds |
-|-----------|--------------|
-| `$402-curves` | sqrt_decay, linear, exponential, bonding |
-| `$402-compliance` | KYC, staking, dividends, registry |
-| `$402-hierarchy` | Parent/child relationships, revenue flow |
-| `$402-containers` | Data embedded in inscriptions |
-| `$402-governance` | Voting rights, proposals |
-
-## MCP Server Interface
-
-For AI agent integration, $402 services SHOULD implement MCP tools:
-
-### Discovery Tools
-
-| Tool | Description |
-|------|-------------|
-| `path402_discover` | Get pricing and token info for a $path |
-| `path402_batch_discover` | Discover multiple $paths |
-| `path402_economics` | ROI and breakeven analysis |
-
-### Acquisition Tools
-
-| Tool | Description |
-|------|-------------|
-| `path402_acquire` | Purchase tokens and access content |
-| `path402_wallet` | View balance and holdings |
-| `path402_transfer` | Transfer tokens |
-
-### Staking Tools
-
-| Tool | Description |
-|------|-------------|
-| `path402_stake` | Stake tokens as partner |
-| `path402_unstake` | Unstake tokens (with cooldown) |
-| `path402_serve` | Serve content and earn revenue |
-
-## Conformance Levels
-
-| Level | Requirements |
-|-------|--------------|
-| **$402 Basic** | HTTP 402 + required headers |
-| **$402 Discoverable** | Basic + `/.well-known/$402.json` |
-| **$402 Hierarchical** | Discoverable + parent/child + 50% rule |
-| **$402 Complete** | Hierarchical + staking + MCP tools |
-
-## Security Considerations
-
-### Payment Verification
-
-- Servers MUST verify on-chain payments before granting access
-- Transaction confirmations SHOULD be required for large amounts
-- Replay attacks MUST be prevented via nonces or timestamps
-
-### Staker Verification
-
-- Multiple stakers should agree on registry state
-- Disagreements resolved by checking on-chain inscriptions
-- Slash stakers who serve false data
-
-### Rate Limiting
-
-- Discovery endpoints SHOULD implement rate limiting
-- Failed payment attempts SHOULD be logged
-
-## Reference Implementations
-
-| Implementation | Language | URL |
-|---------------|----------|-----|
-| PATH402.com | TypeScript/Next.js | https://github.com/b0ase/path402-com |
-| path402-mcp-server | TypeScript | https://github.com/b0ase/path402-mcp-server |
-
-## Personal Tokens (Attention Economy)
-
-### Overview
-
-Beyond content tokenization, $402 enables **personal token minting** — individuals mint their own tokens to create markets for their attention and time.
-
-### Token Economics
-
-| Property | Value | Description |
-|----------|-------|-------------|
-| Supply | 1,000,000,000 | Fixed per person, no minting after genesis |
-| Decimals | 0 | Whole tokens only |
-| Access Rate | 1-100 tokens/sec | Configurable by creator |
-| Burning | Disabled | Tokens circulate, never destroyed |
-
-### Time-Based Access
-
-```
-1 token = 1 second of connection time
-
-Hold 3600 $RICHARD tokens → Open a 1-hour call with Richard
-Tokens are NOT consumed → They return after the call
-Tokens are REUSABLE → Call again tomorrow, or sell to someone
-```
-
-### BSV21 Personal Token Inscription
-
-```json
-{
-  "p": "bsv-21",
-  "op": "deploy",
-  "tick": "$RICHARD",
-  "max": "1000000000",
-  "dec": "0",
-  "path402": {
-    "accessRate": 1,
-    "protocol": "path402",
-    "version": "1.0.0"
-  },
-  "metadata": {
-    "name": "RICHARD",
-    "description": "Access token for Richard"
-  }
-}
-```
-
-### Staking & Dividends
-
-Amount-based dividend model (simple, fair, no gaming):
-
-```
-your_dividend = (your_staked / total_staked) × period_revenue
-
-Revenue Split (Default):
-├── 70% → Creator wallet
-├── 20% → Staker dividend pool
-└── 10% → Protocol treasury ($402 holders)
-```
-
-**KYC Required for Dividends**: Basic token holding is permissionless. Dividend claims require identity verification.
-
-### Proof of Serve
-
-Network participants earn through actual contribution, not hash computation:
-
-| Action | Description |
-|--------|-------------|
-| `serve` | Deliver content to requesters |
-| `relay` | Forward gossip messages |
-| `index` | Maintain accurate token indexes |
-| `validate` | Verify transactions |
-
-```
-node_reward = (node_serves / total_network_serves) × daily_reward_pool
-```
-
-### Social Scaling
-
-The network grows through genuine relationships:
-
-1. **Friends invest in friends** — Buy more tokens than needed for calls
-2. **Stake for upside** — Earn from their future success
-3. **Complete KYC** — Because you trust them
-4. **They succeed → You profit** — Plus maintained access
-
-No viral mechanics. Just aligned incentives through real relationships.
-
-## Changelog
-
-- **3.0.0** (2026-02-04): Added personal token minting, attention economy, Proof of Serve
-- **2.0.0** (2026-02-03): Complete rewrite with 7-step model, hierarchical ownership, staking partners
-- **1.0.0-draft** (2026-02-02): Initial specification
-
-## License
-
-This specification is released under the [Open BSV License version 4](https://github.com/b0ase/path402-com/blob/main/LICENSE).
+The server defines accepted instruments in the 402 response capabilities.
 
 ---
 
-*The $402 standard is developed by the PATH402.com community. Contributions welcome.*
+## Authentication (BRC-103/104)
+
+For high-value content, subscriptions, or "Proof of Serve" validation, mutual authentication is REQUIRED.
+
+1.  **BRC-103**: Defines the peer-to-peer mutual authentication handshake and certificate exchange.
+2.  **BRC-104**: Maps this handshake onto HTTP.
+
+### Session Establishment
+
+Clients MUST establish a session via `/.well-known/auth` before accessing high-security $paths.
+
+```http
+POST /.well-known/auth HTTP/1.1
+Content-Type: application/bsv-auth-request
+...
+```
+
+This ensures "paid" implies "paid + authenticated," preventing replay attacks and ambiguous identity.
+
+---
+
+## Discovery & State (BRC-22/24 Overlays)
+
+$path state (pricing, ownership, hierarchy) is indexed via **Overlay Networks**.
+
+### Indexing (BRC-22)
+Nodes accept and validate topic-relevant UTXO state via authenticated `/submit` endpoints. This allows the network to track the "Shareholder Register" for any given $path.
+
+### Lookup (BRC-24)
+Clients query state via authenticated `/lookup`.
+*   **Paid Lookup**: Discovery endpoints MAY themselves be paywalled (using BRC-105) to prevent spam and fund infrastructure.
+
+---
+
+## Operator Incentives: EARN (PoW20)
+
+This layer is **additive** to the BRC stack. It incentivizes operators to run reliable infrastructure.
+
+### The Problem
+BRC-22/24 define *how* to exchange state, but not *why* an operator should remain online and honest.
+
+### The Solution: Proof of Serve
+Operators (Facilitators) earn reputation and revenue shares by:
+1.  **Serving Content**: Successfully identifying and serving assets.
+2.  **Validating Payments**: Running BRC-105 verification.
+3.  **Indexing State**: Providing accurate BRC-24 lookups.
+
+*This mechanism will be proposed as a standalone BRC candidate.*
+
+---
+
+## $402 Token Details (The Asset)
+
+"The Token" refers specifically to **$PATH402**, the equity token of the `PATH402.com` facilitator business.
+
+*   **Supply**: 1,000,000,000
+*   **Mint**: 1Sat Ordinal Inscription (BSV)
+*   **Utility**: Staking for Facilitator Revenue (Verification Fees, Settlement Fees).
+
+*Note: "BSV21" tokens mentioned in previous drafts are treated as generic payment instruments under BRC-105 capabilities.*
+
+---
+
+## Security Considerations
+
+### 0-Conf Policy
+"Transaction arrives" does NOT automatically mean "Valid". Facilitators MUST enforce a 0-conf risk policy:
+*   **Micro-payments (<$1)**: Accept on mempool arrival (instant).
+*   **Macro-payments (>$10)**: Require 1 confirmation or trusted BRC-103 peer channel.
+*   **Double-Spend Detection**: Facilitators MUST monitor mempool for replacement attempts.
+
+### Domain Verification
+Issuers MUST bind their Identity to their `$path` using the procedures defined in BRC-103 (Identity) and Domain Keys.
+
+---
+
+## Reference Implementations
+
+| Component | specification | Role |
+|-----------|---------------|------|
+| **Wallet** | BRC-100 | Manage keys, sign txs |
+| **Auth** | BRC-103/104 | Establish trust |
+| **Payment** | BRC-105 | Monetize endpoints |
+| **Index** | BRC-22/24 | Discover state |
+| **Client** | path402d | Reference BRC-100 Application |
+
+---
+
+*This standard complies with the Bitcoin SV Technical Standards Committee recommendations.*

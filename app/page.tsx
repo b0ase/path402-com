@@ -173,9 +173,9 @@ export default function Home() {
             <div className="space-y-4">
               {[
                 { step: "1", text: "Client requests a '$' path", code: "GET /$video-1" },
-                { step: "2", text: "Server returns 402 Payment Required", code: '{ "token_id": "abc...", "price": "0.001 BSV" }' },
-                { step: "3", text: "Client sends token (UTXO) to server address", code: null },
-                { step: "4", text: "Server detects incoming transaction", code: null },
+                { step: "2", text: "Server returns 402 Payment Required", code: 'HTTP/1.1 402 Payment Required\nx-bsv-payment-amount: 1000\nx-bsv-payment-destination: 1A1z...' },
+                { step: "3", text: "Client broadcasts tx and sends ID in header", code: 'x-bsv-payment-txid: <txid>' },
+                { step: "4", text: "Server verifies transaction via BRC-105", code: null },
                 { step: "5", text: "Server grants access", code: "200 OK" },
               ].map((item, i) => (
                 <motion.div
@@ -279,7 +279,7 @@ export default function Home() {
               >
                 <h3 className="text-sm font-bold mb-4 uppercase tracking-wide">Path Hierarchy</h3>
                 <pre className="text-zinc-600 dark:text-zinc-400 font-mono text-sm mb-4">
-{`$alice           → access to all
+                  {`$alice           → access to all
 $alice/chatroom  → access to chatroom only
 $alice/video-1   → access to video only`}
                 </pre>
@@ -313,7 +313,7 @@ $alice/video-1   → access to video only`}
               </pre>
               <h3 className="text-sm font-bold text-zinc-900 dark:text-white mb-4 uppercase tracking-wide">Add to Claude Desktop</h3>
               <pre className="bg-white dark:bg-black p-4 font-mono text-sm text-zinc-600 dark:text-zinc-400 overflow-x-auto border border-zinc-200 dark:border-zinc-800">
-{`{
+                {`{
   "mcpServers": {
     "path402": {
       "command": "npx",
