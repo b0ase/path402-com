@@ -3,10 +3,12 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { WalletState, YoursWallet } from '@/lib/types';
 
+
 interface WalletContextType {
   wallet: WalletState;
   connectYours: () => Promise<void>;
   connectHandCash: () => void;
+  connectMetanet: () => Promise<void>;
   disconnect: () => Promise<void>;
   isYoursAvailable: boolean;
 }
@@ -141,6 +143,43 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     window.location.href = '/api/auth/handcash';
   }, []);
 
+  const connectMetanet = useCallback(async () => {
+    try {
+      // Dynamically import Babbage SDK to avoid SSR issues
+      const { isAuthenticated, getIdentity, getPaymail } = await import('@babbage/sdk');
+
+      const authenticated = await isAuthenticated();
+      if (!authenticated) {
+        // Trigger authentication flow if not already authenticated
+        // Note: SDK usually prompts automatically on request if not auth'd, 
+        // but explicit check helps.
+      }
+
+      const identity = await getIdentity();
+      // Babbage uses identity keys, not address directly for display usually, 
+      // but we can map it. For now, let's treat the identity public key as the identifier.
+      // Or better, use Paymail if available.
+
+      // Attempt to get a Paymail or fallback to identity key
+      // NOTE: getPaymail might not be available in all SDK versions or configurations
+      // Let's use identity public key as the primary handle for now.
+
+      setWallet({
+        connected: true,
+        provider: 'metanet',
+        address: identity, // Using identity key as address placeholder
+        ordinalsAddress: null, // Metanet handles this differently
+        handle: 'Metanet User', // Placeholder until paymail integration
+        balance: 0, // Balance check requires specific protocol in Babbage
+      });
+
+    } catch (error) {
+      console.error('Failed to connect Metanet:', error);
+      alert('Metanet Client (e.g. Babbage Desktop) not detected or connection failed.');
+    }
+  }, []);
+
+
   const disconnect = useCallback(async () => {
     if (wallet.provider === 'yours' && window.yours) {
       try {
@@ -159,6 +198,9 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
+    // For Metanet, 'disconnect' is local state clearing mainly, 
+    // as the client itself remains running.
+
     setWallet(defaultWalletState);
   }, [wallet.provider]);
 
@@ -168,6 +210,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
         wallet,
         connectYours,
         connectHandCash,
+        connectMetanet,
         disconnect,
         isYoursAvailable,
       }}

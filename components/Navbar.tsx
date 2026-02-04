@@ -7,7 +7,7 @@ import { ThemeToggle } from './ThemeProvider';
 import { useState } from 'react';
 
 export function Navbar() {
-  const { wallet, connectYours, connectHandCash, disconnect, isYoursAvailable } = useWallet();
+  const { wallet, connectYours, connectHandCash, connectMetanet, disconnect, isYoursAvailable } = useWallet();
   const [showWalletMenu, setShowWalletMenu] = useState(false);
 
   const truncateAddress = (address: string) => {
@@ -179,6 +179,23 @@ export function Navbar() {
                           <div className="text-[10px] text-zinc-500">
                             {isYoursAvailable ? 'Browser extension' : 'Install extension'}
                           </div>
+                        </div>
+                      </motion.button>
+
+                      <motion.button
+                        onClick={() => {
+                          connectMetanet();
+                          setShowWalletMenu(false);
+                        }}
+                        className="w-full flex items-center gap-3 p-3 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+                        whileHover={{ x: 4 }}
+                      >
+                        <div className="w-8 h-8 bg-cyan-500 flex items-center justify-center">
+                          <span className="text-white font-bold text-sm">M</span>
+                        </div>
+                        <div className="text-left">
+                          <div className="text-xs text-zinc-900 dark:text-white font-bold uppercase tracking-wide">Metanet</div>
+                          <div className="text-[10px] text-zinc-500">Babbage Desktop</div>
                         </div>
                       </motion.button>
                     </div>

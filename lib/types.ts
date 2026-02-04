@@ -19,7 +19,7 @@ export const TOKEN_CONFIG = {
 };
 
 // Wallet types
-export type WalletProvider = 'yours' | 'handcash' | null;
+export type WalletProvider = 'yours' | 'handcash' | 'metanet' | null;
 
 export interface WalletState {
   connected: boolean;
