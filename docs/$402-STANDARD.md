@@ -1,6 +1,6 @@
 # The $402 Standard
 
-**Version**: 2.0.0
+**Version**: 3.0.0
 **Status**: Living Document
 **Reference Implementation**: [PATH402.com](https://path402.com)
 **Canonical Vision**: [PROTOCOL_VISION.md](PROTOCOL_VISION.md)
@@ -8,7 +8,12 @@
 
 ## Abstract
 
-The $402 standard defines a protocol for turning URL paths into shareholder businesses. Using HTTP 402 "Payment Required" responses, $402 enables machine-readable pricing, token-gated content access, hierarchical ownership, and staking partnerships.
+The $402 standard defines a protocol for tokenized attention markets. It enables:
+
+1. **Content Tokenization**: Turn URL paths into shareholder businesses
+2. **Personal Tokenization**: Mint individual tokens for time-based access
+
+Using HTTP 402 "Payment Required" responses, $402 enables machine-readable pricing, token-gated content access, hierarchical ownership, staking partnerships, and personal attention markets.
 
 ### BSV Standards Alignment
 
@@ -461,8 +466,96 @@ For AI agent integration, $402 services SHOULD implement MCP tools:
 | PATH402.com | TypeScript/Next.js | https://github.com/b0ase/path402-com |
 | path402-mcp-server | TypeScript | https://github.com/b0ase/path402-mcp-server |
 
+## Personal Tokens (Attention Economy)
+
+### Overview
+
+Beyond content tokenization, $402 enables **personal token minting** — individuals mint their own tokens to create markets for their attention and time.
+
+### Token Economics
+
+| Property | Value | Description |
+|----------|-------|-------------|
+| Supply | 1,000,000,000 | Fixed per person, no minting after genesis |
+| Decimals | 0 | Whole tokens only |
+| Access Rate | 1-100 tokens/sec | Configurable by creator |
+| Burning | Disabled | Tokens circulate, never destroyed |
+
+### Time-Based Access
+
+```
+1 token = 1 second of connection time
+
+Hold 3600 $RICHARD tokens → Open a 1-hour call with Richard
+Tokens are NOT consumed → They return after the call
+Tokens are REUSABLE → Call again tomorrow, or sell to someone
+```
+
+### BSV21 Personal Token Inscription
+
+```json
+{
+  "p": "bsv-21",
+  "op": "deploy",
+  "tick": "$RICHARD",
+  "max": "1000000000",
+  "dec": "0",
+  "path402": {
+    "accessRate": 1,
+    "protocol": "path402",
+    "version": "1.0.0"
+  },
+  "metadata": {
+    "name": "RICHARD",
+    "description": "Access token for Richard"
+  }
+}
+```
+
+### Staking & Dividends
+
+Amount-based dividend model (simple, fair, no gaming):
+
+```
+your_dividend = (your_staked / total_staked) × period_revenue
+
+Revenue Split (Default):
+├── 70% → Creator wallet
+├── 20% → Staker dividend pool
+└── 10% → Protocol treasury ($402 holders)
+```
+
+**KYC Required for Dividends**: Basic token holding is permissionless. Dividend claims require identity verification.
+
+### Proof of Serve
+
+Network participants earn through actual contribution, not hash computation:
+
+| Action | Description |
+|--------|-------------|
+| `serve` | Deliver content to requesters |
+| `relay` | Forward gossip messages |
+| `index` | Maintain accurate token indexes |
+| `validate` | Verify transactions |
+
+```
+node_reward = (node_serves / total_network_serves) × daily_reward_pool
+```
+
+### Social Scaling
+
+The network grows through genuine relationships:
+
+1. **Friends invest in friends** — Buy more tokens than needed for calls
+2. **Stake for upside** — Earn from their future success
+3. **Complete KYC** — Because you trust them
+4. **They succeed → You profit** — Plus maintained access
+
+No viral mechanics. Just aligned incentives through real relationships.
+
 ## Changelog
 
+- **3.0.0** (2026-02-04): Added personal token minting, attention economy, Proof of Serve
 - **2.0.0** (2026-02-03): Complete rewrite with 7-step model, hierarchical ownership, staking partners
 - **1.0.0-draft** (2026-02-02): Initial specification
 

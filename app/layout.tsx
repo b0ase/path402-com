@@ -11,14 +11,14 @@ const mono = JetBrains_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://path402.com'),
-  title: "$402 — The Path 402 Token Protocol",
-  description: "Turn any URL into a priced, tokenised market. The protocol for AI-native micropayments on BSV.",
-  keywords: ["$402", "path token", "BSV", "micropayments", "AI payments", "tokenization", "HTTP 402", "MCP", "AI agents"],
+  title: "$402 — Access Tokens for the Open Web",
+  description: "Mint an access token for anything addressable: your attention, your API, your content. The protocol for AI-native micropayments on BSV.",
+  keywords: ["$402", "path protocol", "BSV", "micropayments", "AI payments", "tokenization", "HTTP 402", "MCP", "AI agents", "attention economy"],
   authors: [{ name: "b0ase", url: "https://x.com/b0ase" }],
   creator: "b0ase",
   openGraph: {
-    title: "$402 — The Path 402 Token Protocol",
-    description: "Turn any URL into a priced, tokenised market. The protocol for AI-native micropayments on BSV.",
+    title: "$402 — Access Tokens for the Open Web",
+    description: "Mint an access token for anything addressable: your attention, your API, your content.",
     url: "https://path402.com",
     siteName: "$402 Protocol",
     locale: "en_US",
@@ -26,8 +26,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "$402 — The Path 402 Token Protocol",
-    description: "Turn any URL into a priced, tokenised market.",
+    title: "$402 — Access Tokens for the Open Web",
+    description: "Mint an access token for anything addressable.",
     creator: "@b0ase",
     site: "@b0ase",
   },
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   },
   other: {
     "ai-content-declaration": "This website provides tokenised content services for AI agents via MCP",
-    "ai-integration": "MCP server available via npm: path402-mcp-server",
+    "ai-integration": "MCP server available via npm: path402",
     "ai-plugin": "https://path402.com/.well-known/ai-plugin.json",
     "llms-txt": "https://path402.com/llms.txt",
   },
@@ -68,7 +68,7 @@ export default function RootLayout({
                   <div>
                     <h3 className="font-bold mb-4 text-zinc-900 dark:text-white text-sm uppercase tracking-widest">$402</h3>
                     <p className="text-zinc-500 text-sm">
-                      The Path 402 Token Protocol for tokenised content and AI-native micropayments.
+                      Access tokens for anything addressable. The protocol for AI-native micropayments.
                     </p>
                   </div>
                   <div>
@@ -76,8 +76,8 @@ export default function RootLayout({
                     <ul className="space-y-2 text-sm">
                       <li><Link href="/docs" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">Documentation</Link></li>
                       <li><Link href="/402" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">Whitepaper</Link></li>
-                      <li><a href="https://github.com/b0ase/path402-mcp-server" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">GitHub</a></li>
-                      <li><a href="https://www.npmjs.com/package/path402-mcp-server" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">npm Package</a></li>
+                      <li><a href="https://github.com/b0ase/path402" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">GitHub</a></li>
+                      <li><a href="https://www.npmjs.com/package/path402" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">npm Package</a></li>
                     </ul>
                   </div>
                   <div>

@@ -219,13 +219,13 @@ export default function ExchangePage() {
             For AI Agents
           </h2>
           <p className="text-zinc-600 dark:text-zinc-400 mb-6">
-            Use the path402-mcp-server to discover, evaluate, and acquire tokens programmatically.
+            Use the path402 to discover, evaluate, and acquire tokens programmatically.
           </p>
           <motion.pre
             className="bg-zinc-200 dark:bg-zinc-900 p-6 font-mono text-sm text-zinc-700 dark:text-zinc-400 overflow-x-auto "
           >
 {`# Install the MCP server
-npm install path402-mcp-server
+npm install path402
 
 # Discovery & Evaluation
 path402_discover       # Probe a $address for pricing

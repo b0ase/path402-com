@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 
-const LLMS_TXT = `# $402 - The Path 402 Token Protocol
+const LLMS_TXT = `# $402 - Access Tokens for the Open Web
 
-> Turn any URL into a priced, tokenised market. The protocol for AI-native micropayments on BSV.
+> Mint an access token for anything addressable: your attention, your API, your content. The protocol for AI-native micropayments on BSV.
 
 ## What is $402?
 
@@ -11,7 +11,7 @@ $402 is a protocol that transforms URL paths into tokenised economic objects. An
 ## Quick Start
 
 \`\`\`bash
-npm install -g path402-mcp-server
+npm install -g path402
 \`\`\`
 
 ## For AI Agents
@@ -25,7 +25,7 @@ Add to your \`claude_desktop_config.json\`:
   "mcpServers": {
     "path402": {
       "command": "npx",
-      "args": ["path402-mcp-server"]
+      "args": ["path402"]
     }
   }
 }
@@ -74,8 +74,8 @@ Early buyers get better prices. This creates natural incentives for discovery.
 - Website: https://path402.com
 - Whitepaper: https://path402.com/whitepaper
 - Documentation: https://path402.com/docs
-- GitHub: https://github.com/b0ase/path402-mcp-server
-- npm: https://www.npmjs.com/package/path402-mcp-server
+- GitHub: https://github.com/b0ase/path402
+- npm: https://www.npmjs.com/package/path402
 
 ## Contact
 

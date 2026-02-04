@@ -43,7 +43,7 @@ export function Navbar() {
             Account
           </Link>
           <a
-            href="https://github.com/b0ase/path402-mcp-server"
+            href="https://github.com/b0ase/path402"
             target="_blank"
             rel="noopener noreferrer"
             className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors"

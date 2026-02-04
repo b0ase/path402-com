@@ -61,8 +61,8 @@ export default function DocsPage() {
   ];
 
   const resources = [
-    { href: "https://github.com/b0ase/path402-mcp-server", title: "GitHub Repository", desc: "Source code and issues", external: true },
-    { href: "https://www.npmjs.com/package/path402-mcp-server", title: "npm Package", desc: "Install and use", external: true },
+    { href: "https://github.com/b0ase/path402", title: "GitHub Repository", desc: "Source code and issues", external: true },
+    { href: "https://www.npmjs.com/package/path402", title: "npm Package", desc: "Install and use", external: true },
     { href: "/exchange", title: "Exchange", desc: "Discover and acquire tokens", external: false },
     { href: "https://b0ase.com/exchange", title: "Live Exchange", desc: "Trade real tokens at b0ase.com", external: true },
   ];
@@ -360,14 +360,14 @@ $example.com/$blog/$my-post     → content token (the actual content)`}
         >
           <h2 className="text-3xl font-bold text-zinc-900 dark:text-white mb-6">MCP Server</h2>
           <p className="text-zinc-400 mb-4 leading-relaxed">
-            The path402-mcp-server enables AI agents to interact with $402 content.
+            The path402 enables AI agents to interact with $402 content.
           </p>
           <h3 className="text-xl font-semibold text-zinc-900 dark:text-white mb-4">Installation</h3>
           <motion.pre
             className="bg-zinc-900 p-6 font-mono text-sm text-zinc-400 overflow-x-auto mb-6 "
             whileHover={{ backgroundColor: "rgba(255,255,255,0.05)" }}
           >
-npm install path402-mcp-server
+npm install path402
           </motion.pre>
           <h3 className="text-xl font-semibold text-zinc-900 dark:text-white mb-4">Claude Desktop Configuration</h3>
           <motion.pre
@@ -378,7 +378,7 @@ npm install path402-mcp-server
   "mcpServers": {
     "path402": {
       "command": "npx",
-      "args": ["path402-mcp-server"]
+      "args": ["path402"]
     }
   }
 }`}

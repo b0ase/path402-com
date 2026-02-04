@@ -52,7 +52,7 @@ function WhitepaperContent() {
               className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-[10px] uppercase tracking-widest text-zinc-500 mb-8"
               variants={fadeIn}
             >
-              WHITEPAPER_V2.2.0
+              WHITEPAPER_V3.0.0
             </motion.div>
 
             <motion.h1
@@ -66,14 +66,14 @@ function WhitepaperContent() {
               className="text-xs text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.3em] mb-4"
               variants={fadeIn}
             >
-              The Path 402 Token Protocol
+              Access Tokens for the Open Web
             </motion.p>
 
             <motion.p
               className="text-zinc-400 max-w-2xl mb-4 text-lg"
               variants={fadeIn}
             >
-              Turning Websites into Shareholder Businesses
+              Tokenize anything addressable: your attention, your API, your content
             </motion.p>
 
             <motion.div
@@ -111,8 +111,9 @@ function WhitepaperContent() {
         <div className="max-w-4xl mx-auto">
           <h2 className="text-[10px] font-bold text-zinc-500 mb-6 uppercase tracking-widest">Abstract</h2>
           <p className="text-zinc-400 leading-relaxed">
-            We propose a protocol where every URL path can become a <em className="text-zinc-900 dark:text-white">shareholder business</em>.
-            Visitors buy tokens to access content. Holders who stake become <em className="text-zinc-900 dark:text-white">partners</em>—running infrastructure,
+            We propose a protocol where any addressable endpoint—a person, a domain, an API—can become a <em className="text-zinc-900 dark:text-white">tokenized market</em>.
+            Mint <span className="text-blue-400 font-mono">$YOURNAME</span> and tokenize your attention. Mint <span className="text-blue-400 font-mono">$example.com</span> and tokenize your content.
+            Holders who stake become <em className="text-zinc-900 dark:text-white">partners</em>—running infrastructure,
             indexing the blockchain, serving the registry, and receiving dividends. The result is a self-sustaining flywheel where buying, serving, and staking
             are the same activity at different stages. No separate classes. No central infrastructure.
             Just aligned incentives all the way down.
@@ -129,21 +130,40 @@ function WhitepaperContent() {
           </p>
           <div className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-8 text-center mb-6">
             <p className="text-2xl text-zinc-900 dark:text-white font-bold mb-2">
-              Every URL path is a company.
+              Any addressable endpoint is a market.
             </p>
             <p className="text-2xl text-zinc-900 dark:text-white font-bold mb-2">
-              Every visitor can become a shareholder.
+              Every buyer becomes a shareholder.
             </p>
             <p className="text-2xl text-zinc-900 dark:text-white font-bold">
               Every shareholder can become a partner.
             </p>
           </div>
+          <p className="text-zinc-400 leading-relaxed mb-4">
+            The <span className="text-zinc-900 dark:text-white font-mono">$</span> prefix marks a path as an economic entity. Two models, one protocol:
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div className="border border-zinc-200 dark:border-zinc-800 p-4 bg-white dark:bg-black">
+              <div className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Personal Tokens</div>
+              <div className="space-y-1 font-mono text-blue-400">
+                <div>$RICHARD</div>
+                <div>$ALICE</div>
+                <div>$SPIELBERG</div>
+              </div>
+              <p className="text-zinc-500 text-sm mt-3">Your time is the asset. 1 token = 1 second.</p>
+            </div>
+            <div className="border border-zinc-200 dark:border-zinc-800 p-4 bg-white dark:bg-black">
+              <div className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Domain Tokens</div>
+              <div className="space-y-1 font-mono text-blue-400">
+                <div>$example.com</div>
+                <div>$example.com/$api</div>
+                <div>$example.com/$blog</div>
+              </div>
+              <p className="text-zinc-500 text-sm mt-3">Your content is the asset. DNS proves ownership.</p>
+            </div>
+          </div>
           <p className="text-zinc-400 leading-relaxed">
-            The <span className="text-zinc-900 dark:text-white font-mono">$</span> prefix marks a path as an economic entity:
-            <span className="text-blue-400 font-mono"> $example.com</span>,
-            <span className="text-blue-400 font-mono"> $example.com/$blog</span>,
-            <span className="text-blue-400 font-mono"> $example.com/$api</span>.
-            Each is a separate market with its own tokens, price curve, and shareholders.
+            Each is a separate market with its own tokens, price curve, and shareholders. The same primitive works for human attention and digital assets.
           </p>
         </div>
       </section>
@@ -1001,6 +1021,227 @@ Suppression FUNDS the person being silenced.`}
         </div>
       </section>
 
+      {/* Step 11: Personal Tokens - The Attention Economy */}
+      <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-sm font-bold text-zinc-900 dark:text-white mb-2 uppercase tracking-wide">Step 11</h2>
+          <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-6">Personal Tokens: The Attention Economy</h3>
+
+          <p className="text-zinc-400 leading-relaxed mb-6">
+            So far, we've talked about tokenizing <em className="text-zinc-900 dark:text-white">content</em>.
+            But the most valuable thing isn't content—it's <strong className="text-zinc-900 dark:text-white">attention</strong>.
+            Human attention is the ultimate scarce resource.
+          </p>
+
+          <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">Everyone Has a Token</h4>
+          <p className="text-zinc-400 leading-relaxed mb-4">
+            In the attention economy, every person mints their own token:
+          </p>
+
+          <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
+{`$RICHARD     → Richard's attention token
+$ALICE       → Alice's attention token
+$SPIELBERG   → Spielberg's attention token
+
+Your token = The canonical path to opening a connection with YOU`}
+          </pre>
+
+          <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">Fixed Supply, Time-Based Access</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div className="border border-zinc-200 dark:border-zinc-800 p-4 bg-zinc-50 dark:bg-zinc-950">
+              <div className="text-zinc-500 text-xs uppercase tracking-widest mb-2">Token Economics</div>
+              <ul className="text-zinc-400 text-sm space-y-1">
+                <li>• <strong className="text-zinc-900 dark:text-white">1 billion tokens</strong> per person (fixed)</li>
+                <li>• No minting after genesis</li>
+                <li>• No burning—tokens circulate</li>
+                <li>• Creator controls float (how many to sell)</li>
+              </ul>
+            </div>
+            <div className="border border-zinc-200 dark:border-zinc-800 p-4 bg-zinc-50 dark:bg-zinc-950">
+              <div className="text-zinc-500 text-xs uppercase tracking-widest mb-2">Access Pricing</div>
+              <ul className="text-zinc-400 text-sm space-y-1">
+                <li>• <strong className="text-zinc-900 dark:text-white">1 token = 1 second</strong> of connection</li>
+                <li>• Configurable rate (1-100 tokens/sec)</li>
+                <li>• Tokens are <em>tickets</em>, not spent on use</li>
+                <li>• Return to holder after connection ends</li>
+              </ul>
+            </div>
+          </div>
+
+          <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">Tokens as Reusable Tickets</h4>
+          <p className="text-zinc-400 leading-relaxed mb-4">
+            The token model is like a <strong className="text-zinc-900 dark:text-white">shareholder meeting pass</strong>—not a consumable:
+          </p>
+
+          <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
+{`You hold 3600 $RICHARD tokens
+    ↓
+You can open a 1-hour connection with Richard
+    ↓
+After the call, you STILL hold 3600 tokens
+    ↓
+You can call again tomorrow, or sell to someone else
+
+The token is perpetual access, not a consumable.
+Like owning a share—you can attend meetings forever.`}
+          </pre>
+
+          <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">Social Scaling: Friends Invest in Friends</h4>
+          <p className="text-zinc-400 leading-relaxed mb-4">
+            The network scales through <strong className="text-zinc-900 dark:text-white">genuine relationships</strong>, not viral mechanics:
+          </p>
+
+          <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
+{`I value my friend
+       ↓
+I buy MORE tokens than I need for calls
+       ↓
+I stake tokens (earn from their success)
+       ↓
+I complete KYC (because I trust them)
+       ↓
+They succeed → I profit + maintain access
+       ↓
+Network grows through real relationships`}
+          </pre>
+
+          <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">Asymmetric Value Calls</h4>
+          <p className="text-zinc-400 leading-relaxed mb-4">
+            When two people call, their token values create natural economics:
+          </p>
+
+          <div className="overflow-x-auto mb-6">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-zinc-800">
+                  <th className="text-left py-3 text-zinc-500 font-bold uppercase tracking-widest text-[10px]">Scenario</th>
+                  <th className="text-left py-3 text-zinc-500 font-bold uppercase tracking-widest text-[10px]">Economics</th>
+                </tr>
+              </thead>
+              <tbody className="text-zinc-400">
+                <tr className="border-b border-zinc-800">
+                  <td className="py-3">$RICHARD = 1000 sats/token<br/>$BOB = 100 sats/token</td>
+                  <td className="py-3">Both spend each other's tokens during call</td>
+                </tr>
+                <tr className="border-b border-zinc-800">
+                  <td className="py-3">Bob calls Richard</td>
+                  <td className="py-3">Bob spends expensive $RICHARD<br/>Richard spends cheap $BOB<br/><span className="text-green-400">Net: Bob pays ~900 sats/sec to talk to Richard</span></td>
+                </tr>
+                <tr>
+                  <td className="py-3">Richard calls Bob</td>
+                  <td className="py-3">Richard spends cheap $BOB<br/>Bob spends expensive $RICHARD<br/><span className="text-green-400">Net: Richard earns ~900 sats/sec</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">Staking & Dividends</h4>
+          <p className="text-zinc-400 leading-relaxed mb-4">
+            Stake tokens to earn from someone's future success. The model is <strong className="text-zinc-900 dark:text-white">amount-based</strong> (not time-based):
+          </p>
+
+          <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
+{`Your dividend = (your_staked / total_staked) × period_revenue
+
+Simple. Fair. No gaming.
+
+Revenue Split (Default):
+├── 70% → Creator wallet
+├── 20% → Staker dividend pool
+└── 10% → Protocol treasury ($402 holders)`}
+          </pre>
+
+          <p className="text-zinc-400 leading-relaxed mb-6">
+            <strong className="text-zinc-900 dark:text-white">KYC required for dividends.</strong> Basic token holding is permissionless—anyone can buy and trade.
+            But claiming dividends requires identity verification. This creates a natural compliance layer where money flows out.
+          </p>
+
+          <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">Proof of Serve (Not Proof of Work)</h4>
+          <p className="text-zinc-400 leading-relaxed mb-4">
+            How do we incentivize network participation? Not through wasteful hash puzzles—through <strong className="text-zinc-900 dark:text-white">actual contribution</strong>:
+          </p>
+
+          <div className="overflow-x-auto mb-6">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-zinc-800">
+                  <th className="text-left py-3 text-zinc-500 font-bold uppercase tracking-widest text-[10px]">Proof of Work</th>
+                  <th className="text-left py-3 text-zinc-500 font-bold uppercase tracking-widest text-[10px]">Proof of Serve</th>
+                </tr>
+              </thead>
+              <tbody className="text-zinc-400">
+                <tr className="border-b border-zinc-800">
+                  <td className="py-3">Rewards hash computation</td>
+                  <td className="py-3 text-green-400">Rewards actual service</td>
+                </tr>
+                <tr className="border-b border-zinc-800">
+                  <td className="py-3">Wastes electricity</td>
+                  <td className="py-3 text-green-400">Uses real network work</td>
+                </tr>
+                <tr className="border-b border-zinc-800">
+                  <td className="py-3">Centralizes to ASICs</td>
+                  <td className="py-3 text-green-400">Scales with actual usage</td>
+                </tr>
+                <tr>
+                  <td className="py-3">One winner per block</td>
+                  <td className="py-3 text-green-400">Everyone who serves earns</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
+{`Serve Reward Actions:
+├── SERVE   → Deliver content to requesters
+├── RELAY   → Forward gossip messages
+├── INDEX   → Maintain accurate token indexes
+└── VALIDATE → Verify transactions
+
+Reward = (your_serves / total_network_serves) × daily_pool
+
+Proof of Serve creates healthy incentives without centralization.`}
+          </pre>
+
+          <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">The End State</h4>
+          <p className="text-zinc-400 leading-relaxed mb-4">
+            Personal tokens create a world where:
+          </p>
+
+          <ul className="space-y-2 text-zinc-400 mb-6">
+            <li className="flex gap-3">
+              <span className="text-blue-400">→</span>
+              <span><strong className="text-zinc-900 dark:text-white">Everyone has a price</strong> — Your token represents your time's market value</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="text-blue-400">→</span>
+              <span><strong className="text-zinc-900 dark:text-white">Friends invest in friends</strong> — Social relationships create liquidity</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="text-blue-400">→</span>
+              <span><strong className="text-zinc-900 dark:text-white">Creators control access</strong> — Your float, your rules</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="text-blue-400">→</span>
+              <span><strong className="text-zinc-900 dark:text-white">Spam is impossible</strong> — Connecting costs tokens (economic friction)</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="text-blue-400">→</span>
+              <span><strong className="text-zinc-900 dark:text-white">No platform rent</strong> — Direct peer-to-peer settlement</span>
+            </li>
+          </ul>
+
+          <div className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-center">
+            <p className="text-zinc-500 text-sm mb-2">Mint your token:</p>
+            <p className="text-zinc-900 dark:text-white text-lg font-mono">
+              $YOURNAME
+            </p>
+            <p className="text-zinc-500 text-sm mt-2">
+              1 billion tokens. Fixed supply. Your attention, tokenized.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Implementation */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
         <div className="max-w-4xl mx-auto">
@@ -1125,7 +1366,7 @@ X-$402-Model: sqrt_decay
             </a>.
           </p>
           <p className="text-zinc-600 text-xs uppercase tracking-widest">
-            Version 2.2.0 · February 2026 · <a href="https://path402.com" className="text-blue-400 hover:text-blue-300 transition-colors">path402.com</a>
+            Version 3.0.0 · February 2026 · <a href="https://path402.com" className="text-blue-400 hover:text-blue-300 transition-colors">path402.com</a>
           </p>
         </div>
       </section>

@@ -4,8 +4,8 @@ const AI_PLUGIN = {
   schema_version: "v1",
   name_for_human: "$402 Protocol",
   name_for_model: "path402",
-  description_for_human: "The Path 402 Token Protocol - turn any URL into a priced, tokenised market.",
-  description_for_model: "Protocol for tokenising URL paths. AI agents can discover, evaluate, acquire, and serve tokenised content. Use the path402-mcp-server npm package for full MCP integration. Tools available: path402_discover (probe $addresses), path402_evaluate (ROI analysis), path402_acquire (purchase tokens), path402_wallet (view holdings), path402_serve (earn revenue), path402_economics (financial analysis).",
+  description_for_human: "Access tokens for anything addressable: your attention, your API, your content.",
+  description_for_model: "Protocol for tokenising URL paths. AI agents can discover, evaluate, acquire, and serve tokenised content. Use the path402 npm package for full MCP integration. Tools available: path402_discover (probe $addresses), path402_evaluate (ROI analysis), path402_acquire (purchase tokens), path402_wallet (view holdings), path402_serve (earn revenue), path402_economics (financial analysis).",
   auth: {
     type: "none"
   },
@@ -17,12 +17,12 @@ const AI_PLUGIN = {
   contact_email: "hello@b0ase.com",
   legal_info_url: "https://path402.com/docs/legal",
   mcp_server: {
-    package: "path402-mcp-server",
+    package: "path402",
     registry: "npm",
-    install: "npm install -g path402-mcp-server",
+    install: "npm install -g path402",
     config: {
       command: "npx",
-      args: ["path402-mcp-server"]
+      args: ["path402"]
     }
   },
   capabilities: [

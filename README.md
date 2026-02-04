@@ -37,22 +37,22 @@ The name combines:
 | Component | Description | Link |
 |-----------|-------------|------|
 | **$PATH402** | The protocol | [path402.com](https://path402.com) |
-| **path402-mcp-server** | AI agent tools | [npm](https://www.npmjs.com/package/path402-mcp-server) |
-| **GitHub** | Source code | [github.com/b0ase/path402-mcp-server](https://github.com/b0ase/path402-mcp-server) |
+| **path402** | AI agent tools | [npm](https://www.npmjs.com/package/path402) |
+| **GitHub** | Source code | [github.com/b0ase/path402](https://github.com/b0ase/path402) |
 | **Live Exchange** | Trade tokens | [b0ase.com/exchange](https://b0ase.com/exchange) |
 
 ## Quick Start
 
 ```bash
 # Install the MCP server
-npm install path402-mcp-server
+npm install path402
 
 # Add to Claude Desktop config
 {
   "mcpServers": {
     "path402": {
       "command": "npx",
-      "args": ["path402-mcp-server"]
+      "args": ["path402"]
     }
   }
 }
