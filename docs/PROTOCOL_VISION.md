@@ -1,5 +1,16 @@
 # The $402 Protocol Vision
 
+## BRC Alignment (BSV Stack)
+
+The BSV ecosystem already defines core plumbing that Path402 can build on:
+
+- **BRC‑100**: wallet → app interface (identity, signing, tx handling)
+- **BRC‑103/104**: mutual auth + HTTP transport (`/.well-known/auth`, `x-bsv-auth`)
+- **BRC‑105**: HTTP 402 paywall + payment proof (preferred for BSV)
+- **BRC‑22/24**: overlay submit/lookup for indexed state
+
+Path402’s **EARN / PoW20** layer is additive and not defined by existing BRCs yet.
+
 ## Step 1: The Bearer Share Model
 
 ### The Blockchain as a Directory

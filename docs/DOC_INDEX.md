@@ -43,6 +43,7 @@
 | **[DOMAIN_VERIFICATION.md](DOMAIN_VERIFICATION.md)** | DNS + well-known + on-chain signature proof for issuers | ✓ New |
 | **[PRICING_CURVES.md](PRICING_CURVES.md)** | Library of pricing curves for token issuers | ✓ Aligned |
 | **[ARCHITECTURE.md](ARCHITECTURE.md)** | Five-layer architecture | ✓ Aligned |
+| **[BRC_ALIGNMENT.md](BRC_ALIGNMENT.md)** | How Path402 maps to BRC‑100/103/104/105/22/24 | ✓ New |
 | **[PATHD_ARCHITECTURE.md](PATHD_ARCHITECTURE.md)** | $pathd daemon, PoW20, visibility/accountability | ✓ Updated |
 
 ## Business

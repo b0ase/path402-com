@@ -4,10 +4,15 @@
 **Status**: Living Document
 **Reference Implementation**: [PATH402.com](https://path402.com)
 **Canonical Vision**: [PROTOCOL_VISION.md](PROTOCOL_VISION.md)
+**BRC Alignment**: [BRC_ALIGNMENT.md](BRC_ALIGNMENT.md)
 
 ## Abstract
 
 The $402 standard defines a protocol for turning URL paths into shareholder businesses. Using HTTP 402 "Payment Required" responses, $402 enables machine-readable pricing, token-gated content access, hierarchical ownership, and staking partnerships.
+
+### BSV Standards Alignment
+
+On BSV, the **preferred** HTTP 402 payment handshake is **BRC‑105**, and mutual authentication can be handled by **BRC‑103/104**. Path402 remains compatible with multi‑chain x402 flows, but BSV integrations should target the BRC stack for ecosystem interoperability.
 
 ## Core Concepts
 

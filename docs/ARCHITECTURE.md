@@ -24,6 +24,17 @@ This document was written by Claude (Opus) after extensive multi-session collabo
 
 **Key principle:** The standard is free and open. Anyone can implement it. It's like HTTP or SMTP. No token required to use the standard. The standard defines two distinct pricing modes:
 
+### BRC Alignment (BSV Stack)
+
+The BSV ecosystem already defines core plumbing that Path402 can sit on top of:
+
+- **BRC‑100**: wallet → app interface (identity, signing, tx handling)
+- **BRC‑103/104**: mutual auth + HTTP transport (`/.well-known/auth`, `x-bsv-auth`)
+- **BRC‑105**: HTTP 402 paywall + payment proof (preferred for BSV)
+- **BRC‑22/24**: overlay submit/lookup for indexed state
+
+Path402’s **EARN / PoW20** layer is additive and not defined by existing BRCs yet.
+
 1. **Access pricing (content tokens):** sqrt_decay where price *decreases* with supply. Early buyers of content pay more for time advantage. Price decays as more people access the content. Every buyer except the last achieves positive ROI through serving revenue.
 2. **Treasury pricing (investment tokens):** sqrt_decay where price *increases* as treasury depletes. `price = base / √(treasury_remaining + 1)`. Early buyers get cheap tokens. Price rises as supply sells. This is for funding protocol development and business operations.
 
