@@ -40,3 +40,10 @@ next-env.d.ts
 .DS_Store
 Thumbs.db
 .env*.local
+
+# Local media
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.webp
