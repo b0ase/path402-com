@@ -146,9 +146,9 @@ function WhitepaperContent() {
             <div className="border border-zinc-200 dark:border-zinc-800 p-4 bg-white dark:bg-black">
               <div className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Personal Tokens</div>
               <div className="space-y-1 font-mono text-blue-400">
-                <div>$RICHARD</div>
-                <div>$ALICE</div>
-                <div>$SPIELBERG</div>
+                <div>$alice</div>
+                <div>$bob</div>
+                <div>$charlie</div>
               </div>
               <p className="text-zinc-500 text-sm mt-3">Your time is the asset. 1 token = 1 second.</p>
             </div>
@@ -713,40 +713,45 @@ Stake:      path402_stake, path402_serve`}
 4. EARNS    → Receives $402 rewards for computational work`}
           </pre>
 
-          <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">PoW20: Proof of Work for Indexers</h4>
+          <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">Future: Network Index Token (Optional)</h4>
+          <div className="border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-950/20 p-4 mb-6">
+            <p className="text-amber-800 dark:text-amber-400 text-sm">
+              <strong>Note:</strong> This section describes a <em>possible future development</em> for the production version of path402d.
+              It is not part of the current protocol specification.
+            </p>
+          </div>
+
           <p className="text-zinc-400 leading-relaxed mb-6">
-            How do we incentivize people to run $pathd? The same way Bitcoin incentivizes miners: <strong className="text-zinc-900 dark:text-white">proof of work</strong>.
+            A network-wide <span className="font-mono text-blue-400">$402</span> token could serve as the "root" token of the entire $402 ecosystem—granting
+            indexing access to all child tokens. This would subsidize the network through PoW mining.
           </p>
 
-          <p className="text-zinc-400 leading-relaxed mb-4">
-            PoW20 is a BSV-21 feature that requires hash puzzles to mint tokens. The $402 protocol uses PoW20 to reward indexers:
+          <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">Why PoW?</h4>
+          <p className="text-zinc-400 leading-relaxed mb-6">
+            <strong className="text-zinc-900 dark:text-white">Not to waste energy—to force operators into the open.</strong> The same reason Bitcoin uses PoW:
+            <em className="text-zinc-900 dark:text-white"> to deanonymize nodes by making them large</em>.
+          </p>
+
+          <p className="text-zinc-400 leading-relaxed mb-6">
+            Small anonymous nodes can hide. Large PoW-mining nodes cannot. They must invest in infrastructure,
+            pay electricity bills, register with ISPs. This creates accountability through scale.
           </p>
 
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-{`PoW20 Reward Mechanism:
+{`PoW20 forces visibility:
 
-1. $pathd node indexes blockchain         → computational work
-2. $pathd node serves content to users    → network work
-3. $pathd node solves hash puzzle         → proof of work
-4. Node earns $402 tokens                 → reward
+1. To earn $402 rewards, nodes must mine
+2. Mining requires scale and investment
+3. Scale requires identity (ISP accounts, electricity contracts)
+4. Identity creates accountability
 
-Formula: double_sha256(solution) < difficulty
-
-Where solution = TICK:ADDRESS:BLOCK_HEADER:NONCE`}
+Result: Big indexers can't hide. Users know who they're trusting.`}
           </pre>
 
           <p className="text-zinc-400 leading-relaxed mb-6">
-            <strong className="text-zinc-900 dark:text-white">Why PoW?</strong> Not just to reward work. <em className="text-zinc-900 dark:text-white">To force operators into the open.</em>
-          </p>
-
-          <p className="text-zinc-400 leading-relaxed mb-6">
-            BSV is neutral. But data vendors are <strong className="text-zinc-900 dark:text-white">NOT</strong> neutral. They have agendas. They have biases.
-            A Christian node pushes Christian content. A Chinese node follows Chinese censorship. A corporate node promotes sponsors.
-          </p>
-
-          <p className="text-zinc-400 leading-relaxed mb-6">
-            <strong className="text-zinc-900 dark:text-white">This is not a bug—it's a feature we expose.</strong> PoW forces scale. Scale forces visibility.
-            Visibility forces accountability. Big nodes can't hide. Big nodes must identify themselves. Users can compare nodes and choose who to trust.
+            Data vendors have biases. A corporate node might promote sponsors. A regional node might follow local regulations.
+            <strong className="text-zinc-900 dark:text-white"> This is not a bug—it's a feature we expose.</strong>
+            Users can compare nodes and choose who to trust, because PoW forces them to be visible.
           </p>
 
           <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">Token as Perpetual Access</h4>
@@ -874,9 +879,9 @@ Application: $402 Protocol   ← Paths, tokens, dividends`}
           </p>
 
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-{`Christians SELL Christian content to Muslims
-  → Muslims buy → Muslims read Christian perspective
-  → The seller wins by DISTRIBUTING widely
+{`Alice SELLS content to Bob's audience
+  → Bob's followers buy → They read Alice's perspective
+  → Alice wins by DISTRIBUTING widely
 
 Threatened party sees damaging content
   → Races to buy 51%+ of tokens
@@ -1039,9 +1044,9 @@ Suppression FUNDS the person being silenced.`}
           </p>
 
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-{`$RICHARD     → Richard's attention token
-$ALICE       → Alice's attention token
-$SPIELBERG   → Spielberg's attention token
+{`$alice       → Alice's attention token
+$bob         → Bob's attention token
+$charlie     → Charlie's attention token
 
 Your token = The canonical path to opening a connection with YOU`}
           </pre>
@@ -1120,16 +1125,16 @@ Network grows through real relationships`}
               </thead>
               <tbody className="text-zinc-400">
                 <tr className="border-b border-zinc-800">
-                  <td className="py-3">$RICHARD = 1000 sats/token<br/>$BOB = 100 sats/token</td>
+                  <td className="py-3">$alice = 1000 sats/token<br/>$bob = 100 sats/token</td>
                   <td className="py-3">Both spend each other's tokens during call</td>
                 </tr>
                 <tr className="border-b border-zinc-800">
-                  <td className="py-3">Bob calls Richard</td>
-                  <td className="py-3">Bob spends expensive $RICHARD<br/>Richard spends cheap $BOB<br/><span className="text-green-400">Net: Bob pays ~900 sats/sec to talk to Richard</span></td>
+                  <td className="py-3">Bob calls Alice</td>
+                  <td className="py-3">Bob spends expensive $alice<br/>Alice spends cheap $bob<br/><span className="text-green-400">Net: Bob pays ~900 sats/sec to talk to Alice</span></td>
                 </tr>
                 <tr>
-                  <td className="py-3">Richard calls Bob</td>
-                  <td className="py-3">Richard spends cheap $BOB<br/>Bob spends expensive $RICHARD<br/><span className="text-green-400">Net: Richard earns ~900 sats/sec</span></td>
+                  <td className="py-3">Alice calls Bob</td>
+                  <td className="py-3">Alice spends cheap $bob<br/>Bob spends expensive $alice<br/><span className="text-green-400">Net: Alice earns ~900 sats/sec</span></td>
                 </tr>
               </tbody>
             </table>
@@ -1145,10 +1150,9 @@ Network grows through real relationships`}
 
 Simple. Fair. No gaming.
 
-Revenue Split (Default):
-├── 70% → Creator wallet
-├── 20% → Staker dividend pool
-└── 10% → Protocol treasury ($402 holders)`}
+Revenue Split (Configurable by creator):
+├── Creator wallet (majority)
+└── Staker dividend pool (remainder)`}
           </pre>
 
           <p className="text-zinc-400 leading-relaxed mb-6">

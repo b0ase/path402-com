@@ -124,37 +124,31 @@ export default function ProtocolPage() {
               Revenue Split
             </motion.h2>
             <div className="border border-zinc-200 dark:border-zinc-800 p-8 bg-zinc-50 dark:bg-zinc-950">
+              <p className="text-zinc-400 mb-6">
+                Revenue splits are <strong className="text-zinc-900 dark:text-white">configurable by the creator</strong>. A typical split:
+              </p>
               <div className="space-y-6">
                 <div>
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-zinc-600 dark:text-zinc-400">Creator</span>
-                    <span className="font-bold text-2xl text-zinc-900 dark:text-white">70%</span>
+                    <span className="font-bold text-2xl text-zinc-900 dark:text-white">80%</span>
                   </div>
                   <div className="w-full bg-zinc-200 dark:bg-zinc-800 h-2">
-                    <div className="bg-zinc-900 dark:bg-white h-2" style={{ width: '70%' }}></div>
+                    <div className="bg-zinc-900 dark:bg-white h-2" style={{ width: '80%' }}></div>
                   </div>
                 </div>
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-zinc-600 dark:text-zinc-400">Stakers (investors)</span>
+                    <span className="text-zinc-600 dark:text-zinc-400">Stakers (dividend pool)</span>
                     <span className="font-bold text-2xl text-zinc-900 dark:text-white">20%</span>
                   </div>
                   <div className="w-full bg-zinc-200 dark:bg-zinc-800 h-2">
                     <div className="bg-zinc-500 h-2" style={{ width: '20%' }}></div>
                   </div>
                 </div>
-                <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-zinc-600 dark:text-zinc-400">Protocol</span>
-                    <span className="font-bold text-2xl text-zinc-900 dark:text-white">10%</span>
-                  </div>
-                  <div className="w-full bg-zinc-200 dark:bg-zinc-800 h-2">
-                    <div className="bg-zinc-400 h-2" style={{ width: '10%' }}></div>
-                  </div>
-                </div>
               </div>
               <p className="text-zinc-500 text-sm mt-6">
-                Every token sale, every access request—the protocol earns 10%.
+                Creators set their own revenue split when minting tokens. Stakers earn dividends proportional to their stake.
               </p>
             </div>
           </motion.div>
