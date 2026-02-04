@@ -39,9 +39,6 @@ export function Navbar() {
           <Link href="/registry" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors text-xs uppercase tracking-widest">
             Registry
           </Link>
-          <Link href="/blog" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors text-xs uppercase tracking-widest font-bold">
-            Blog
-          </Link>
           <Link href="/account" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors text-xs uppercase tracking-widest">
             Account
           </Link>
