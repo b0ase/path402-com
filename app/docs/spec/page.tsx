@@ -50,7 +50,7 @@ export default function ProtocolSpecPage() {
                 {/* Overview */}
                 <Section title="Overview">
                     <p className="text-zinc-600 dark:text-zinc-400 mb-6 leading-relaxed">
-                        $402 is a protocol for tokenized attention markets. Every participant mints their own token, creating a market for their time and content. The network scales socially through genuine relationships, not viral mechanics.
+                        $402 is a protocol for tokenized attention markets. Every participant mints their own token, creating a market for their time and content. The protocol harnesses viral memecoin dynamics to bootstrap the creator economy—every domain becomes a shareholder company, every path becomes a tradable asset.
                     </p>
                     <div className="bg-zinc-50 dark:bg-zinc-900 p-6 border border-zinc-200 dark:border-zinc-800 rounded-sm">
                         <h3 className="text-sm font-bold uppercase tracking-widest mb-4">The Progression</h3>
