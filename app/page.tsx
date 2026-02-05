@@ -145,10 +145,10 @@ export default function Home() {
                 How does a server know if a client has paid for access?
               </p>
               <p className="text-zinc-900 dark:text-white text-xl font-bold mb-6">
-                The client sends a token. The transaction IS the proof.
+                The client buys a ticket. The ticket IS the proof.
               </p>
               <p className="text-zinc-500 text-sm">
-                No indexer lookup required. No validity oracle. If the server receives the token, access is granted.
+                No indexer lookup required. No validity oracle. Tickets are tradable shares—hold them, trade them, stake them, or use them for access.
               </p>
             </div>
           </motion.div>
@@ -398,7 +398,7 @@ $alice/video-1   → access to video only`}
       <section className="py-20 px-6">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-xl font-bold uppercase tracking-tight mb-4">
-            The payment is the proof. The $ is the signal.
+            The ticket is the proof. The $ is the signal.
           </h2>
           <p className="text-zinc-500 mb-8">
             The web finally works the way it was supposed to.
