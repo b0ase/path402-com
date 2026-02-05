@@ -1155,8 +1155,8 @@ Network grows through real relationships`}
 Simple. Fair. No gaming.
 
 Revenue Split (Configurable by creator):
-├── Creator wallet (majority)
-└── Staker dividend pool (remainder)`}
+├── Creator wallet (95%)
+└── Indexer Reward (5%)`}
           </pre>
 
           <p className="text-zinc-400 leading-relaxed mb-6">
@@ -1207,7 +1207,8 @@ Revenue Split (Configurable by creator):
 
 Reward = (your_serves / total_network_serves) × daily_pool
 
-Proof of Serve creates healthy incentives without centralization.`}
+Proof of Serve creates healthy incentives without centralization.
+Each serve generates a **BRC-104 Signed Stamp**, which is gossiped via **BRC-22 Topic Managers** to provide verifiable social proof of work.`}
           </pre>
 
           <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">The End State</h4>
@@ -1255,20 +1256,28 @@ Proof of Serve creates healthy incentives without centralization.`}
         <div className="max-w-4xl mx-auto">
           <h2 className="text-sm font-bold text-zinc-900 dark:text-white mb-6 uppercase tracking-wide">Implementation</h2>
 
-          <h3 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">HTTP 402 Response</h3>
+          <h3 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">HTTP 402 Response (BRC-105)</h3>
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
             {`HTTP/1.1 402 Payment Required
-X-$402-Version: 2.0.0
-X-$402-Price: 4500
-X-$402-Token: $example.com/$blog
-X-$402-Model: sqrt_decay
+x-bsv-payment-version: 1.0.0
+x-bsv-payment-satoshis-required: 4500
+x-bsv-payment-derivation-prefix: <unique_nonce>
 
 {
   "price_sats": 4500,
   "token": "$example.com/$blog",
-  "treasury_remaining": 499000000,
+  "identity": "<server_pubkey>",
   "accepts": ["bsv", "base", "sol", "eth"]
 }`}
+          </pre>
+
+          <h3 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">Client Response (BRC-104/105)</h3>
+          <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
+            {`GET /some/path HTTP/1.1
+Host: example.com
+x-bsv-auth-identity-key: <client_pubkey>
+x-bsv-auth-signature: <sig>
+x-bsv-payment: { transaction, derivationSuffix }`}
           </pre>
 
           <h3 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">Discovery Endpoint</h3>
@@ -1359,7 +1368,10 @@ X-$402-Model: sqrt_decay
             <li>[5] PATH402.com (2026). Protocol Vision Document.</li>
             <li>[6] 1Sat Ordinals (2024). BSV-21 Token Standard. docs.1satordinals.com</li>
             <li>[7] POW-20 Protocol (2024). Layer-1 tokens backed by proof-of-work. protocol.pow20.io</li>
-            <li>[8] BSV Association (2025). BRC-100 Wallet-to-Application Interface. bsv.brc.dev/wallet/0100</li>
+            <li>[8] BRC-105 (2025). Normative 402 Payment Handshake. bsv.brc.dev/payment/0105</li>
+            <li>[9] BRC-104 (2025). Authenticated HTTP Sessions. bsv.brc.dev/auth/0104</li>
+            <li>[10] BRC-100 (2025). Wallet-to-Application Interface. bsv.brc.dev/wallet/0100</li>
+            <li>[11] BRC-24 (2025). Overlay Lookup Services. bsv.brc.dev/indexing/0024</li>
           </ol>
         </div>
       </section>

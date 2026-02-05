@@ -177,9 +177,14 @@ export default function ExchangePage() {
                 code: ["Treasury 500M: 10 SAT", "Treasury 10M: 71 SAT", "Treasury 1K: 7,072 SAT"]
               },
               {
-                title: "Revenue Split",
-                desc: "Each purchase is split between the issuer and the facilitator platform.",
-                code: ["Issuer: 80%", "Facilitator: 20%"]
+                title: "95/5 Revenue Split",
+                desc: "Every purchase supports the creator and ensures high-speed verification via the Indexer Overlay.",
+                code: ["Creator: 95%", "Indexer: 5% (Proof of Serve)"]
+              },
+              {
+                title: "BRC-24 Discovery",
+                desc: "The $402 network acts as a BRC-24 Lookup Service. Find the most 'stamped' content.",
+                code: ["Query: BRC-24 Overlay", "Signal: Social Proof Stamps"]
               }
             ].map((item, i) => (
               <motion.div
@@ -224,7 +229,7 @@ export default function ExchangePage() {
           <motion.pre
             className="bg-zinc-200 dark:bg-zinc-900 p-6 font-mono text-sm text-zinc-700 dark:text-zinc-400 overflow-x-auto "
           >
-{`# Install the MCP server
+            {`# Install the MCP server
 npm install path402
 
 # Discovery & Evaluation

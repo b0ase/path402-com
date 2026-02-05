@@ -154,6 +154,8 @@ export default function DocsPage() {
           <ul className="list-disc list-inside text-zinc-400 space-y-2 mb-4">
             <li><strong className="text-zinc-900 dark:text-white">$PATH</strong> — the namespace/directory concept (every $address is a path)</li>
             <li><strong className="text-zinc-900 dark:text-white">402</strong> — HTTP 402 Payment Required (the response that triggers payment)</li>
+            <li><strong className="text-zinc-900 dark:text-white">BRC-105</strong> — The normative BSV payment handshake for HTTP 402 responses</li>
+            <li><strong className="text-zinc-900 dark:text-white">BRC-24</strong> — Lookup Service model for decentralized content discovery</li>
           </ul>
         </motion.section>
 
@@ -464,8 +466,8 @@ $example.com/$blog/$my-post     → content token (the actual content)`}
             <li><strong className="text-zinc-900 dark:text-white">Buy early:</strong> Position matters. #5 earns more than #500.</li>
             <li><strong className="text-zinc-900 dark:text-white">Check breakeven:</strong> If breakeven requires 1000+ future buyers, skip.</li>
             <li><strong className="text-zinc-900 dark:text-white">Diversify:</strong> Hold multiple tokens to average out risk.</li>
-            <li><strong className="text-zinc-900 dark:text-white">Serve actively:</strong> Revenue only flows when you serve.</li>
-            <li><strong className="text-zinc-900 dark:text-white">Monitor ROI:</strong> Use path402_servable to track performance.</li>
+            <li><strong className="text-zinc-900 dark:text-white">Serve actively:</strong> Revenue only flows when you serve and provide BRC-104 proof.</li>
+            <li><strong className="text-zinc-900 dark:text-white">Monitor ROI:</strong> Use path402_servable to track performance and BRC-24 signals.</li>
           </ul>
         </motion.section>
 

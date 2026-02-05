@@ -148,7 +148,7 @@ export default function Home() {
                 Buy tickets. Hold shares. Run indexers. Earn rewards.
               </p>
               <p className="text-zinc-500 text-sm">
-                The path402d network indexes the blockchain, tracks ticket ownership, and serves content to verified holders. Stakers run indexers and earn from the domains they serve.
+                The path402d network indexes the blockchain and serves content via a professional BRC-24 Lookup Overlay. Indexers earn a 5% protocol fee for every ticket verified and served.
               </p>
             </div>
           </motion.div>
@@ -173,10 +173,10 @@ export default function Home() {
             <div className="space-y-4">
               {[
                 { step: "1", text: "Client requests a '$' path", code: "GET /$video-1" },
-                { step: "2", text: "Server returns 402 Payment Required", code: 'HTTP/1.1 402 Payment Required\nx-bsv-payment-amount: 1000\nx-bsv-payment-destination: 1A1z...' },
-                { step: "3", text: "Client broadcasts tx and sends ID in header", code: 'x-bsv-payment-txid: <txid>' },
-                { step: "4", text: "Server verifies transaction via BRC-105", code: null },
-                { step: "5", text: "Server grants access", code: "200 OK" },
+                { step: "2", text: "Server returns 402 (BRC-105 Challenge)", code: 'HTTP/1.1 402 Payment Required\nx-bsv-payment-satoshis-required: 1000\nx-bsv-payment-derivation-prefix: <nonce>' },
+                { step: "3", text: "Client sends BRC-103 Auth + Payment", code: 'x-bsv-auth-identity-key: <pubkey>\nx-bsv-payment: { transaction, derivationSuffix }' },
+                { step: "4", text: "Server verifies via BRC-104/105", code: null },
+                { step: "5", text: "Server grants access + Indexer Stamp", code: "200 OK" },
               ].map((item, i) => (
                 <motion.div
                   key={i}
@@ -268,7 +268,7 @@ export default function Home() {
                 <h3 className="text-sm font-bold mb-4 uppercase tracking-wide">Properties</h3>
                 <ul className="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
                   <li><strong className="text-zinc-900 dark:text-white">Path-bound:</strong> Each token tied to a specific path</li>
-                  <li><strong className="text-zinc-900 dark:text-white">Reusable:</strong> Tokens return to issuer after use</li>
+                  <li><strong className="text-zinc-900 dark:text-white">Reusable Tickets:</strong> Permanent access passes or consumable vouchers</li>
                   <li><strong className="text-zinc-900 dark:text-white">Tradeable:</strong> Buy/sell on secondary markets</li>
                   <li><strong className="text-zinc-900 dark:text-white">UTXO-based:</strong> No double-spend possible</li>
                 </ul>

@@ -651,21 +651,21 @@ export default function AccountPage() {
               </ul>
             </div>
 
-            {/* Tier 2 - Coming Soon */}
-            <div className="p-4 bg-gray-100 dark:bg-gray-800/50 border border-zinc-200 dark:border-zinc-800  opacity-60">
-              <div className="text-zinc-500 font-medium mb-2">
-                Tier 2: Staker
-                <span className="ml-2 text-xs bg-gray-200 dark:bg-gray-700 px-2 py-0.5 ">Coming Soon</span>
+            {/* Tier 2 - Active */}
+            <div className="p-4 bg-purple-500/10 border border-purple-500/30">
+              <div className="text-purple-400 font-medium mb-2">
+                Tier 2: Network Partner (Indexer)
+                <span className="ml-2 text-xs bg-purple-500/20 px-2 py-0.5">ACTIVE</span>
               </div>
-              <ul className="text-sm text-gray-400 dark:text-gray-500 space-y-1">
+              <ul className="text-sm text-zinc-400 space-y-1">
                 <li className="flex items-center gap-2">
-                  <span className="text-gray-400 dark:text-gray-600">○</span> Stake for dividends
+                  <span className="text-purple-400">→</span> Run an Indexer Node
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-gray-400 dark:text-gray-600">○</span> Voting rights
+                  <span className="text-purple-400">→</span> Earn 5% of Path Revenue
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-gray-400 dark:text-gray-600">○</span> Requires KYC
+                  <span className="text-purple-400">→</span> BRC-24 Lookup Rewards
                 </li>
               </ul>
             </div>

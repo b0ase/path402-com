@@ -257,6 +257,29 @@ Multicast: Same rate, split`}
                     </div>
                 </Section>
 
+                {/* BRC Standards Alignment */}
+                <Section title="BRC Standards Alignment">
+                    <p className="text-zinc-600 dark:text-zinc-400 mb-8 leading-relaxed">
+                        $402 is built on the modern Bitcoin SV stack, adhering to established standards (BRCs) to ensure maximum interoperability with wallets, indexers, and other peer-to-peer services.
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {[
+                            { id: '105', title: 'Payment Handshake', desc: 'Normative 402 challenge/response flow using headers.' },
+                            { id: '104', title: 'HTTP Auth', desc: 'Secure mutual authentication for gated content sessions.' },
+                            { id: '103', title: 'Identity', desc: 'Peer-to-peer certificate exchange and identity proof.' },
+                            { id: '100', title: 'Wallet Interface', desc: 'Universal integration with compliant wallet providers.' },
+                            { id: '24', title: 'Lookup Overlays', desc: 'Scalable indexing and viral content discovery.' },
+                            { id: '22', title: 'Topic Managers', desc: 'Protocol-specific content propagation logic.' },
+                        ].map((brc) => (
+                            <div key={brc.id} className="p-4 border border-zinc-100 dark:border-zinc-900 bg-zinc-50/50 dark:bg-zinc-950/50">
+                                <div className="text-xs font-bold text-zinc-400 mb-1">BRC-{brc.id}</div>
+                                <div className="font-bold text-sm mb-1">{brc.title}</div>
+                                <div className="text-xs text-zinc-500">{brc.desc}</div>
+                            </div>
+                        ))}
+                    </div>
+                </Section>
+
                 {/* Ticket Stamp Chains */}
                 <Section title="Ticket Stamp Chains: The Indexer Solution">
                     <p className="text-zinc-600 dark:text-zinc-400 mb-6 leading-relaxed">
