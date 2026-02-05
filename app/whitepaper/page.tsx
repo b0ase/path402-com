@@ -176,7 +176,7 @@ function WhitepaperContent() {
             The $402 protocol creates a self-reinforcing cycle:
           </p>
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-{`    ┌─────────────────────────────────────────┐
+            {`    ┌─────────────────────────────────────────┐
     │                                         │
     │   1. BUY ACCESS                         │
     │      Pay entry fee → Receive tokens     │
@@ -369,7 +369,7 @@ function WhitepaperContent() {
           </p>
 
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-{`$example.com                    → Site-level entity
+            {`$example.com                    → Site-level entity
 $example.com/$blog              → Blog section entity
 $example.com/$blog/$premium     → Premium content entity
 $example.com/$api               → API access entity`}
@@ -427,7 +427,7 @@ $example.com/$api               → API access entity`}
           </p>
 
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-{`$example.com                      ← Holding company (root)
+            {`$example.com                      ← Holding company (root)
 ├── $example.com/$blog            ← Subsidiary (branch)
 │   ├── $example.com/$blog/$news  ← Product line (leaf)
 │   └── $example.com/$blog/$opinion
@@ -443,7 +443,7 @@ $example.com/$api               → API access entity`}
           </p>
 
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-{`$example.com/$blog created with 1,000,000 tokens:
+            {`$example.com/$blog created with 1,000,000 tokens:
   → 500,000 go to $example.com (parent)
   → 500,000 available for sale
 
@@ -476,7 +476,7 @@ $example.com/$blog/$premium created:
           </p>
 
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-{`{
+            {`{
   "p": "$402",
   "version": "1.0",
   "path": "$myblog.com",
@@ -566,7 +566,7 @@ $example.com/$blog/$premium created:
 
           <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">The Scaling Effect</h4>
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-{`Small domain ($myblog.com):
+            {`Small domain ($myblog.com):
   → 1-2 stakers sufficient
   → Low revenue, issuer might self-stake
 
@@ -594,7 +594,7 @@ Large domain ($news.com):
             $402 proposes something radical: <strong className="text-zinc-900 dark:text-white">the domain name becomes the ticker symbol</strong>.
           </p>
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-{`Legacy:     $COIN on NYSE      → Coinbase stock
+            {`Legacy:     $COIN on NYSE      → Coinbase stock
 $402:       $coinbase.com      → Domain IS the equity
 
 Legacy:     $GOOGL on NASDAQ   → Google stock
@@ -670,7 +670,7 @@ $402:       $google.com        → Domain IS the equity`}
           </p>
 
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-{`npm install path402-mcp-server
+            {`npm install path402-mcp-server
 
 Discovery:  path402_discover, path402_economics
 Acquire:    path402_acquire, path402_wallet
@@ -705,7 +705,7 @@ Stake:      path402_stake, path402_serve`}
           </p>
 
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-{`$pathd does four things:
+            {`$pathd does four things:
 
 1. INDEXES  → Reads BSV blockchain, tracks all $402 tokens
 2. VALIDATES → Confirms token ownership before serving content
@@ -738,7 +738,7 @@ Stake:      path402_stake, path402_serve`}
           </p>
 
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-{`PoW20 forces visibility:
+            {`PoW20 forces visibility:
 
 1. To earn $402 rewards, nodes must mine
 2. Mining requires scale and investment
@@ -803,7 +803,7 @@ Result: Big indexers can't hide. Users know who they're trusting.`}
           </p>
 
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-{`┌──────────────┐         BRC-100          ┌──────────────┐
+            {`┌──────────────┐         BRC-100          ┌──────────────┐
 │              │◄────────────────────────►│              │
 │   BROWSER    │    wallet-app spec       │    $pathd    │
 │   (wallet)   │                          │   (server)   │
@@ -839,7 +839,7 @@ Result: Big indexers can't hide. Users know who they're trusting.`}
 
           <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">The Complete Stack</h4>
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-{`Layer 0: BitcoinSV           ← 1M+ TPS base layer
+            {`Layer 0: BitcoinSV           ← 1M+ TPS base layer
     ↓
 Layer 1: BSV-21 + PoW20      ← Token standard + mining
     ↓
@@ -851,12 +851,16 @@ Application: $402 Protocol   ← Paths, tokens, dividends`}
           </pre>
 
           <div className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-center">
-            <p className="text-zinc-500 text-sm mb-2">Download and run:</p>
-            <p className="text-zinc-900 dark:text-white text-lg font-mono">
-              npm install -g pathd
+            <p className="text-zinc-500 text-sm mb-2">Install the package:</p>
+            <p className="text-zinc-900 dark:text-white text-lg font-mono mb-4">
+              npm install -g path402
             </p>
-            <p className="text-zinc-500 text-sm mt-2">
-              Become a node. Earn $402. Power the network.
+            <p className="text-zinc-500 text-sm mb-2">Start the daemon:</p>
+            <p className="text-zinc-900 dark:text-white text-lg font-mono mb-4">
+              path402d start
+            </p>
+            <p className="text-zinc-500 text-sm">
+              Index the blockchain. Serve content. Earn rewards.
             </p>
           </div>
         </div>
@@ -879,7 +883,7 @@ Application: $402 Protocol   ← Paths, tokens, dividends`}
           </p>
 
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-{`Alice SELLS content to Bob's audience
+            {`Alice SELLS content to Bob's audience
   → Bob's followers buy → They read Alice's perspective
   → Alice wins by DISTRIBUTING widely
 
@@ -921,7 +925,7 @@ Threatened party sees damaging content
 
           <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">The Hostile Takeover Race</h4>
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-{`Damaging content inscribed at t=0
+            {`Damaging content inscribed at t=0
 
 t=1min:  Threatened party detects it
 t=2min:  Starts buying aggressively
@@ -974,7 +978,7 @@ PRESERVERS WIN  → Content spreads widely`}
           </p>
 
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-{`To acquire 51% of 1,000,000 tokens (sqrt_decay):
+            {`To acquire 51% of 1,000,000 tokens (sqrt_decay):
   First 100k tokens:  ~95,000,000 sats
   Next 200k tokens:   ~160,000,000 sats
   Next 210k tokens:   ~136,000,000 sats
@@ -1044,7 +1048,7 @@ Suppression FUNDS the person being silenced.`}
           </p>
 
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-{`$alice       → Alice's attention token
+            {`$alice       → Alice's attention token
 $bob         → Bob's attention token
 $charlie     → Charlie's attention token
 
@@ -1079,7 +1083,7 @@ Your token = The canonical path to opening a connection with YOU`}
           </p>
 
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-{`You hold 3600 $RICHARD tokens
+            {`You hold 3600 $RICHARD tokens
     ↓
 You can open a 1-hour connection with Richard
     ↓
@@ -1097,7 +1101,7 @@ Like owning a share—you can attend meetings forever.`}
           </p>
 
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-{`I value my friend
+            {`I value my friend
        ↓
 I buy MORE tokens than I need for calls
        ↓
@@ -1125,16 +1129,16 @@ Network grows through real relationships`}
               </thead>
               <tbody className="text-zinc-400">
                 <tr className="border-b border-zinc-800">
-                  <td className="py-3">$alice = 1000 sats/token<br/>$bob = 100 sats/token</td>
+                  <td className="py-3">$alice = 1000 sats/token<br />$bob = 100 sats/token</td>
                   <td className="py-3">Both spend each other's tokens during call</td>
                 </tr>
                 <tr className="border-b border-zinc-800">
                   <td className="py-3">Bob calls Alice</td>
-                  <td className="py-3">Bob spends expensive $alice<br/>Alice spends cheap $bob<br/><span className="text-green-400">Net: Bob pays ~900 sats/sec to talk to Alice</span></td>
+                  <td className="py-3">Bob spends expensive $alice<br />Alice spends cheap $bob<br /><span className="text-green-400">Net: Bob pays ~900 sats/sec to talk to Alice</span></td>
                 </tr>
                 <tr>
                   <td className="py-3">Alice calls Bob</td>
-                  <td className="py-3">Alice spends cheap $bob<br/>Bob spends expensive $alice<br/><span className="text-green-400">Net: Alice earns ~900 sats/sec</span></td>
+                  <td className="py-3">Alice spends cheap $bob<br />Bob spends expensive $alice<br /><span className="text-green-400">Net: Alice earns ~900 sats/sec</span></td>
                 </tr>
               </tbody>
             </table>
@@ -1146,7 +1150,7 @@ Network grows through real relationships`}
           </p>
 
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-{`Your dividend = (your_staked / total_staked) × period_revenue
+            {`Your dividend = (your_staked / total_staked) × period_revenue
 
 Simple. Fair. No gaming.
 
@@ -1195,7 +1199,7 @@ Revenue Split (Configurable by creator):
           </div>
 
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-{`Serve Reward Actions:
+            {`Serve Reward Actions:
 ├── SERVE   → Deliver content to requesters
 ├── RELAY   → Forward gossip messages
 ├── INDEX   → Maintain accurate token indexes
@@ -1253,7 +1257,7 @@ Proof of Serve creates healthy incentives without centralization.`}
 
           <h3 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">HTTP 402 Response</h3>
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-{`HTTP/1.1 402 Payment Required
+            {`HTTP/1.1 402 Payment Required
 X-$402-Version: 2.0.0
 X-$402-Price: 4500
 X-$402-Token: $example.com/$blog
@@ -1272,7 +1276,7 @@ X-$402-Model: sqrt_decay
             Every $402 domain exposes <span className="font-mono text-blue-400">/.well-known/$402.json</span>:
           </p>
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-{`{
+            {`{
   "$402_version": "2.0",
   "extensions": ["$402-curves", "$402-hierarchy"],
   "root": {
