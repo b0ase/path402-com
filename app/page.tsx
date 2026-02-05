@@ -142,13 +142,13 @@ export default function Home() {
             </h2>
             <div className="border border-zinc-200 dark:border-zinc-800 p-8 bg-zinc-50 dark:bg-zinc-950">
               <p className="text-zinc-600 dark:text-zinc-400 text-lg mb-6">
-                How does a server know if a client has paid for access?
+                Every domain becomes a shareholder company. Every path becomes a tradable asset.
               </p>
               <p className="text-zinc-900 dark:text-white text-xl font-bold mb-6">
-                The client buys a ticket. The ticket IS the proof.
+                Buy tickets. Hold shares. Run indexers. Earn rewards.
               </p>
               <p className="text-zinc-500 text-sm">
-                No indexer lookup required. No validity oracle. Tickets are tradable shares—hold them, trade them, stake them, or use them for access.
+                The $pathd network indexes the blockchain, tracks ticket ownership, and serves content to verified holders. Stakers run indexers and earn from the domains they serve.
               </p>
             </div>
           </motion.div>
