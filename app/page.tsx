@@ -398,7 +398,7 @@ $alice/video-1   → access to video only`}
       <section className="py-20 px-6">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-xl font-bold uppercase tracking-tight mb-4">
-            The ticket is the proof. The $ is the signal.
+            The $ is the signal. The ticket is the proof.
           </h2>
           <p className="text-zinc-500 mb-8">
             The web finally works the way it was supposed to.
