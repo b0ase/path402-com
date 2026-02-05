@@ -96,6 +96,14 @@ export default function DocsPage() {
           >
             Everything you need to know about the $402 protocol.
           </motion.p>
+          <motion.div variants={fadeIn} transition={{ delay: 0.3 }} className="mt-6">
+            <Link
+              href="/docs/spec"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-900 dark:bg-white text-white dark:text-black text-xs font-bold uppercase tracking-widest hover:opacity-80 transition-opacity"
+            >
+              Read Full Specification →
+            </Link>
+          </motion.div>
         </motion.div>
 
         {/* Table of Contents */}
@@ -168,7 +176,7 @@ export default function DocsPage() {
             className="bg-zinc-900 p-6 font-mono text-sm text-zinc-400 overflow-x-auto mb-4 "
             whileHover={{ backgroundColor: "rgba(255,255,255,0.05)" }}
           >
-{`$example.com                    → site-level token (cheap)
+            {`$example.com                    → site-level token (cheap)
 $example.com/$blog              → section token
 $example.com/$blog/$my-post     → content token (the actual content)`}
           </motion.pre>
@@ -367,14 +375,14 @@ $example.com/$blog/$my-post     → content token (the actual content)`}
             className="bg-zinc-900 p-6 font-mono text-sm text-zinc-400 overflow-x-auto mb-6 "
             whileHover={{ backgroundColor: "rgba(255,255,255,0.05)" }}
           >
-npm install path402
+            npm install path402
           </motion.pre>
           <h3 className="text-xl font-semibold text-zinc-900 dark:text-white mb-4">Claude Desktop Configuration</h3>
           <motion.pre
             className="bg-zinc-900 p-6 font-mono text-sm text-zinc-400 overflow-x-auto mb-6 "
             whileHover={{ backgroundColor: "rgba(255,255,255,0.05)" }}
           >
-{`{
+            {`{
   "mcpServers": {
     "path402": {
       "command": "npx",
