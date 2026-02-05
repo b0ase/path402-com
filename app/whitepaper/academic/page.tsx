@@ -187,15 +187,15 @@ export default function AcademicWhitepaper() {
             </p>
           </section>
 
-          {/* 6. Network Incentives: $pathd */}
+          {/* 6. Network Incentives: path402d */}
           <section className="mb-4 break-inside-avoid-column">
             <h2 className="font-bold text-sm mb-2">6. Network Incentives</h2>
             <p className="mb-2">
               Bitcoin has <span className="font-mono">bitcoind</span>. The $402 network has
-              <span className="font-mono">$pathd</span>—the indexing and serving daemon.
+              <span className="font-mono">path402d</span>—the indexing and serving daemon.
             </p>
             <p className="mb-2">
-              $pathd performs four functions: (1) INDEX — reads BSV blockchain, tracks all
+              path402d performs four functions: (1) INDEX — reads BSV blockchain, tracks all
               $402 tokens; (2) VALIDATE — confirms token ownership before serving; (3) SERVE —
               delivers content to verified holders; (4) EARN — receives $402 rewards via PoW20.
             </p>
@@ -268,7 +268,7 @@ export default function AcademicWhitepaper() {
               We don't compete with x402—we complete it.
             </p>
             <p className="mb-2">
-              The browser communicates with $pathd through BRC-100, the wallet-to-application
+              The browser communicates with path402d through BRC-100, the wallet-to-application
               interface specification on BSV.
             </p>
           </section>

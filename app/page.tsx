@@ -148,7 +148,7 @@ export default function Home() {
                 Buy tickets. Hold shares. Run indexers. Earn rewards.
               </p>
               <p className="text-zinc-500 text-sm">
-                The $pathd network indexes the blockchain, tracks ticket ownership, and serves content to verified holders. Stakers run indexers and earn from the domains they serve.
+                The path402d network indexes the blockchain, tracks ticket ownership, and serves content to verified holders. Stakers run indexers and earn from the domains they serve.
               </p>
             </div>
           </motion.div>

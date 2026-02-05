@@ -196,7 +196,7 @@ BECAUSE it's large. PoW20 would create many competing Coinbases.
 
 The $402 whitepaper should have a Section 9: Network Incentives that:
 
-1. Defines $pathd as the indexing daemon
+1. Defines path402d as the indexing daemon
 2. Explains PoW20 mechanism for infrastructure rewards
 3. Shows math for work → rewards conversion
 4. Explains scale → compliance dynamic (the "Coinbase effect")
@@ -225,7 +225,7 @@ A whitepaper that:
 After extensive research, the $402 whitepaper v2.1.0 now includes **Step 9: Network Incentives** which resolves the PoW vs PoS tension:
 
 **PoW20 for Infrastructure Rewards:**
-- $pathd nodes earn $402 tokens by solving hash puzzles
+- path402d nodes earn $402 tokens by solving hash puzzles
 - Computational work = indexing + serving + validation
 - Formula: `double_sha256(solution) < difficulty`
 - Forces scale → forces compliance (the "Coinbase effect")
@@ -251,9 +251,9 @@ Layer 0: BitcoinSV           ← 1M+ TPS base layer
     ↓
 Layer 1: BSV-21 + PoW20      ← Token standard + mining
     ↓
-Layer 2: $pathd Network      ← Indexers serving content
+Layer 2: path402d Network      ← Indexers serving content
     ↓
-Interface: BRC-100           ← Browser ↔ $pathd
+Interface: BRC-100           ← Browser ↔ path402d
     ↓
 Application: $402 Protocol   ← Paths, tokens, dividends
 ```
@@ -262,7 +262,7 @@ Application: $402 Protocol   ← Paths, tokens, dividends
 
 - **Whitepaper v2.1.0**: Added Step 9 with full specification
 - **PATHD_ARCHITECTURE.md**: Created detailed daemon specification
-- **Landing page**: Added $pathd section with download button
-- **DOC_INDEX.md**: Updated to 9 steps, added $pathd docs
+- **Landing page**: Added path402d section with download button
+- **DOC_INDEX.md**: Updated to 9 steps, added path402d docs
 
 **Status**: RESOLVED

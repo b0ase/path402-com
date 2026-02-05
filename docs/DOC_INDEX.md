@@ -44,7 +44,7 @@
 | **[PRICING_CURVES.md](PRICING_CURVES.md)** | Library of pricing curves for token issuers | ✓ Aligned |
 | **[ARCHITECTURE.md](ARCHITECTURE.md)** | Five-layer architecture | ✓ Aligned |
 | **[BRC_ALIGNMENT.md](BRC_ALIGNMENT.md)** | How Path402 maps to BRC‑100/103/104/105/22/24 | ✓ New |
-| **[PATHD_ARCHITECTURE.md](PATHD_ARCHITECTURE.md)** | $pathd daemon, PoW20, visibility/accountability | ✓ Updated |
+| **[PATHD_ARCHITECTURE.md](PATHD_ARCHITECTURE.md)** | path402d daemon, PoW20, visibility/accountability | ✓ Updated |
 
 ## Business
 
@@ -75,7 +75,7 @@
 
 **MCP server**: [npmjs.com/package/path402-mcp-server](https://www.npmjs.com/package/path402-mcp-server)
 
-**$pathd daemon**: [path402.com/pathd](https://path402.com/pathd)
+**path402d daemon**: [path402.com/pathd](https://path402.com/pathd)
 
 ---
 

@@ -1,4 +1,4 @@
-# $pathd Architecture
+# path402d Architecture
 
 **Version**: 1.0.0
 **Date**: February 3, 2026
@@ -6,12 +6,12 @@
 
 ## Overview
 
-`$pathd` is the indexing and serving daemon for the $402 network. It plays the same role in the $402 ecosystem that `bitcoind` plays in Bitcoin: the core software that nodes run to participate in the network.
+`path402d` is the indexing and serving daemon for the $402 network. It plays the same role in the $402 ecosystem that `bitcoind` plays in Bitcoin: the core software that nodes run to participate in the network.
 
 ```
 Bitcoin Network          $402 Network
 ─────────────────        ─────────────────
-bitcoind                 $pathd
+bitcoind                 path402d
   - Indexes blocks         - Indexes $402 tokens
   - Validates txs          - Validates ownership
   - Relays txs             - Serves content
@@ -27,16 +27,16 @@ Layer 0: BitcoinSV           ← 1M+ TPS base layer (payment rails)
     ↓
 Layer 1: BSV-21 + PoW20      ← Token standard + mining rewards
     ↓
-Layer 2: $pathd Network      ← Indexers serving paid content
+Layer 2: path402d Network      ← Indexers serving paid content
     ↓
-Interface: BRC-100           ← Browser ↔ $pathd communication
+Interface: BRC-100           ← Browser ↔ path402d communication
     ↓
 Application: $402 Protocol   ← Paths, tokens, dividends
 ```
 
 ### Core Functions
 
-$pathd performs four essential functions:
+path402d performs four essential functions:
 
 | Function | Description | Computation |
 |----------|-------------|-------------|
@@ -87,12 +87,12 @@ Incentive alignment:
 
 ### Reward Mechanism
 
-$pathd nodes earn $402 tokens through PoW20 (proof-of-work token minting):
+path402d nodes earn $402 tokens through PoW20 (proof-of-work token minting):
 
 ```
-1. $pathd node indexes blockchain         → computational work
-2. $pathd node serves content to users    → network work
-3. $pathd node solves hash puzzle         → proof of work
+1. path402d node indexes blockchain         → computational work
+2. path402d node serves content to users    → network work
+3. path402d node solves hash puzzle         → proof of work
 4. Node earns $402 tokens                 → reward
 
 Formula: double_sha256(solution) < difficulty
@@ -143,10 +143,10 @@ Examples of biased nodes:
 
 ### Curation Through Discovery (BitTorrent Model)
 
-Like a BitTorrent node, if you're running $pathd you're making choices about what to serve. Curation happens at the **discovery** stage through selective purchasing:
+Like a BitTorrent node, if you're running path402d you're making choices about what to serve. Curation happens at the **discovery** stage through selective purchasing:
 
 ```
-Running $pathd:
+Running path402d:
   → Run AI agents to scan new inscriptions
   → Buy tokens to access content samples
   → Evaluate: Is this valuable? Does it serve my niche?
@@ -161,17 +161,17 @@ Decision tree:
 **The network self-organizes into specialized niches:**
 
 ```
-$pathd-techblog.com
+path402d-techblog.com
   → Agent scans for: programming, AI, startups
   → Buys: Technical content, research papers
   → Ignores: Political content, entertainment
 
-$pathd-news.org
+path402d-news.org
   → Agent scans for: current events, journalism
   → Buys: Breaking news, investigative reports
   → Ignores: Old content, spam
 
-$pathd-conservative.net
+path402d-conservative.net
   → Agent scans for: political commentary
   → Buys: Right-leaning analysis
   → Ignores: Left-leaning content (or buys to suppress)
@@ -188,7 +188,7 @@ $pathd-conservative.net
 
 The market reveals what content is valuable through price discovery. Nodes that serve high-demand content earn more. Nodes that serve spam lose users and revenue.
 
-If a $pathd node gets really big, we want to know:
+If a path402d node gets really big, we want to know:
 - **WHO** is running it
 - **WHAT** their agenda is
 - **HOW** they're curating content
@@ -200,10 +200,10 @@ PoW forces them into visibility. Big nodes can't hide. Big nodes must identify t
 We don't want one giant "neutral" node. We want many identified nodes:
 
 ```
-$pathd-christianity.org  → Christian perspective (identified)
-$pathd-islam.net         → Islamic perspective (identified)
-$pathd-secular.com       → Secular perspective (identified)
-$pathd-china.cn          → Chinese state perspective (identified)
+path402d-christianity.org  → Christian perspective (identified)
+path402d-islam.net         → Islamic perspective (identified)
+path402d-secular.com       → Secular perspective (identified)
+path402d-china.cn          → Chinese state perspective (identified)
 ```
 
 Users can:
@@ -253,12 +253,12 @@ Verify:     How do you verify an AI's judgment?
 
 ### Browser as Wallet
 
-The browser acts as a wallet, holding $402 tokens. Communication with $pathd uses the BRC-100 standard:
+The browser acts as a wallet, holding $402 tokens. Communication with path402d uses the BRC-100 standard:
 
 ```
 ┌──────────────┐         BRC-100          ┌──────────────┐
 │              │◄────────────────────────►│              │
-│   BROWSER    │    wallet-app spec       │    $pathd    │
+│   BROWSER    │    wallet-app spec       │    path402d    │
 │   (wallet)   │                          │   (server)   │
 │              │                          │              │
 │  Holds:      │         Request:         │  Validates:  │
@@ -270,7 +270,7 @@ The browser acts as a wallet, holding $402 tokens. Communication with $pathd use
 
 ### BRC-100 Methods Used
 
-| Method | Purpose | $pathd Usage |
+| Method | Purpose | path402d Usage |
 |--------|---------|--------------|
 | `createAction` | Construct transactions | Token transfers |
 | `createSignature` | Prove ownership | Access verification |
@@ -281,10 +281,10 @@ The browser acts as a wallet, holding $402 tokens. Communication with $pathd use
 ### Access Flow
 
 ```
-1. User requests content from $pathd node
-2. $pathd requests signature via BRC-100
+1. User requests content from path402d node
+2. path402d requests signature via BRC-100
 3. Browser signs challenge with token private key
-4. $pathd verifies signature against BSV-21 UTXO
+4. path402d verifies signature against BSV-21 UTXO
 5. If valid: Content served
 6. If invalid: 402 Payment Required response
 ```
@@ -451,7 +451,7 @@ X-$402-Token: $example.com/$blog
 
 ### Node Discovery
 
-$pathd nodes discover each other through:
+path402d nodes discover each other through:
 
 1. **DNS Seeds** - Hardcoded seed nodes
 2. **Peer Exchange** - Active nodes share peer lists
@@ -468,7 +468,7 @@ Node A indexes new $402 token
 
 ### Consensus
 
-There is no consensus required between $pathd nodes. Each node:
+There is no consensus required between path402d nodes. Each node:
 
 1. Reads the same BSV blockchain
 2. Applies the same validation rules

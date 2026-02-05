@@ -692,20 +692,20 @@ Stake:      path402_stake, path402_serve`}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-sm font-bold text-zinc-900 dark:text-white mb-2 uppercase tracking-wide">Step 9</h2>
-          <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-6">Network Incentives: The $pathd Daemon</h3>
+          <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-6">Network Incentives: The path402d Daemon</h3>
 
           <p className="text-zinc-400 leading-relaxed mb-6">
-            Bitcoin has <span className="font-mono text-blue-400">bitcoind</span>. The $402 network has <span className="font-mono text-blue-400">$pathd</span>.
+            Bitcoin has <span className="font-mono text-blue-400">bitcoind</span>. The $402 network has <span className="font-mono text-blue-400">path402d</span>.
           </p>
 
-          <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">What is $pathd?</h4>
+          <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">What is path402d?</h4>
           <p className="text-zinc-400 leading-relaxed mb-4">
-            The <strong className="text-zinc-900 dark:text-white">$pathd daemon</strong> is the indexing and serving software that powers the $402 network.
+            The <strong className="text-zinc-900 dark:text-white">path402d daemon</strong> is the indexing and serving software that powers the $402 network.
             Anyone can download and run it. Those who do become <em className="text-zinc-900 dark:text-white">network nodes</em>.
           </p>
 
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-            {`$pathd does four things:
+            {`path402d does four things:
 
 1. INDEXES  → Reads BSV blockchain, tracks all $402 tokens
 2. VALIDATES → Confirms token ownership before serving content
@@ -799,13 +799,13 @@ Result: Big indexers can't hide. Users know who they're trusting.`}
 
           <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">Browser as Wallet (BRC-100)</h4>
           <p className="text-zinc-400 leading-relaxed mb-4">
-            How does the browser talk to $pathd? Through the <span className="font-mono text-blue-400">BRC-100</span> wallet interface.
+            How does the browser talk to path402d? Through the <span className="font-mono text-blue-400">BRC-100</span> wallet interface.
           </p>
 
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
             {`┌──────────────┐         BRC-100          ┌──────────────┐
 │              │◄────────────────────────►│              │
-│   BROWSER    │    wallet-app spec       │    $pathd    │
+│   BROWSER    │    wallet-app spec       │    path402d    │
 │   (wallet)   │                          │   (server)   │
 │              │                          │              │
 │  Holds:      │         Request:         │  Validates:  │
@@ -843,9 +843,9 @@ Result: Big indexers can't hide. Users know who they're trusting.`}
     ↓
 Layer 1: BSV-21 + PoW20      ← Token standard + mining
     ↓
-Layer 2: $pathd Network      ← Indexers serving content
+Layer 2: path402d Network      ← Indexers serving content
     ↓
-Interface: BRC-100           ← Browser ↔ $pathd
+Interface: BRC-100           ← Browser ↔ path402d
     ↓
 Application: $402 Protocol   ← Paths, tokens, dividends`}
           </pre>
