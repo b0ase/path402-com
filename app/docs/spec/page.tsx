@@ -257,6 +257,54 @@ Multicast: Same rate, split`}
                     </div>
                 </Section>
 
+                {/* Ticket Stamp Chains */}
+                <Section title="Ticket Stamp Chains: The Indexer Solution">
+                    <p className="text-zinc-600 dark:text-zinc-400 mb-6 leading-relaxed">
+                        Tickets accumulate cryptographic stamps as they're validated and used, creating a trust layer that solves the indexer incentive problem through pure Bitcoin economics.
+                    </p>
+
+                    <div className="grid md:grid-cols-2 gap-8 mb-8">
+                        <div className="bg-zinc-50 dark:bg-zinc-900 p-6 border border-zinc-200 dark:border-zinc-800">
+                            <h3 className="text-xs font-bold uppercase tracking-widest mb-4 text-zinc-500">The Problem</h3>
+                            <ul className="space-y-3 text-sm text-zinc-600 dark:text-zinc-400">
+                                <li className="flex gap-2"><span>1.</span> Validation costs indexers resources</li>
+                                <li className="flex gap-2"><span>2.</span> If creators keep 100%, indexers starve</li>
+                                <li className="flex gap-2"><span>3.</span> System needs speed, speed needs indexers</li>
+                            </ul>
+                        </div>
+                        <div className="bg-zinc-50 dark:bg-zinc-900 p-6 border border-zinc-200 dark:border-zinc-800">
+                            <h3 className="text-xs font-bold uppercase tracking-widest mb-4 text-zinc-500">The Solution</h3>
+                            <div className="text-2xl font-bold mb-2">95/5 Split</div>
+                            <p className="text-sm text-zinc-500">
+                                Creators keep 95%. Indexers earn 5% fee for every stamp (validation). Market forces prioritize viral content naturally. No bootstrap token required.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="border border-zinc-200 dark:border-zinc-800 p-6 bg-zinc-50 dark:bg-zinc-900 rounded-sm">
+                        <h3 className="text-sm font-bold uppercase tracking-widest mb-4 text-center">Trust Accumulation</h3>
+                        <div className="flex flex-wrap gap-4 items-center justify-between text-center max-w-2xl mx-auto">
+                            <div className="p-4 bg-white dark:bg-black border border-zinc-100 dark:border-zinc-800 flex-1 min-w-[120px]">
+                                <div className="text-xs text-zinc-400 mb-1">0 Stamps</div>
+                                <div className="font-bold">Base Price</div>
+                            </div>
+                            <div className="hidden sm:block text-zinc-300">→</div>
+                            <div className="p-4 bg-white dark:bg-black border border-zinc-100 dark:border-zinc-800 flex-1 min-w-[120px]">
+                                <div className="text-xs text-zinc-400 mb-1">100 Stamps</div>
+                                <div className="font-bold text-emerald-600">+30% Trust</div>
+                            </div>
+                            <div className="hidden sm:block text-zinc-300">→</div>
+                            <div className="p-4 bg-white dark:bg-black border border-zinc-100 dark:border-zinc-800 flex-1 min-w-[120px]">
+                                <div className="text-xs text-zinc-400 mb-1">1000 Stamps</div>
+                                <div className="font-bold text-emerald-500">+100% Viral Hit</div>
+                            </div>
+                        </div>
+                        <p className="mt-6 text-xs text-zinc-500 uppercase tracking-widest text-center">
+                            Stamps ARE the proof of work
+                        </p>
+                    </div>
+                </Section>
+
             </div>
         </div>
     );
