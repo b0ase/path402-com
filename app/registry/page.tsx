@@ -127,7 +127,7 @@ export default function RegistryPage() {
 
   return (
     <main className="min-h-screen bg-white dark:bg-black text-zinc-900 dark:text-white pt-20">
-      <div className="max-w-4xl mx-auto px-6 py-20">
+      <div className="max-w-7xl mx-auto px-6 py-20">
         {/* Header */}
         <motion.div
           className="mb-12"

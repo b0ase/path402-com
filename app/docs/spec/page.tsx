@@ -21,7 +21,7 @@ const staggerContainer = {
 export default function ProtocolSpecPage() {
     return (
         <div className="min-h-screen bg-white dark:bg-black text-zinc-900 dark:text-white pt-24 pb-20 font-sans">
-            <div className="max-w-4xl mx-auto px-6">
+            <div className="max-w-7xl mx-auto px-6">
 
                 {/* Header */}
                 <motion.div

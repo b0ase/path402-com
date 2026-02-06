@@ -21,7 +21,7 @@ export default function ExecSummaryPage() {
     <div className="min-h-screen bg-white dark:bg-black text-zinc-900 dark:text-white font-mono selection:bg-zinc-900 selection:text-white dark:selection:bg-white dark:selection:text-black">
       {/* Header */}
       <section className="relative py-24 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             initial="hidden"
             animate="visible"
@@ -89,7 +89,7 @@ export default function ExecSummaryPage() {
 
       {/* Content */}
       <section className="py-16 px-6">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             initial="hidden"
             animate="visible"

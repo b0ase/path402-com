@@ -16,7 +16,7 @@ export function Navbar() {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-black/90 backdrop-blur-sm border-b border-zinc-200 dark:border-zinc-800">
-      <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="text-xl font-bold tracking-tighter text-zinc-900 dark:text-white font-mono">
           $402

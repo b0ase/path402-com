@@ -28,7 +28,7 @@ export default function ProtocolPage() {
     <div className="min-h-screen bg-white dark:bg-black text-zinc-900 dark:text-white font-mono selection:bg-zinc-900 selection:text-white dark:selection:bg-white dark:selection:text-black">
       {/* Header */}
       <section className="py-24 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             initial="hidden"
             animate="visible"
@@ -60,7 +60,7 @@ export default function ProtocolPage() {
 
       {/* The 50% Rule */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -110,7 +110,7 @@ export default function ProtocolPage() {
 
       {/* Revenue Split */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -157,7 +157,7 @@ export default function ProtocolPage() {
 
       {/* The Flywheel */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -184,7 +184,7 @@ No separate classes. The path is open to everyone.`}
 
       {/* Flywheel in Action */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -235,7 +235,7 @@ No separate classes. The path is open to everyone.`}
 
       {/* Features Grid */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -278,7 +278,7 @@ No separate classes. The path is open to everyone.`}
 
       {/* Back to Home */}
       <section className="py-16 px-6">
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="max-w-7xl mx-auto text-center">
           <Link
             href="/"
             className="inline-flex items-center gap-2 px-8 py-4 bg-zinc-100 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400 font-bold uppercase tracking-widest text-xs border border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600 hover:text-zinc-900 dark:hover:text-white transition-colors"

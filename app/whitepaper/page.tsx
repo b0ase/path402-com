@@ -36,7 +36,7 @@ function WhitepaperContent() {
     <div className="min-h-screen bg-white dark:bg-black text-zinc-900 dark:text-white font-mono selection:bg-zinc-900 selection:text-white dark:selection:bg-white dark:selection:text-black">
       {/* Header */}
       <section className="relative py-24 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             initial="hidden"
             animate="visible"
@@ -108,7 +108,7 @@ function WhitepaperContent() {
 
       {/* Abstract */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <h2 className="text-[10px] font-bold text-zinc-500 mb-6 uppercase tracking-widest">Abstract</h2>
           <p className="text-zinc-400 leading-relaxed">
             We propose a protocol where any addressable endpoint—a person, a domain, an API—can become a <em className="text-zinc-900 dark:text-white">tokenized market</em>.
@@ -123,7 +123,7 @@ function WhitepaperContent() {
 
       {/* The Core Idea */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <h2 className="text-sm font-bold text-zinc-900 dark:text-white mb-6 uppercase tracking-wide">The Core Idea</h2>
           <p className="text-zinc-400 leading-relaxed mb-6">
             HTTP 402 "Payment Required" was reserved in 1999 but never defined. The $402 protocol finally gives it meaning:
@@ -170,7 +170,7 @@ function WhitepaperContent() {
 
       {/* The Flywheel */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <h2 className="text-sm font-bold text-zinc-900 dark:text-white mb-6 uppercase tracking-wide">The Flywheel</h2>
           <p className="text-zinc-400 leading-relaxed mb-6">
             The $402 protocol creates a self-reinforcing cycle:
@@ -215,7 +215,7 @@ function WhitepaperContent() {
 
       {/* Step 1: Bearer Share Model */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <h2 className="text-sm font-bold text-zinc-900 dark:text-white mb-2 uppercase tracking-wide">Step 1</h2>
           <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-6">Bearer Share Model</h3>
 
@@ -270,7 +270,7 @@ function WhitepaperContent() {
 
       {/* Step 2: Compliance and Dividends */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <h2 className="text-sm font-bold text-zinc-900 dark:text-white mb-2 uppercase tracking-wide">Step 2</h2>
           <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-6">Compliance and Dividends</h3>
 
@@ -324,7 +324,7 @@ function WhitepaperContent() {
 
       {/* Step 3: Pricing Curves */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <h2 className="text-sm font-bold text-zinc-900 dark:text-white mb-2 uppercase tracking-wide">Step 3</h2>
           <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-6">Pricing Curves</h3>
 
@@ -360,7 +360,7 @@ function WhitepaperContent() {
 
       {/* Step 4: Paths as Economic Entities */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <h2 className="text-sm font-bold text-zinc-900 dark:text-white mb-2 uppercase tracking-wide">Step 4</h2>
           <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-6">Paths as Economic Entities</h3>
 
@@ -418,7 +418,7 @@ $example.com/$api               → API access entity`}
 
       {/* Step 5: Hierarchical Ownership */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <h2 className="text-sm font-bold text-zinc-900 dark:text-white mb-2 uppercase tracking-wide">Step 5</h2>
           <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-6">Hierarchical Ownership</h3>
 
@@ -467,7 +467,7 @@ $example.com/$blog/$premium created:
 
       {/* Step 6: Extensibility */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <h2 className="text-sm font-bold text-zinc-900 dark:text-white mb-2 uppercase tracking-wide">Step 6</h2>
           <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-6">Extensibility</h3>
 
@@ -530,7 +530,7 @@ $example.com/$blog/$premium created:
 
       {/* Step 7: Staking Partners */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <h2 className="text-sm font-bold text-zinc-900 dark:text-white mb-2 uppercase tracking-wide">Step 7</h2>
           <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-6">Staking Partners</h3>
 
@@ -585,7 +585,7 @@ Large domain ($news.com):
 
       {/* Step 8: AI Agents and x402 */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <h2 className="text-sm font-bold text-zinc-900 dark:text-white mb-2 uppercase tracking-wide">Step 8</h2>
           <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-6">AI Agents and Protocol Interoperability</h3>
 
@@ -690,7 +690,7 @@ Stake:      path402_stake, path402_serve`}
 
       {/* Step 9: Network Incentives */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <h2 className="text-sm font-bold text-zinc-900 dark:text-white mb-2 uppercase tracking-wide">Step 9</h2>
           <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-6">Network Incentives: The path402d Daemon</h3>
 
@@ -868,7 +868,7 @@ Application: $402 Protocol   ← Paths, tokens, dividends`}
 
       {/* Step 10: The Content Market */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <h2 className="text-sm font-bold text-zinc-900 dark:text-white mb-2 uppercase tracking-wide">Step 10</h2>
           <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-6">The Content Market: Narratives as Assets</h3>
 
@@ -1032,7 +1032,7 @@ Suppression FUNDS the person being silenced.`}
 
       {/* Step 11: Personal Tokens - The Attention Economy */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <h2 className="text-sm font-bold text-zinc-900 dark:text-white mb-2 uppercase tracking-wide">Step 11</h2>
           <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-6">Personal Tokens: The Attention Economy</h3>
 
@@ -1253,7 +1253,7 @@ Each serve generates a **BRC-104 Signed Stamp**, which is gossiped via **BRC-22 
 
       {/* Implementation */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <h2 className="text-sm font-bold text-zinc-900 dark:text-white mb-6 uppercase tracking-wide">Implementation</h2>
 
           <h3 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">HTTP 402 Response (BRC-105)</h3>
@@ -1340,7 +1340,7 @@ x-bsv-payment: { transaction, derivationSuffix }`}
 
       {/* Conclusion */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <h2 className="text-sm font-bold text-zinc-900 dark:text-white mb-6 uppercase tracking-wide">Conclusion</h2>
           <p className="text-zinc-400 leading-relaxed mb-6">
             The $402 protocol turns websites into shareholder businesses. Every visitor can become an owner.
@@ -1358,7 +1358,7 @@ x-bsv-payment: { transaction, derivationSuffix }`}
 
       {/* References */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <h2 className="text-sm font-bold text-zinc-900 dark:text-white mb-6 uppercase tracking-wide">References</h2>
           <ol className="space-y-2 text-zinc-500 text-sm">
             <li>[1] Nakamoto, S. (2008). Bitcoin: A Peer-to-Peer Electronic Cash System.</li>
@@ -1378,7 +1378,7 @@ x-bsv-payment: { transaction, derivationSuffix }`}
 
       {/* Footer */}
       <section className="py-16 px-6">
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="max-w-7xl mx-auto text-center">
           <p className="text-zinc-600 text-sm mb-4">
             This whitepaper is released under the{' '}
             <a href="https://github.com/b0ase/path402-com/blob/main/LICENSE" className="text-blue-400 hover:text-blue-300 transition-colors">

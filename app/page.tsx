@@ -28,7 +28,7 @@ export default function Home() {
     <div className="min-h-screen bg-white dark:bg-black text-zinc-900 dark:text-white font-mono selection:bg-zinc-900 selection:text-white dark:selection:bg-white dark:selection:text-black">
       {/* Hero Section */}
       <section className="relative py-24 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             initial="hidden"
             animate="visible"
@@ -128,7 +128,7 @@ export default function Home() {
 
       {/* The Core Idea */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -155,7 +155,7 @@ export default function Home() {
 
       {/* How It Works */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -200,7 +200,7 @@ export default function Home() {
 
       {/* Examples */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -247,7 +247,7 @@ export default function Home() {
 
       {/* Token Model */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -292,7 +292,7 @@ export default function Home() {
 
       {/* Quick Start */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -329,7 +329,7 @@ export default function Home() {
 
       {/* Roadmap */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -405,7 +405,7 @@ export default function Home() {
 
       {/* Ecosystem */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -474,7 +474,7 @@ export default function Home() {
 
       {/* CTA */}
       <section className="py-20 px-6">
-        <div className="max-w-2xl mx-auto text-center">
+        <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-xl font-bold uppercase tracking-tight mb-4">
             The network needs operators. The protocol rewards them.
           </h2>

@@ -90,7 +90,7 @@ export default function DomainVerificationDocPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-black pt-20">
-      <div className="max-w-4xl mx-auto px-6 py-20">
+      <div className="max-w-7xl mx-auto px-6 py-20">
         <div className="mb-10">
           <Link href="/docs" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white text-sm mb-4 inline-block">
             ← Back to Docs

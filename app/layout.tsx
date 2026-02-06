@@ -63,7 +63,7 @@ export default function RootLayout({
 
             {/* Footer */}
             <footer className="border-t border-zinc-200 dark:border-zinc-800 py-16 mt-20 bg-white dark:bg-black">
-              <div className="max-w-4xl mx-auto px-6">
+              <div className="max-w-7xl mx-auto px-6">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                   <div>
                     <h3 className="font-bold mb-4 text-zinc-900 dark:text-white text-sm uppercase tracking-widest">$402</h3>
