@@ -68,7 +68,7 @@ export default function RootLayout({
                   <div>
                     <h3 className="font-bold mb-4 text-zinc-900 dark:text-white text-sm uppercase tracking-widest">$402</h3>
                     <p className="text-zinc-500 text-sm">
-                      Access tokens for anything addressable. The protocol for AI-native micropayments.
+                      Access tokens for anything addressable. Run a node, earn $402 through Proof of Work.
                     </p>
                   </div>
                   <div>
@@ -83,10 +83,10 @@ export default function RootLayout({
                   <div>
                     <h4 className="text-[10px] font-bold text-zinc-400 dark:text-zinc-600 mb-4 uppercase tracking-widest">Ecosystem</h4>
                     <ul className="space-y-2 text-sm">
-                      <li><Link href="/exchange" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">Exchange</Link></li>
-                      <li><Link href="/token" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">Token</Link></li>
-                      <li><Link href="/registry" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">Registry</Link></li>
-                      <li><a href="https://b0ase.com/exchange" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">b0ase.com/exchange</a></li>
+                      <li><Link href="/download" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">Download Client</Link></li>
+                      <li><Link href="/token" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">POW20 Token</Link></li>
+                      <li><Link href="/protocol" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">Protocol Economics</Link></li>
+                      <li><a href="https://fnews.online" target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">F.NEWS</a></li>
                     </ul>
                   </div>
                   <div>

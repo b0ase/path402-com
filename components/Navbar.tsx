@@ -28,19 +28,13 @@ export function Navbar() {
             Whitepaper
           </Link>
           <Link href="/token" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors text-xs uppercase tracking-widest">
-            Token
+            POW20
           </Link>
-          <Link href="/exchange" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors text-xs uppercase tracking-widest">
-            Exchange
+          <Link href="/download" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors text-xs uppercase tracking-widest">
+            Download
           </Link>
           <Link href="/docs" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors text-xs uppercase tracking-widest">
             Docs
-          </Link>
-          <Link href="/registry" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors text-xs uppercase tracking-widest">
-            Registry
-          </Link>
-          <Link href="/account" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors text-xs uppercase tracking-widest">
-            Account
           </Link>
           <a
             href="https://github.com/b0ase/path402"
@@ -60,7 +54,7 @@ export function Navbar() {
           <ThemeToggle />
 
           <Link
-            href="/whitepaper"
+            href="/download"
             className="hidden sm:inline-flex items-center px-4 py-2 bg-zinc-100 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400 text-xs font-bold uppercase tracking-widest border border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600 hover:text-zinc-900 dark:hover:text-white transition-colors"
           >
             DOWNLOAD
