@@ -18,8 +18,8 @@ const staggerContainer = {
   }
 };
 
-const GITHUB_RELEASE = "https://github.com/b0ase/path402/releases/tag/v4.0.0-alpha.1";
-const RELEASE_BASE = "https://github.com/b0ase/path402/releases/download/v4.0.0-alpha.1";
+const GITHUB_RELEASE = "https://github.com/b0ase/path402/releases/tag/v4.0.0-alpha.2";
+const RELEASE_BASE = "https://github.com/b0ase/path402/releases/download/v4.0.0-alpha.2";
 
 const APPLE_ICON = (
   <svg className="w-8 h-8" viewBox="0 0 24 24" fill="currentColor">
@@ -43,8 +43,8 @@ const DOWNLOADS = [
   {
     platform: "macOS",
     subtitle: "Apple Silicon",
-    filename: "path402-4.0.0-alpha.1-arm64.dmg",
-    url: `${RELEASE_BASE}/path402-4.0.0-alpha.1-arm64.dmg`,
+    filename: "path402-4.0.0-alpha.2-arm64.dmg",
+    url: `${RELEASE_BASE}/path402-4.0.0-alpha.2-arm64.dmg`,
     icon: APPLE_ICON,
     note: "For M1, M2, M3, M4 Macs",
     label: "Download DMG"
@@ -52,8 +52,8 @@ const DOWNLOADS = [
   {
     platform: "macOS",
     subtitle: "Intel",
-    filename: "path402-4.0.0-alpha.1.dmg",
-    url: `${RELEASE_BASE}/path402-4.0.0-alpha.1.dmg`,
+    filename: "path402-4.0.0-alpha.2.dmg",
+    url: `${RELEASE_BASE}/path402-4.0.0-alpha.2.dmg`,
     icon: APPLE_ICON,
     note: "For Intel-based Macs",
     label: "Download DMG"
@@ -61,8 +61,8 @@ const DOWNLOADS = [
   {
     platform: "Windows",
     subtitle: "Installer",
-    filename: "path402 Setup 4.0.0-alpha.1.exe",
-    url: `${RELEASE_BASE}/path402%20Setup%204.0.0-alpha.1.exe`,
+    filename: "path402 Setup 4.0.0-alpha.2.exe",
+    url: `${RELEASE_BASE}/path402%20Setup%204.0.0-alpha.2.exe`,
     icon: WINDOWS_ICON,
     note: "NSIS installer for Windows x64",
     label: "Download EXE"
@@ -70,8 +70,8 @@ const DOWNLOADS = [
   {
     platform: "Windows",
     subtitle: "Portable",
-    filename: "path402 4.0.0-alpha.1.exe",
-    url: `${RELEASE_BASE}/path402%204.0.0-alpha.1.exe`,
+    filename: "path402 4.0.0-alpha.2.exe",
+    url: `${RELEASE_BASE}/path402%204.0.0-alpha.2.exe`,
     icon: WINDOWS_ICON,
     note: "No installation required — run directly",
     label: "Download Portable"
@@ -79,8 +79,8 @@ const DOWNLOADS = [
   {
     platform: "Linux",
     subtitle: "AppImage",
-    filename: "path402-client-4.0.0-alpha.1-x86_64.AppImage",
-    url: `${RELEASE_BASE}/path402-client-4.0.0-alpha.1-x86_64.AppImage`,
+    filename: "path402-client-4.0.0-alpha.2-x86_64.AppImage",
+    url: `${RELEASE_BASE}/path402-client-4.0.0-alpha.2-x86_64.AppImage`,
     icon: LINUX_ICON,
     note: "Universal Linux package — chmod +x and run",
     label: "Download AppImage"
@@ -88,8 +88,8 @@ const DOWNLOADS = [
   {
     platform: "Linux",
     subtitle: "Debian",
-    filename: "path402-client-4.0.0-alpha.1-amd64.deb",
-    url: `${RELEASE_BASE}/path402-client-4.0.0-alpha.1-amd64.deb`,
+    filename: "path402-client-4.0.0-alpha.2-amd64.deb",
+    url: `${RELEASE_BASE}/path402-client-4.0.0-alpha.2-amd64.deb`,
     icon: LINUX_ICON,
     note: "For Ubuntu, Debian, and derivatives",
     label: "Download .deb"
@@ -97,6 +97,19 @@ const DOWNLOADS = [
 ];
 
 const RELEASE_NOTES = [
+  {
+    version: "4.0.0-alpha.2",
+    date: "February 2026",
+    tag: "latest",
+    changes: [
+      "BRC-114 Hash-to-Mint: real $402 token mining via on-chain smart contract",
+      "Proof-of-Indexing work commitments recorded permanently on BSV",
+      "UTXO contention handling with automatic retry + backoff",
+      "macOS builds signed AND notarized (no more Gatekeeper bypass)",
+      "Mining-only mode: runs without AI API key",
+      "Config file support: ~/.pathd/config.json for walletKey + tokenId",
+    ]
+  },
   {
     version: "4.0.0-alpha.1",
     date: "February 2026",
@@ -191,7 +204,7 @@ export default function DownloadPage() {
                 Installation Note
               </h3>
               <p className="text-sm text-amber-700 dark:text-amber-500">
-                macOS builds are code-signed but not yet notarized. On first launch, right-click the app and select &quot;Open&quot; to bypass Gatekeeper.
+                macOS builds are code-signed with a Developer ID certificate. On first launch, right-click the app and select &quot;Open&quot; to bypass Gatekeeper.
                 Windows builds are unsigned &mdash; you may see a SmartScreen warning. This is alpha software.
               </p>
             </motion.div>
