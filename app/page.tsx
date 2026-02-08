@@ -357,151 +357,208 @@ function BootSequenceHero() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6 }}
+              className="flex flex-col lg:flex-row lg:items-stretch lg:gap-12"
             >
-              {/* Super title */}
-              <motion.div
-                initial={{ opacity: 0, x: -30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 0.1, ease }}
-                className="flex items-center gap-3 mb-6"
-              >
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
-                </span>
-                <span className="text-zinc-600 text-[10px] tracking-[0.3em] uppercase font-mono font-bold">
-                  HTTP 402 : PAYMENT REQUIRED
-                </span>
-              </motion.div>
-
-              {/* ═══ THE MASSIVE $402 TITLE ═══ */}
-              <div className="relative mb-2">
-                <motion.h1
-                  className="font-display font-black tracking-tighter leading-[0.85] hero-title-glow"
-                  style={{ fontSize: 'clamp(5rem, 15vw, 14rem)' }}
+              {/* ═══ LEFT: Title + CTA ═══ */}
+              <div className="flex-1 min-w-0">
+                {/* Super title */}
+                <motion.div
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 0.1, ease }}
+                  className="flex items-center gap-3 mb-6"
                 >
-                  <motion.span
-                    initial={{ opacity: 0, y: 60 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.2, ease }}
-                    className="inline-block text-white"
-                  >
-                    $
-                  </motion.span>
-                  <motion.span
-                    initial={{ opacity: 0, y: 60 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.35, ease }}
-                    className="inline-block text-white"
-                  >
-                    4
-                  </motion.span>
-                  <motion.span
-                    initial={{ opacity: 0, y: 60 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.45, ease }}
-                    className="inline-block text-white"
-                  >
-                    0
-                  </motion.span>
-                  <motion.span
-                    initial={{ opacity: 0, y: 60 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.55, ease }}
-                    className="inline-block text-white"
-                  >
-                    2
-                  </motion.span>
-                </motion.h1>
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+                  </span>
+                  <span className="text-zinc-600 text-[10px] tracking-[0.3em] uppercase font-mono font-bold">
+                    HTTP 402 : PAYMENT REQUIRED
+                  </span>
+                </motion.div>
 
-                {/* Title reflection (mirror fading below) */}
-                <div
-                  className="relative overflow-hidden h-16 md:h-24 select-none"
-                  aria-hidden="true"
-                  style={{
-                    transform: 'scaleY(-1)',
-                    WebkitMaskImage: 'linear-gradient(to bottom, rgba(255,255,255,0.12), transparent 80%)',
-                    maskImage: 'linear-gradient(to bottom, rgba(255,255,255,0.12), transparent 80%)',
-                  }}
-                >
+                {/* ═══ THE MASSIVE $402 TITLE ═══ */}
+                <div className="relative mb-0">
+                  <motion.h1
+                    className="font-display font-black tracking-tighter leading-[0.85] hero-title-glow"
+                    style={{ fontSize: 'clamp(5rem, 12vw, 12rem)' }}
+                  >
+                    <motion.span
+                      initial={{ opacity: 0, y: 60 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.8, delay: 0.2, ease }}
+                      className="inline-block text-white"
+                    >
+                      $
+                    </motion.span>
+                    <motion.span
+                      initial={{ opacity: 0, y: 60 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.8, delay: 0.35, ease }}
+                      className="inline-block text-white"
+                    >
+                      4
+                    </motion.span>
+                    <motion.span
+                      initial={{ opacity: 0, y: 60 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.8, delay: 0.45, ease }}
+                      className="inline-block text-white"
+                    >
+                      0
+                    </motion.span>
+                    <motion.span
+                      initial={{ opacity: 0, y: 60 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.8, delay: 0.55, ease }}
+                      className="inline-block text-white"
+                    >
+                      2
+                    </motion.span>
+                  </motion.h1>
+
+                  {/* Title reflection (mirror fading below) */}
                   <div
-                    className="font-display font-black tracking-tighter leading-[0.85] text-white/40"
-                    style={{ fontSize: 'clamp(5rem, 15vw, 14rem)' }}
+                    className="relative overflow-hidden h-6 md:h-10 select-none"
+                    aria-hidden="true"
+                    style={{
+                      transform: 'scaleY(-1)',
+                      WebkitMaskImage: 'linear-gradient(to bottom, rgba(255,255,255,0.12), transparent 80%)',
+                      maskImage: 'linear-gradient(to bottom, rgba(255,255,255,0.12), transparent 80%)',
+                    }}
                   >
-                    $402
+                    <div
+                      className="font-display font-black tracking-tighter leading-[0.85] text-white/40"
+                      style={{ fontSize: 'clamp(5rem, 12vw, 12rem)' }}
+                    >
+                      $402
+                    </div>
                   </div>
+
+                  {/* Horizontal scan line across title */}
+                  <motion.div
+                    initial={{ scaleX: 0, originX: 0 }}
+                    animate={{ scaleX: [0, 1, 1, 0], originX: [0, 0, 1, 1] }}
+                    transition={{ duration: 1.2, delay: 0.6, ease: "easeInOut" }}
+                    className="absolute top-[60%] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                  />
+
+                  {/* Secondary thinner scan line */}
+                  <motion.div
+                    initial={{ scaleX: 0, originX: 1 }}
+                    animate={{ scaleX: [0, 1, 1, 0], originX: [1, 1, 0, 0] }}
+                    transition={{ duration: 1, delay: 0.8, ease: "easeInOut" }}
+                    className="absolute top-[65%] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-500/20 to-transparent"
+                  />
                 </div>
 
-                {/* Horizontal scan line across title */}
+                {/* Tagline */}
                 <motion.div
-                  initial={{ scaleX: 0, originX: 0 }}
-                  animate={{ scaleX: [0, 1, 1, 0], originX: [0, 0, 1, 1] }}
-                  transition={{ duration: 1.2, delay: 0.6, ease: "easeInOut" }}
-                  className="absolute top-[60%] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent"
-                />
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.8, delay: 0.7 }}
+                  className="mb-2"
+                >
+                  <span className="text-zinc-400 text-xl md:text-2xl tracking-[0.3em] uppercase font-display font-black">
+                    PATH 402 — FOLLOW THE MONEY
+                  </span>
+                </motion.div>
 
-                {/* Secondary thinner scan line */}
+                {/* Description */}
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.9 }}
+                  className="text-zinc-500 max-w-xl text-sm leading-relaxed mb-8 font-mono"
+                >
+                  Put a <code className="text-white bg-zinc-900 px-1.5 py-0.5 border border-zinc-800">$</code> in
+                  front of any path and it becomes a tokenized asset. Run a node, serve content, earn tokens.
+                  The network pays you for the infrastructure you provide.
+                </motion.p>
+
+                {/* CTA buttons */}
                 <motion.div
-                  initial={{ scaleX: 0, originX: 1 }}
-                  animate={{ scaleX: [0, 1, 1, 0], originX: [1, 1, 0, 0] }}
-                  transition={{ duration: 1, delay: 0.8, ease: "easeInOut" }}
-                  className="absolute top-[65%] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-500/20 to-transparent"
-                />
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 1.1 }}
+                  className="flex flex-wrap gap-4"
+                >
+                  <Link
+                    href="/download"
+                    className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white text-black font-bold uppercase tracking-widest text-xs hover:bg-zinc-200 transition-all overflow-hidden"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    Download Client
+                    <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-green-500 scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                  </Link>
+                  <Link
+                    href="/whitepaper"
+                    className="inline-flex items-center gap-3 px-8 py-4 border border-zinc-800 text-zinc-400 font-bold uppercase tracking-widest text-xs hover:border-zinc-600 hover:text-white transition-all"
+                  >
+                    Read Whitepaper
+                  </Link>
+                  <Link
+                    href="/exec-summary"
+                    className="inline-flex items-center gap-3 px-8 py-4 border border-zinc-800 text-zinc-400 font-bold uppercase tracking-widest text-xs hover:border-zinc-600 hover:text-white transition-all"
+                  >
+                    Exec Summary
+                  </Link>
+                </motion.div>
               </div>
 
-              {/* Tagline */}
+              {/* ═══ RIGHT: Video panel ═══ */}
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.8, delay: 0.7 }}
-                className="mb-4"
+                initial={{ opacity: 0, x: 40 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.8, ease }}
+                className="hidden lg:flex flex-col w-[400px] xl:w-[480px] flex-shrink-0 mt-6"
               >
-                <span className="text-zinc-500 text-xs tracking-[0.4em] uppercase font-mono">
-                  ACCESS TOKENS FOR THE OPEN WEB
-                </span>
-              </motion.div>
+                <div className="relative border border-zinc-800 overflow-hidden flex-1 aspect-video">
+                  {/* Video background */}
+                  <video
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    className="absolute inset-0 w-full h-full object-cover opacity-40"
+                  >
+                    <source src="/402-video-1.mp4" type="video/mp4" />
+                  </video>
 
-              {/* Description */}
-              <motion.p
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.9 }}
-                className="text-zinc-500 max-w-xl text-sm leading-relaxed mb-12 font-mono"
-              >
-                Put a <code className="text-white bg-zinc-900 px-1.5 py-0.5 border border-zinc-800">$</code> in
-                front of any path and it becomes a tokenized asset. Run a node, serve content, earn tokens.
-                The network pays you for the infrastructure you provide.
-              </motion.p>
+                  {/* Overlay content */}
+                  <div className="relative z-10 p-8 md:p-10 flex flex-col justify-center h-full bg-gradient-to-t from-black/80 via-black/40 to-black/60">
+                    {/* Corner brackets */}
+                    <div className="absolute top-3 left-3 w-4 h-4 border-t border-l border-zinc-600" />
+                    <div className="absolute top-3 right-3 w-4 h-4 border-t border-r border-zinc-600" />
+                    <div className="absolute bottom-3 left-3 w-4 h-4 border-b border-l border-zinc-600" />
+                    <div className="absolute bottom-3 right-3 w-4 h-4 border-b border-r border-zinc-600" />
 
-              {/* CTA buttons */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 1.1 }}
-                className="flex flex-wrap gap-4"
-              >
-                <Link
-                  href="/download"
-                  className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white text-black font-bold uppercase tracking-widest text-xs hover:bg-zinc-200 transition-all overflow-hidden"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                  </svg>
-                  Download Client
-                  <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-green-500 scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
-                </Link>
-                <Link
-                  href="/whitepaper"
-                  className="inline-flex items-center gap-3 px-8 py-4 border border-zinc-800 text-zinc-400 font-bold uppercase tracking-widest text-xs hover:border-zinc-600 hover:text-white transition-all"
-                >
-                  Read Whitepaper
-                </Link>
-                <Link
-                  href="/exec-summary"
-                  className="inline-flex items-center gap-3 px-8 py-4 border border-zinc-800 text-zinc-400 font-bold uppercase tracking-widest text-xs hover:border-zinc-600 hover:text-white transition-all"
-                >
-                  Exec Summary
-                </Link>
+                    {/* Label */}
+                    <div className="text-[8px] text-zinc-600 font-mono tracking-[0.3em] uppercase mb-6">
+                      SYS::CORE_CONCEPT
+                    </div>
+
+                    <h2 className="text-2xl xl:text-3xl font-black tracking-tighter mb-5 font-display leading-tight">
+                      EVERY URL<span className="text-zinc-700">.</span><br />
+                      BECOMES AN<span className="text-zinc-700">.</span><br />
+                      ECONOMIC OBJECT<span className="text-zinc-700">.</span>
+                    </h2>
+                    <p className="text-zinc-500 text-sm leading-relaxed">
+                      Tokens gate access. Payment flows to holders and operators. The network rewards you for the infrastructure you provide.
+                    </p>
+
+                    {/* Bottom data strip */}
+                    <div className="mt-auto pt-6 flex items-center gap-4 text-[8px] font-mono text-zinc-700 tracking-wider">
+                      <span>PROTO::HTTP/402</span>
+                      <span className="w-1 h-1 bg-zinc-800" />
+                      <span>NET::GOSSIP_P2P</span>
+                      <span className="w-1 h-1 bg-zinc-800" />
+                      <span>ENC::NOISE_IK</span>
+                    </div>
+                  </div>
+                </div>
               </motion.div>
             </motion.div>
           )}
