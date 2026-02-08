@@ -112,7 +112,7 @@ function WhitepaperContent() {
           <h2 className="text-[10px] font-bold text-zinc-500 mb-6 uppercase tracking-widest">Abstract</h2>
           <p className="text-zinc-400 leading-relaxed">
             We propose a protocol where any addressable endpoint—a person, a domain, an API—can become a <em className="text-zinc-900 dark:text-white">tokenized market</em>.
-            Mint <span className="text-blue-400 font-mono">$YOURNAME</span> and tokenize your attention. Mint <span className="text-blue-400 font-mono">$example.com</span> and tokenize your content.
+            Mint <span className="text-blue-400 font-mono">$YOURNAME</span> and tokenize your attention. Mint <span className="text-blue-400 font-mono">$yourdomain.com</span> and tokenize your content.
             Holders who stake become <em className="text-zinc-900 dark:text-white">partners</em>—running infrastructure,
             indexing the blockchain, serving the registry, and receiving dividends. The result is a self-sustaining flywheel where buying, serving, and staking
             are the same activity at different stages. No separate classes. No central infrastructure.
@@ -155,11 +155,11 @@ function WhitepaperContent() {
             <div className="border border-zinc-200 dark:border-zinc-800 p-4 bg-white dark:bg-black">
               <div className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Domain Tokens</div>
               <div className="space-y-1 font-mono text-blue-400">
-                <div>$example.com</div>
-                <div>$example.com/$api</div>
-                <div>$example.com/$blog</div>
+                <div>$charlie.com</div>
+                <div>$charlie.com/$alice</div>
+                <div>$charlie.com/$alice/$blog</div>
               </div>
-              <p className="text-zinc-500 text-sm mt-3">Your content is the asset. DNS proves ownership.</p>
+              <p className="text-zinc-500 text-sm mt-3">Paths are attribution chains. DNS proves the root. Each <span className="font-mono">/</span> is a business relationship.</p>
             </div>
           </div>
           <p className="text-zinc-400 leading-relaxed">
@@ -369,10 +369,10 @@ function WhitepaperContent() {
           </p>
 
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-            {`$example.com                    → Site-level entity
-$example.com/$blog              → Blog section entity
-$example.com/$blog/$premium     → Premium content entity
-$example.com/$api               → API access entity`}
+            {`$charlie.com                        → Charlie's domain (editor/publisher)
+$charlie.com/$alice                 → Alice's workspace under Charlie
+$charlie.com/$alice/$blog           → Alice's blog vertical
+$charlie.com/$alice/$blog/$post-1   → Specific deliverable`}
           </pre>
 
           <p className="text-zinc-400 leading-relaxed mb-4">
@@ -427,14 +427,15 @@ $example.com/$api               → API access entity`}
           </p>
 
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-            {`$example.com                      ← Holding company (root)
-├── $example.com/$blog            ← Subsidiary (branch)
-│   ├── $example.com/$blog/$news  ← Product line (leaf)
-│   └── $example.com/$blog/$opinion
-├── $example.com/$api             ← Subsidiary (branch)
-│   ├── $example.com/$api/$v1     ← Product line (leaf)
-│   └── $example.com/$api/$v2
-└── $example.com/$premium         ← Subsidiary (branch)`}
+            {`$charlie.com                              ← Charlie's domain (editor)
+├── $charlie.com/$alice                  ← Alice's workspace
+│   ├── $charlie.com/$alice/$blog        ← Alice's blog vertical
+│   │   └── $charlie.com/$alice/$blog/$post-1  ← Specific post
+│   └── $charlie.com/$alice/$api         ← Alice's API
+├── $charlie.com/$bob                    ← Bob's workspace
+│   ├── $charlie.com/$bob/$research      ← Bob's research feed
+│   └── $charlie.com/$bob/$data          ← Bob's data products
+└── $charlie.com/$premium                ← Premium content tier`}
           </pre>
 
           <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">The 50% Rule</h4>
@@ -443,14 +444,16 @@ $example.com/$api               → API access entity`}
           </p>
 
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-            {`$example.com/$blog created with 1,000,000 tokens:
-  → 500,000 go to $example.com (parent)
+            {`$charlie.com/$alice created with 1,000,000 tokens:
+  → 500,000 go to $charlie.com (Charlie takes editorial cut)
   → 500,000 available for sale
 
-$example.com/$blog/$premium created:
-  → 500,000 go to $example.com/$blog (parent)
+$charlie.com/$alice/$blog created:
+  → 500,000 go to $charlie.com/$alice (Alice takes creator cut)
   → 500,000 available for sale
-  → $example.com owns 50% of $blog, so indirectly owns 250,000`}
+  → Charlie owns 50% of $charlie.com/$alice, so indirectly owns 250,000
+
+Every / in the path is a business relationship with revenue flowing UP.`}
           </pre>
 
           <p className="text-zinc-400 leading-relaxed mb-6">
@@ -479,7 +482,7 @@ $example.com/$blog/$premium created:
             {`{
   "p": "$402",
   "version": "1.0",
-  "path": "$myblog.com",
+  "path": "$charlie.com",
   "pricing": { "model": "fixed", "price": 500 }
 }`}
           </pre>
@@ -566,14 +569,14 @@ $example.com/$blog/$premium created:
 
           <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">The Scaling Effect</h4>
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
-            {`Small domain ($myblog.com):
+            {`Small publisher ($alice.com):
   → 1-2 stakers sufficient
-  → Low revenue, issuer might self-stake
+  → Low revenue, Alice might self-stake
 
-Large domain ($news.com):
+Large editor ($charlie.com with 20 writers):
   → Many stakers compete
-  → High revenue, redundant infrastructure
-  → Stakers earn significant income`}
+  → High revenue from all nested workspaces
+  → Stakers earn from every /$writer/$content beneath`}
           </pre>
 
           <p className="text-zinc-400 leading-relaxed">
@@ -1265,7 +1268,7 @@ x-bsv-payment-derivation-prefix: <unique_nonce>
 
 {
   "price_sats": 4500,
-  "token": "$example.com/$blog",
+  "token": "$charlie.com/$alice/$blog",
   "identity": "<server_pubkey>",
   "accepts": ["bsv", "base", "sol", "eth"]
 }`}
@@ -1274,7 +1277,7 @@ x-bsv-payment-derivation-prefix: <unique_nonce>
           <h3 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">Client Response (BRC-104/105)</h3>
           <pre className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 text-sm overflow-x-auto text-zinc-400 mb-6">
             {`GET /some/path HTTP/1.1
-Host: example.com
+Host: charlie.com
 x-bsv-auth-identity-key: <client_pubkey>
 x-bsv-auth-signature: <sig>
 x-bsv-payment: { transaction, derivationSuffix }`}
@@ -1289,11 +1292,11 @@ x-bsv-payment: { transaction, derivationSuffix }`}
   "$402_version": "2.0",
   "extensions": ["$402-curves", "$402-hierarchy"],
   "root": {
-    "path": "$example.com",
+    "path": "$charlie.com",
     "inscription_id": "abc123..."
   },
   "children": [
-    { "path": "$example.com/$blog", "inscription_id": "def456..." }
+    { "path": "$charlie.com/$alice", "inscription_id": "def456..." }
   ]
 }`}
           </pre>
