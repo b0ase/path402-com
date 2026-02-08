@@ -8,8 +8,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
 
 const navItems = [
+  { href: 'https://path401.com', label: '$401', external: true },
   { href: '/', label: '$402' },
-  { href: '/401', label: '$401' },
+  { href: 'https://path403.com', label: '$403', external: true },
   { href: '/portfolio', label: 'PORTFOLIO' },
   { href: '/market', label: 'MARKET' },
   { href: '/exchange', label: 'EXCHANGE' },
@@ -55,6 +56,20 @@ export function ClientNavigation() {
             {navItems.map((item) => {
               const isActive = pathname === item.href ||
                 (item.href !== '/' && pathname.startsWith(item.href));
+
+              if (item.external) {
+                return (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-6 h-full flex items-center text-[10px] uppercase tracking-[0.2em] font-mono font-bold transition-colors whitespace-nowrap bg-zinc-50 dark:bg-zinc-900/10 text-zinc-500 hover:text-black dark:hover:text-white border-r border-zinc-200 dark:border-zinc-800"
+                  >
+                    {item.label}
+                  </a>
+                );
+              }
 
               return (
                 <Link
