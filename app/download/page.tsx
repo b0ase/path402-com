@@ -129,7 +129,7 @@ const RELEASE_NOTES = [
 
 export default function DownloadPage() {
   return (
-    <div className="min-h-screen bg-white dark:bg-black text-zinc-900 dark:text-white font-mono">
+    <div className="min-h-screen bg-white dark:bg-black text-zinc-900 dark:text-white font-mono pt-14">
       <section className="py-24 px-6">
         <div className="max-w-7xl mx-auto">
           <motion.div

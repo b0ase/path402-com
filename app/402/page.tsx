@@ -112,7 +112,7 @@ export default function WhitepaperPaywallPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 flex items-center justify-center">
+    <div className="min-h-screen bg-white dark:bg-gray-950 flex items-center justify-center pt-14">
       <div className="text-center">
         {/* Big Round $402 Button */}
         <div className="mb-8 flex justify-center">

@@ -96,7 +96,7 @@ export default function SiteIndexPage() {
   const totalPages = PAGE_CATEGORIES.reduce((acc, cat) => acc + cat.pages.length, 0);
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white pt-14">
       <div className="px-4 md:px-8 py-16">
         {/* Header */}
         <div className="mb-12 border-b border-zinc-800 pb-8">

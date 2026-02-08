@@ -9,6 +9,11 @@ export default {
   darkMode: 'class',
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['var(--font-inter)', 'Inter', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-jetbrains-mono)', 'JetBrains Mono', 'Fira Code', 'ui-monospace', 'monospace'],
+        display: ['var(--font-orbitron)', 'Orbitron', 'sans-serif'],
+      },
       backgroundColor: {
         'surface': 'var(--bg-surface)',
         'surface-secondary': 'var(--bg-surface-secondary)',

@@ -1,13 +1,29 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, Orbitron } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
 import { WalletProvider } from "@/components/WalletProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { Navbar } from "@/components/Navbar";
+import { ClientNavigation } from "@/components/ClientNavigation";
 import { Sticky402Button } from "@/components/Sticky402Button";
 
-const mono = JetBrains_Mono({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains-mono",
+  display: "swap",
+});
+
+const orbitron = Orbitron({
+  subsets: ["latin"],
+  variable: "--font-orbitron",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://path402.com'),
@@ -54,10 +70,10 @@ export default function RootLayout({
         <link rel="ai-plugin" href="https://path402.com/.well-known/ai-plugin.json" />
         <link rel="alternate" type="text/plain" href="https://path402.com/llms.txt" title="LLMs.txt" />
       </head>
-      <body className={mono.className}>
+      <body className={`${inter.variable} ${mono.variable} ${orbitron.variable} font-mono antialiased`}>
         <ThemeProvider>
           <WalletProvider>
-            <Navbar />
+            <ClientNavigation />
             {children}
             <Sticky402Button />
 

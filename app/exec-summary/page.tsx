@@ -18,7 +18,7 @@ const staggerContainer = {
 
 export default function ExecSummaryPage() {
   return (
-    <div className="min-h-screen bg-white dark:bg-black text-zinc-900 dark:text-white font-mono selection:bg-zinc-900 selection:text-white dark:selection:bg-white dark:selection:text-black">
+    <div className="min-h-screen bg-white dark:bg-black text-zinc-900 dark:text-white font-mono selection:bg-zinc-900 selection:text-white dark:selection:bg-white dark:selection:text-black pt-14">
       {/* Header */}
       <section className="relative py-24 px-6 border-b border-zinc-200 dark:border-zinc-900">
         <div className="max-w-7xl mx-auto">

@@ -2,12 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useWallet } from './WalletProvider';
 
 export function Sticky402Button() {
   const pathname = usePathname();
+  const { wallet } = useWallet();
 
-  // Don't show on download page
-  if (pathname === '/download') {
+  // Hide when connected (user is already on the client) or on download page
+  if (wallet.connected || pathname === '/download') {
     return null;
   }
 

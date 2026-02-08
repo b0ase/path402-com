@@ -48,7 +48,7 @@ export default function ExchangePage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-black pt-20">
-      <div className="max-w-7xl mx-auto px-6 py-20">
+      <div className="max-w-[1920px] mx-auto px-6 md:px-16 py-16">
         {/* Header */}
         <motion.div
           className="mb-12"
