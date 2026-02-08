@@ -524,7 +524,7 @@ function BootSequenceHero() {
                     playsInline
                     className="absolute inset-0 w-full h-full object-cover opacity-40"
                   >
-                    <source src="/402-video-1.mp4" type="video/mp4" />
+                    <source src="https://pub-fee9eb6b685a48f2aa263c104838ce5e.r2.dev/402-video-1.mp4" type="video/mp4" />
                   </video>
 
                   {/* Overlay content */}
@@ -686,7 +686,7 @@ function CoreIdea() {
               playsInline
               className="absolute inset-0 w-full h-full object-cover opacity-40 dark:opacity-30"
             >
-              <source src="/402-video-1.mp4" type="video/mp4" />
+              <source src="https://pub-fee9eb6b685a48f2aa263c104838ce5e.r2.dev/402-video-1.mp4" type="video/mp4" />
             </video>
             <div className="relative z-10 p-8 md:p-12 flex flex-col justify-center h-full">
               <h2 className="text-3xl md:text-4xl font-black tracking-tighter mb-6 font-display">
@@ -799,7 +799,7 @@ function DemoVideo() {
             controls
             className="w-full aspect-video"
           >
-            <source src="/402-video-2.mp4" type="video/mp4" />
+            <source src="https://pub-fee9eb6b685a48f2aa263c104838ce5e.r2.dev/402-video-2.mp4" type="video/mp4" />
           </video>
           <div className="absolute top-4 left-4 z-10 pointer-events-none">
             <span className="text-[8px] font-mono text-white/60 tracking-[0.2em] uppercase bg-black/50 px-2 py-1">
