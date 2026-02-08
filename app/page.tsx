@@ -620,15 +620,27 @@ function CoreIdea() {
           The Core Idea
         </motion.div>
         <div className="grid md:grid-cols-2 gap-0 border border-zinc-200 dark:border-zinc-800">
-          <motion.div custom={0.1} variants={fadeUp} className="p-8 md:p-12 border-b md:border-b-0 md:border-r border-zinc-200 dark:border-zinc-800">
-            <h2 className="text-3xl md:text-4xl font-black tracking-tighter mb-6 font-display">
-              EVERY URL<span className="text-zinc-300 dark:text-zinc-800">.</span><br />
-              BECOMES AN<span className="text-zinc-300 dark:text-zinc-800">.</span><br />
-              ECONOMIC OBJECT<span className="text-zinc-300 dark:text-zinc-800">.</span>
-            </h2>
-            <p className="text-zinc-500 text-sm leading-relaxed max-w-md">
-              Tokens gate access. Payment flows to holders and operators. The network rewards you for the infrastructure you provide.
-            </p>
+          {/* Left: video demo with overlay text */}
+          <motion.div custom={0.1} variants={fadeUp} className="relative border-b md:border-b-0 md:border-r border-zinc-200 dark:border-zinc-800 overflow-hidden min-h-[300px] md:min-h-[400px]">
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="absolute inset-0 w-full h-full object-cover opacity-40 dark:opacity-30"
+            >
+              <source src="/402-video-1.mp4" type="video/mp4" />
+            </video>
+            <div className="relative z-10 p-8 md:p-12 flex flex-col justify-center h-full">
+              <h2 className="text-3xl md:text-4xl font-black tracking-tighter mb-6 font-display">
+                EVERY URL<span className="text-zinc-300 dark:text-zinc-800">.</span><br />
+                BECOMES AN<span className="text-zinc-300 dark:text-zinc-800">.</span><br />
+                ECONOMIC OBJECT<span className="text-zinc-300 dark:text-zinc-800">.</span>
+              </h2>
+              <p className="text-zinc-500 text-sm leading-relaxed max-w-md">
+                Tokens gate access. Payment flows to holders and operators. The network rewards you for the infrastructure you provide.
+              </p>
+            </div>
           </motion.div>
           <div className="flex flex-col">
             <motion.div custom={0.2} variants={fadeUp} className="p-8 md:p-12 border-b border-zinc-200 dark:border-zinc-800 flex-1">
@@ -698,6 +710,46 @@ function PaymentFlow() {
             </motion.div>
           ))}
         </div>
+      </div>
+    </motion.section>
+  );
+}
+
+// ── Demo Video ──────────────────────────────────────────────────
+
+function DemoVideo() {
+  return (
+    <motion.section
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-80px" }}
+      className="border-b border-zinc-200 dark:border-zinc-900"
+    >
+      <div className="max-w-[1920px] mx-auto px-6 md:px-16 py-16">
+        <motion.div custom={0} variants={fadeIn} className="section-label">
+          See It In Action
+        </motion.div>
+        <motion.div
+          custom={0.1}
+          variants={scaleIn}
+          className="relative border border-zinc-200 dark:border-zinc-800 overflow-hidden bg-black"
+        >
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            controls
+            className="w-full aspect-video"
+          >
+            <source src="/402-video-2.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute top-4 left-4 z-10 pointer-events-none">
+            <span className="text-[8px] font-mono text-white/60 tracking-[0.2em] uppercase bg-black/50 px-2 py-1">
+              $402 Protocol Demo
+            </span>
+          </div>
+        </motion.div>
       </div>
     </motion.section>
   );
@@ -1208,6 +1260,7 @@ export default function Home() {
         <StatusGrid />
         <CoreIdea />
         <PaymentFlow />
+        <DemoVideo />
         <Examples />
         <TokenModel />
         <QuickStart />
