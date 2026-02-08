@@ -13,7 +13,9 @@ interface FNewsToken {
   video: string;
 }
 
-const R2 = 'https://pub-fee9eb6b685a48f2aa263c104838ce5e.r2.dev/videos';
+const R2 = 'https://pub-fee9eb6b685a48f2aa263c104838ce5e.r2.dev';
+const R2_VIDEOS = `${R2}/videos`;
+const R2_IMAGES = `${R2}/images`;
 
 const SAMPLE_SATIRE_TOKENS: FNewsToken[] = [
   {
@@ -21,56 +23,56 @@ const SAMPLE_SATIRE_TOKENS: FNewsToken[] = [
     name: 'ALEX BONES',
     description: 'THE JEPSTEIN FILES: GLOBALIST PLOT REVEALED. "THEY ARE TURNING THE FRIGGIN\' FROGS GAY!" EXCLUSIVE REVEAL OF INTERDIMENSIONAL VAMPIRE SECRETS.',
     base_price_sats: 420,
-    image: '/alex_bones.png',
-    video: `${R2}/alex_bones.mp4`
+    image: `${R2_IMAGES}/alex_bones.png`,
+    video: `${R2_VIDEOS}/alex_bones.mp4`
   },
   {
     token_id: '402_CARLSBERG',
     name: 'FUCKER CARLSBERG',
     description: 'CONFUSION GRIPS THE NATION. WHY IS THE GREEN M&M NO LONGER SEXY? JUST ASKING QUESTIONS. THE WOKE MOB DOESN\'T WANT YOU TO KNOW.',
     base_price_sats: 69,
-    image: '/fucker_carlsberg.png',
-    video: `${R2}/fucker_carlsberg.mp4`
+    image: `${R2_IMAGES}/fucker_carlsberg.png`,
+    video: `${R2_VIDEOS}/fucker_carlsberg.mp4`
   },
   {
     token_id: '402_HOENS',
     name: 'CANDY HOENS',
     description: 'THE TRUTH HURTS. FACTS DON\'T CARE ABOUT YOUR FEELINGS, BUT I DO CARE ABOUT EXPOSING THE LIES OF THE MAINSTREAM NARRATIVE. DEBATE ME.',
     base_price_sats: 88,
-    image: '/candy_hoens.png',
-    video: `${R2}/candy_hoens.mp4`
+    image: `${R2_IMAGES}/candy_hoens.png`,
+    video: `${R2_VIDEOS}/candy_hoens.mp4`
   },
   {
     token_id: '402_FLUENZA',
     name: 'DICK FLUENZA',
     description: 'AMERICA FIRST... TO THE BASEMENT. CATCH THE FLU. YEAH, WE\'RE GOING THERE. UNFILTERED, UNHINGED, AND UNDERGROUND.',
     base_price_sats: 14,
-    image: '/dick_fluenza.png',
-    video: `${R2}/dick_fluenza.mp4`
+    image: `${R2_IMAGES}/dick_fluenza.png`,
+    video: `${R2_VIDEOS}/dick_fluenza.mp4`
   },
   {
     token_id: '402_SMIRK',
     name: 'CHARLIE SMIRK',
     description: 'PROVE ME WRONG. IF SOCIALISM IS SO GOOD, WHY IS MY FACE SO SMALL? TURNING POINT USA? MORE LIKE TURNING POINT WHO CARES.',
     base_price_sats: 10,
-    image: '/charlie_smirk.png',
-    video: `${R2}/charlie_smirk.mp4`
+    image: `${R2_IMAGES}/charlie_smirk.png`,
+    video: `${R2_VIDEOS}/charlie_smirk.mp4`
   },
   {
     token_id: '402_KWEG',
     name: 'THE ADVENTURES OF KWEG WONG ESQ.',
     description: 'He\'s always trying to pretend to be Satoshi, and going to conferences to give lectures on "scientific" papers he just made up.',
     base_price_sats: 21,
-    image: '/kweg_adventures.png',
-    video: `${R2}/kweg-wong-2.mp4`
+    image: `${R2_IMAGES}/kweg_adventures.png`,
+    video: `${R2_VIDEOS}/kweg-wong-2.mp4`
   },
   {
     token_id: '402_FAYLOOR',
     name: 'MICHAEL FAYLOOR',
     description: 'THE SELF-PROCLAIMED GENIUS WHO LEVERAGED HIS ENTIRE NET WORTH INTO BITCOIN AT THE TOP. "I AM NEVER WRONG." NARRATOR: HE WAS WRONG.',
     base_price_sats: 42,
-    image: '/michael_fayloor.png',
-    video: `${R2}/michael-fayloor.mp4`
+    image: `${R2_IMAGES}/alex_bones.png`,
+    video: `${R2_VIDEOS}/michael-fayloor.mp4`
   },
 ];
 
