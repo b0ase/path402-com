@@ -96,32 +96,46 @@ function BootSequenceHero() {
     })));
   }, []);
 
+  // Boot sequence — all timers in one effect to avoid strict mode issues
   useEffect(() => {
-    const t1 = setTimeout(() => setPhase(1), 400);
-    return () => clearTimeout(t1);
+    let cancelled = false;
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    let interval: ReturnType<typeof setInterval> | null = null;
+
+    // Phase 0 → 1: start boot after 400ms
+    timers.push(setTimeout(() => {
+      if (cancelled) return;
+      setPhase(1);
+
+      // Phase 1: type boot lines
+      let i = 0;
+      interval = setInterval(() => {
+        if (cancelled) { interval && clearInterval(interval); return; }
+        if (i < BOOT_MESSAGES.length) {
+          setBootLines(prev => [...prev, BOOT_MESSAGES[i]]);
+          i++;
+        } else {
+          interval && clearInterval(interval);
+          // Phase 1 → 2: title reveal
+          timers.push(setTimeout(() => {
+            if (cancelled) return;
+            setPhase(2);
+            // Phase 2 → 3: full content
+            timers.push(setTimeout(() => {
+              if (cancelled) return;
+              setPhase(3);
+            }, 800));
+          }, 300));
+        }
+      }, 150);
+    }, 400));
+
+    return () => {
+      cancelled = true;
+      timers.forEach(clearTimeout);
+      if (interval) clearInterval(interval);
+    };
   }, []);
-
-  useEffect(() => {
-    if (phase !== 1) return;
-    let i = 0;
-    const interval = setInterval(() => {
-      if (i < BOOT_MESSAGES.length) {
-        setBootLines(prev => [...prev, BOOT_MESSAGES[i]]);
-        i++;
-      } else {
-        clearInterval(interval);
-        setTimeout(() => setPhase(2), 300);
-      }
-    }, 150);
-    return () => clearInterval(interval);
-  }, [phase]);
-
-  useEffect(() => {
-    if (phase === 2) {
-      const t = setTimeout(() => setPhase(3), 800);
-      return () => clearTimeout(t);
-    }
-  }, [phase]);
 
   return (
     <section className="relative min-h-[100vh] flex flex-col justify-center overflow-hidden bg-black">
