@@ -13,6 +13,8 @@ interface FNewsToken {
   video: string;
 }
 
+const R2 = 'https://pub-fee9eb6b685a48f2aa263c104838ce5e.r2.dev/videos';
+
 const SAMPLE_SATIRE_TOKENS: FNewsToken[] = [
   {
     token_id: '402_BONES',
@@ -20,7 +22,7 @@ const SAMPLE_SATIRE_TOKENS: FNewsToken[] = [
     description: 'THE JEPSTEIN FILES: GLOBALIST PLOT REVEALED. "THEY ARE TURNING THE FRIGGIN\' FROGS GAY!" EXCLUSIVE REVEAL OF INTERDIMENSIONAL VAMPIRE SECRETS.',
     base_price_sats: 420,
     image: '/alex_bones.png',
-    video: '/videos/demo.mp4'
+    video: `${R2}/alex_bones.mp4`
   },
   {
     token_id: '402_CARLSBERG',
@@ -28,7 +30,7 @@ const SAMPLE_SATIRE_TOKENS: FNewsToken[] = [
     description: 'CONFUSION GRIPS THE NATION. WHY IS THE GREEN M&M NO LONGER SEXY? JUST ASKING QUESTIONS. THE WOKE MOB DOESN\'T WANT YOU TO KNOW.',
     base_price_sats: 69,
     image: '/fucker_carlsberg.png',
-    video: '/videos/fucker_carlsberg.mp4'
+    video: `${R2}/fucker_carlsberg.mp4`
   },
   {
     token_id: '402_HOENS',
@@ -36,7 +38,7 @@ const SAMPLE_SATIRE_TOKENS: FNewsToken[] = [
     description: 'THE TRUTH HURTS. FACTS DON\'T CARE ABOUT YOUR FEELINGS, BUT I DO CARE ABOUT EXPOSING THE LIES OF THE MAINSTREAM NARRATIVE. DEBATE ME.',
     base_price_sats: 88,
     image: '/candy_hoens.png',
-    video: '/videos/demo.mp4'
+    video: `${R2}/candy_hoens.mp4`
   },
   {
     token_id: '402_FLUENZA',
@@ -44,7 +46,7 @@ const SAMPLE_SATIRE_TOKENS: FNewsToken[] = [
     description: 'AMERICA FIRST... TO THE BASEMENT. CATCH THE FLU. YEAH, WE\'RE GOING THERE. UNFILTERED, UNHINGED, AND UNDERGROUND.',
     base_price_sats: 14,
     image: '/dick_fluenza.png',
-    video: '/videos/demo.mp4'
+    video: `${R2}/dick_fluenza.mp4`
   },
   {
     token_id: '402_SMIRK',
@@ -52,7 +54,7 @@ const SAMPLE_SATIRE_TOKENS: FNewsToken[] = [
     description: 'PROVE ME WRONG. IF SOCIALISM IS SO GOOD, WHY IS MY FACE SO SMALL? TURNING POINT USA? MORE LIKE TURNING POINT WHO CARES.',
     base_price_sats: 10,
     image: '/charlie_smirk.png',
-    video: '/videos/demo.mp4'
+    video: `${R2}/charlie_smirk.mp4`
   },
   {
     token_id: '402_KWEG',
@@ -60,7 +62,15 @@ const SAMPLE_SATIRE_TOKENS: FNewsToken[] = [
     description: 'He\'s always trying to pretend to be Satoshi, and going to conferences to give lectures on "scientific" papers he just made up.',
     base_price_sats: 21,
     image: '/kweg_adventures.png',
-    video: '/videos/kweg-wong-2.mp4'
+    video: `${R2}/kweg-wong-2.mp4`
+  },
+  {
+    token_id: '402_FAYLOOR',
+    name: 'MICHAEL FAYLOOR',
+    description: 'THE SELF-PROCLAIMED GENIUS WHO LEVERAGED HIS ENTIRE NET WORTH INTO BITCOIN AT THE TOP. "I AM NEVER WRONG." NARRATOR: HE WAS WRONG.',
+    base_price_sats: 42,
+    image: '/michael_fayloor.png',
+    video: `${R2}/michael-fayloor.mp4`
   },
 ];
 
