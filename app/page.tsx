@@ -143,15 +143,19 @@ function BootSequenceHero() {
     <section className="relative min-h-[100vh] flex flex-col justify-center overflow-hidden bg-black">
 
       {/* ═══════════ BACKGROUND VIDEO ═══════════ */}
-      <video
+      <motion.video
         autoPlay
         muted
         loop
         playsInline
-        className="absolute inset-0 w-full h-full object-cover opacity-20 z-0"
+        preload="auto"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.5 }}
+        transition={{ duration: 2, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="absolute inset-6 w-[calc(100%-3rem)] h-[calc(100%-3rem)] object-cover rounded z-[1]"
       >
         <source src="/402-hero.mp4" type="video/mp4" />
-      </video>
+      </motion.video>
 
       {/* ═══════════ BACKGROUND LAYERS ═══════════ */}
 
@@ -537,7 +541,7 @@ function BootSequenceHero() {
                     playsInline
                     className="absolute inset-0 w-full h-full object-cover opacity-40"
                   >
-                    <source src="https://pub-fee9eb6b685a48f2aa263c104838ce5e.r2.dev/402-video-1.mp4" type="video/mp4" />
+                    <source src="/path-402-inset.mp4" type="video/mp4" />
                   </video>
 
                   {/* Overlay content */}
@@ -797,7 +801,7 @@ function CoreIdea() {
               playsInline
               className="absolute inset-0 w-full h-full object-cover opacity-40 dark:opacity-30"
             >
-              <source src="https://pub-fee9eb6b685a48f2aa263c104838ce5e.r2.dev/402-video-1.mp4" type="video/mp4" />
+              <source src="/path-402-inset.mp4" type="video/mp4" />
             </video>
             <div className="relative z-10 p-8 md:p-12 flex flex-col justify-center h-full">
               <h2 className="text-3xl md:text-4xl font-black tracking-tighter mb-6 font-display">
