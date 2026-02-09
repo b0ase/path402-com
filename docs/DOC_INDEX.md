@@ -38,20 +38,22 @@
 | Document | Description | Alignment Status |
 |----------|-------------|------------------|
 | **[PROTOCOL_VISION.md](PROTOCOL_VISION.md)** | Canonical $402 protocol (10 steps) | ✓ Source of truth |
+| **[HTM_TOKEN.md](HTM_TOKEN.md)** | **$402 Hash-to-Mint mining token** — sCrypt contract, PoW mining, Proof of Indexing | ✓ New |
 | **[TREE_MODEL.md](TREE_MODEL.md)** | The 6 rules: paths, revenue flow, non-dilution, roots as index funds | ✓ New |
 | **[$402-STANDARD.md]($402-STANDARD.md)** | HTTP 402 implementation spec v2.0.0 | ✓ Aligned |
 | **[DOMAIN_VERIFICATION.md](DOMAIN_VERIFICATION.md)** | DNS + well-known + on-chain signature proof for issuers | ✓ New |
 | **[PRICING_CURVES.md](PRICING_CURVES.md)** | Library of pricing curves for token issuers | ✓ Aligned |
 | **[ARCHITECTURE.md](ARCHITECTURE.md)** | Five-layer architecture | ✓ Aligned |
 | **[BRC_ALIGNMENT.md](BRC_ALIGNMENT.md)** | How Path402 maps to BRC‑100/103/104/105/22/24 | ✓ New |
-| **[PATHD_ARCHITECTURE.md](PATHD_ARCHITECTURE.md)** | path402d daemon, PoW20, visibility/accountability | ✓ Updated |
+| **[PATHD_ARCHITECTURE.md](PATHD_ARCHITECTURE.md)** | path402d daemon, HTM mining, visibility/accountability | ✓ Updated |
 
 ## Business
 
 | Document | Description |
 |----------|-------------|
 | **[BUSINESS_MODEL.md](BUSINESS_MODEL.md)** | Revenue model, fee structure, facilitator economics |
-| **[TOKEN_ARCHITECTURE.md](TOKEN_ARCHITECTURE.md)** | $PATH402 token details, allocation, governance |
+| **[TOKEN_ARCHITECTURE.md](TOKEN_ARCHITECTURE.md)** | $PATH402 equity token details, allocation, governance |
+| **[HTM_TOKEN.md](HTM_TOKEN.md)** | $402 mining token — the PoW reward for running the client |
 
 ## MCP Server
 
@@ -79,4 +81,4 @@
 
 ---
 
-**Last Updated**: February 3, 2026
+**Last Updated**: February 9, 2026

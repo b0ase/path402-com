@@ -1,8 +1,12 @@
-# $PATH402 Token Architecture
+# $PATH402 Token Architecture (Equity Token)
+
+> **Note**: This document describes **$PATH402**, the equity/revenue-share token. For the **$402 mining token** (PoW, HTM smart contract), see [HTM_TOKEN.md](HTM_TOKEN.md).
 
 ## Overview
 
-$PATH402 uses a two-tier system that separates token holding (permissionless) from equity participation (KYC required).
+$PATH402 is the equity token of the $402 protocol. It uses a two-tier system that separates token holding (permissionless) from equity participation (KYC required).
+
+$PATH402 is separate from the $402 mining token. See [HTM_TOKEN.md](HTM_TOKEN.md) for the mining token's 21M supply, sCrypt smart contract, and Proof-of-Indexing system.
 
 ## Address Derivation
 
