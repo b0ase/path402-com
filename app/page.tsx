@@ -140,6 +140,17 @@ function BootSequenceHero() {
   return (
     <section className="relative min-h-[100vh] flex flex-col justify-center overflow-hidden bg-black">
 
+      {/* ═══════════ BACKGROUND VIDEO ═══════════ */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover opacity-20 z-0"
+      >
+        <source src="/402-hero.mp4" type="video/mp4" />
+      </video>
+
       {/* ═══════════ BACKGROUND LAYERS ═══════════ */}
 
       {/* Layer 1: Radial blue glow behind title */}
