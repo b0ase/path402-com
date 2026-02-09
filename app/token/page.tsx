@@ -93,8 +93,8 @@ export default function TokenPage() {
                   <div className="text-2xl font-black mb-3">02</div>
                   <h3 className="text-sm font-bold uppercase tracking-wide mb-2">Prove Your Work</h3>
                   <p className="text-zinc-500 text-sm">
-                    The POW20 mechanism (BRC-100/104/105) requires computational proof.
-                    Nodes that serve content and verify transactions earn mining rewards.
+                    The HTM contract (BRC-114 Proof of Indexing) requires nodes to index BSV-21 tokens.
+                    Nodes that index and serve content earn $402 mining rewards.
                   </p>
                 </div>
                 <div className="border border-zinc-200 dark:border-zinc-800 p-6 bg-zinc-50 dark:bg-zinc-950">
@@ -147,10 +147,10 @@ export default function TokenPage() {
                 <div className="border border-zinc-200 dark:border-zinc-800 p-6 bg-zinc-50 dark:bg-zinc-950">
                   <h3 className="text-sm font-bold mb-4 uppercase tracking-wide">$402 Protocol Token</h3>
                   <ul className="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
-                    <li><strong className="text-zinc-900 dark:text-white">Standard:</strong> BSV-20 (BRC-100)</li>
-                    <li><strong className="text-zinc-900 dark:text-white">Distribution:</strong> POW20 mining</li>
-                    <li><strong className="text-zinc-900 dark:text-white">Utility:</strong> Protocol fee payments, staking, governance</li>
-                    <li><strong className="text-zinc-900 dark:text-white">Settlement:</strong> BSV L1</li>
+                    <li><strong className="text-zinc-900 dark:text-white">Standard:</strong> BSV-21 (PoW20 HTM)</li>
+                    <li><strong className="text-zinc-900 dark:text-white">Supply:</strong> 21,000,000 (mirrors Bitcoin)</li>
+                    <li><strong className="text-zinc-900 dark:text-white">Distribution:</strong> 100% mined, 0% pre-mine</li>
+                    <li><strong className="text-zinc-900 dark:text-white">Utility:</strong> Stake with $401 KYC to earn serving revenue</li>
                   </ul>
                 </div>
                 <div className="border border-zinc-200 dark:border-zinc-800 p-6 bg-zinc-50 dark:bg-zinc-950">
