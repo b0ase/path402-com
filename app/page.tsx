@@ -4,6 +4,10 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useWallet } from "@/components/WalletProvider";
 import { useEffect, useState } from "react";
+import Hero401 from "@/components/heroes/Hero401";
+import Hero403 from "@/components/heroes/Hero403";
+
+const SITE_VARIANT = process.env.NEXT_PUBLIC_SITE_VARIANT || '402';
 
 // ── Animation variants ──────────────────────────────────────────
 
@@ -1323,7 +1327,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-black text-zinc-900 dark:text-white">
-      <BootSequenceHero />
+      {SITE_VARIANT === '401' ? <Hero401 /> : SITE_VARIANT === '403' ? <Hero403 /> : <BootSequenceHero />}
       <div className="pt-0">
         <StatusGrid />
         <CoreIdea />
