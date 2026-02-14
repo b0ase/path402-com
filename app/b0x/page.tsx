@@ -153,6 +153,18 @@ export default function B0xPage() {
           transition={{ duration: 0.7, ease }}
           className="border border-zinc-900 overflow-hidden"
         >
+          {/* Video / Image */}
+          <div className="relative w-full aspect-video bg-black">
+            <video
+              src="/b0x-miner.mp4"
+              poster="/b0x-miner.jpg"
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="w-full h-full object-cover"
+            />
+          </div>
           <div className="p-8 md:p-12">
             <div className="flex items-center gap-2 mb-6">
               <span className="text-[9px] font-mono tracking-[0.3em] text-zinc-700 uppercase">Hardware</span>
