@@ -39,6 +39,22 @@ export const metadata: Metadata = {
     siteName: "$402 Protocol",
     locale: "en_US",
     type: "website",
+    images: [
+      {
+        url: "https://path402.com/og-402.jpg",
+        width: 1200,
+        height: 630,
+        alt: "$402 Protocol — Traffic lights representing HTTP 401, 402, 403 status codes",
+      },
+    ],
+    videos: [
+      {
+        url: "https://path402.com/x-lights.mp4",
+        width: 688,
+        height: 464,
+        type: "video/mp4",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
@@ -46,6 +62,7 @@ export const metadata: Metadata = {
     description: "Mint an access token for anything addressable.",
     creator: "@b0ase",
     site: "@b0ase",
+    images: ["https://path402.com/og-402.jpg"],
   },
   robots: {
     index: true,

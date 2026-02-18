@@ -47,6 +47,7 @@ Thumbs.db
 *.png
 *.gif
 *.webp
+!public/og-402.jpg
 
 # Tool caches
 .firecrawl/
