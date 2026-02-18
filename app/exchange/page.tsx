@@ -1,7 +1,29 @@
 'use client';
 
 import Link from "next/link";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+
+interface TokenListing {
+  id: string;
+  address: string;
+  name: string;
+  description?: string;
+  content_type?: string;
+  pricing_model: string;
+  current_price_sats: number;
+  market_cap_sats: number;
+  total_supply: number;
+  treasury_balance: number;
+  issuer_handle: string;
+  is_verified: boolean;
+}
+
+function formatSats(sats: number): string {
+  if (Math.abs(sats) >= 1_000_000) return `${(sats / 1_000_000).toFixed(2)}M`;
+  if (Math.abs(sats) >= 1_000) return `${(sats / 1_000).toFixed(1)}K`;
+  return sats.toLocaleString();
+}
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -12,227 +34,219 @@ const staggerContainer = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.1 }
+    transition: { staggerChildren: 0.06 }
   }
 };
 
-const scaleIn = {
-  hidden: { opacity: 0, scale: 0.95 },
-  visible: { opacity: 1, scale: 1 }
-};
-
 export default function ExchangePage() {
-  const exampleTokens = [
-    {
-      address: "$b0ase.com/$blog",
-      price: 500,
-      supply: 0,
-      description: "Access to b0ase blog content",
-      model: "sqrt_decay",
-    },
-    {
-      address: "$b0ase.com/$api",
-      price: 1000,
-      supply: 0,
-      description: "API access credits",
-      model: "sqrt_decay",
-    },
-    {
-      address: "$b0ase.com/$premium",
-      price: 2500,
-      supply: 0,
-      description: "Premium content access",
-      model: "sqrt_decay",
-    },
-  ];
+  const [tokens, setTokens] = useState<TokenListing[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [filter, setFilter] = useState<string>('all');
+
+  useEffect(() => {
+    fetch('/api/tokens?limit=100')
+      .then(r => r.json())
+      .then(data => {
+        setTokens(data.tokens || []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError('Failed to load tokens');
+        setLoading(false);
+      });
+  }, []);
+
+  const contentTypes = ['all', ...new Set(tokens.map(t => t.content_type).filter(Boolean))];
+  const filtered = filter === 'all' ? tokens : tokens.filter(t => t.content_type === filter);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black pt-20">
-      <div className="max-w-[1920px] mx-auto px-6 md:px-16 py-16">
+    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white font-mono">
+      <main className="w-full px-4 md:px-8 py-16 max-w-[1920px] mx-auto">
         {/* Header */}
-        <motion.div
-          className="mb-12"
-          initial="hidden"
-          animate="visible"
-          variants={staggerContainer}
-        >
-          <motion.div variants={fadeIn}>
-            <Link href="/" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white text-sm mb-4 inline-block">
-              ← Back to Home
-            </Link>
+        <header className="mb-8 border-b border-zinc-200 dark:border-zinc-900 pb-6 flex items-end justify-between overflow-hidden relative">
+          <div>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+              className="flex items-center gap-3 mb-4 text-zinc-500 text-xs tracking-widest uppercase"
+            >
+              <Link href="/" className="hover:text-white transition-colors">Home</Link>
+              <span>/</span>
+              <span>Exchange</span>
+            </motion.div>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              className="text-4xl md:text-6xl font-black tracking-tighter mb-2"
+            >
+              EXCHANGE<span className="text-zinc-300 dark:text-zinc-800">.MKT</span>
+            </motion.h1>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="text-zinc-500 max-w-lg"
+            >
+              <b>Token Marketplace.</b> Discover and acquire content tokens on the $402 network.
+            </motion.div>
+          </div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 0.06, scale: 1 }}
+            transition={{ duration: 0.7, delay: 0.2, ease: "backOut" }}
+            className="hidden md:block text-[120px] leading-none font-black text-right select-none"
+          >
+            $
           </motion.div>
-          <motion.h1
-            className="text-5xl font-bold text-zinc-900 dark:text-white mb-4"
-            variants={fadeIn}
-            transition={{ duration: 0.6 }}
-          >
-            Exchange
-          </motion.h1>
-          <motion.p
-            className="text-zinc-600 dark:text-zinc-400 max-w-2xl"
-            variants={fadeIn}
-            transition={{ delay: 0.2 }}
-          >
-            Discover and acquire content tokens. View current prices, supply levels, and economics
-            before making a purchase.
-          </motion.p>
-        </motion.div>
+        </header>
 
-        {/* Info Banner */}
-        <motion.div
-          className="border border-blue-500/30 bg-blue-500/10 p-6 mb-12 "
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          whileHover={{ borderColor: "rgba(59, 130, 246, 0.5)" }}
-        >
-          <h3 className="text-blue-600 dark:text-blue-400 font-semibold mb-2">Live Exchange at b0ase.com</h3>
-          <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
-            For live token trading with real payments, visit the full exchange at b0ase.com.
-            This page shows example tokens and pricing models.
-          </p>
-          <motion.a
-            href="https://b0ase.com/exchange"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block px-4 py-2 bg-blue-600 text-zinc-900 dark:text-white font-medium text-sm hover:bg-blue-700 transition-colors "
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+        {/* Stats Bar */}
+        {!loading && tokens.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="mb-8 grid grid-cols-3 gap-0 border border-zinc-200 dark:border-zinc-800"
           >
-            Go to Live Exchange →
-          </motion.a>
-        </motion.div>
+            <div className="border-r border-zinc-200 dark:border-zinc-800 p-6">
+              <div className="text-[9px] text-zinc-500 uppercase tracking-widest mb-1">Active Tokens</div>
+              <div className="text-2xl font-black">{tokens.length}</div>
+            </div>
+            <div className="border-r border-zinc-200 dark:border-zinc-800 p-6">
+              <div className="text-[9px] text-zinc-500 uppercase tracking-widest mb-1">Total Market Cap</div>
+              <div className="text-2xl font-black">{formatSats(tokens.reduce((s, t) => s + t.market_cap_sats, 0))} <span className="text-sm text-zinc-500 font-normal">SAT</span></div>
+            </div>
+            <div className="p-6">
+              <div className="text-[9px] text-zinc-500 uppercase tracking-widest mb-1">Pricing Model</div>
+              <div className="text-2xl font-black">alice_bond</div>
+            </div>
+          </motion.div>
+        )}
 
-        {/* Token List */}
-        <motion.div
-          className="mb-12"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={staggerContainer}
-        >
-          <motion.h2
-            className="text-sm font-medium text-zinc-500 mb-6 uppercase tracking-wider"
-            variants={fadeIn}
-          >
-            Example Tokens
-          </motion.h2>
-          <div className="space-y-4">
-            {exampleTokens.map((token, i) => (
-              <motion.div
-                key={token.address}
-                className="border border-zinc-200 dark:border-zinc-800 p-6  bg-zinc-50 dark:bg-zinc-950"
-                variants={scaleIn}
-                transition={{ duration: 0.4, delay: i * 0.1 }}
-                whileHover={{
-                  borderColor: "rgba(96, 165, 250, 0.5)",
-                  y: -2,
-                  transition: { duration: 0.2 }
-                }}
+        {/* Filter Tabs */}
+        {contentTypes.length > 2 && (
+          <div className="mb-6 flex gap-2 overflow-x-auto pb-2">
+            {contentTypes.map(type => (
+              <button
+                key={type || 'all'}
+                onClick={() => setFilter(type || 'all')}
+                className={`px-4 py-2 text-[10px] font-bold uppercase tracking-widest border transition-colors whitespace-nowrap ${
+                  filter === type
+                    ? 'border-white bg-white text-black'
+                    : 'border-zinc-800 text-zinc-500 hover:border-zinc-600'
+                }`}
               >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <code className="text-blue-600 dark:text-blue-400 font-mono text-lg">{token.address}</code>
-                    <p className="text-zinc-600 dark:text-zinc-400 text-sm mt-1">{token.description}</p>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-2xl font-bold text-zinc-900 dark:text-white">{token.price} SAT</div>
-                    <div className="text-zinc-500 text-sm">Supply: {token.supply}</div>
-                  </div>
-                </div>
-                <div className="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
-                  <span className="text-zinc-500 text-sm font-mono">{token.model}</span>
-                  <motion.button
-                    className="px-4 py-2 bg-white text-black font-medium text-sm hover:bg-zinc-200 transition-colors "
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    Acquire Token
-                  </motion.button>
-                </div>
-              </motion.div>
+                {type || 'all'}
+              </button>
             ))}
           </div>
-        </motion.div>
+        )}
 
-        {/* Pricing Explanation */}
-        <motion.div
-          className="mb-12"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={staggerContainer}
-        >
-          <motion.h2
-            className="text-sm font-medium text-zinc-500 mb-6 uppercase tracking-wider"
-            variants={fadeIn}
+        {/* Loading */}
+        {loading && (
+          <div className="py-20 text-center">
+            <div className="text-zinc-500 text-sm animate-pulse">Loading tokens...</div>
+          </div>
+        )}
+
+        {/* Error */}
+        {error && (
+          <div className="py-20 text-center">
+            <div className="text-red-500 text-sm">{error}</div>
+          </div>
+        )}
+
+        {/* Empty */}
+        {!loading && !error && filtered.length === 0 && (
+          <div className="py-20 text-center">
+            <div className="text-zinc-500 text-sm">No tokens found. Register a $address to get started.</div>
+          </div>
+        )}
+
+        {/* Token Table */}
+        {!loading && filtered.length > 0 && (
+          <motion.section
+            initial="hidden"
+            animate="visible"
+            variants={staggerContainer}
           >
-            How Pricing Works
-          </motion.h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {[
-              {
-                title: "Ascending Bond",
-                desc: "Price = Base / √(treasury + 1). Early buyers pay less, price increases as treasury depletes.",
-                code: ["Treasury 500M: 10 SAT", "Treasury 10M: 71 SAT", "Treasury 1K: 7,072 SAT"]
-              },
-              {
-                title: "95/5 Revenue Split",
-                desc: "Every purchase supports the creator and ensures high-speed verification via the Indexer Overlay.",
-                code: ["Creator: 95%", "Indexer: 5% (Proof of Serve)"]
-              },
-              {
-                title: "BRC-24 Discovery",
-                desc: "The $402 network acts as a BRC-24 Lookup Service. Find the most 'stamped' content.",
-                code: ["Query: BRC-24 Overlay", "Signal: Social Proof Stamps"]
-              }
-            ].map((item, i) => (
-              <motion.div
-                key={i}
-                className="border border-zinc-200 dark:border-zinc-800 p-6  bg-zinc-50 dark:bg-zinc-950"
-                variants={scaleIn}
-                transition={{ duration: 0.4, delay: i * 0.1 }}
-                whileHover={{
-                  borderColor: "rgba(156, 163, 175, 0.5)",
-                  transition: { duration: 0.2 }
-                }}
-              >
-                <h3 className="text-lg font-semibold text-zinc-900 dark:text-white mb-2">{item.title}</h3>
-                <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-4">{item.desc}</p>
-                <motion.div
-                  className="bg-zinc-200 dark:bg-zinc-900 p-4 font-mono text-sm "
-                >
-                  {item.code.map((line, j) => (
-                    <div key={j} className="text-zinc-700 dark:text-zinc-500">{line}</div>
+            <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-4 border-b border-zinc-200 dark:border-zinc-900 pb-2">
+              {filter === 'all' ? 'All Tokens' : filter}
+            </div>
+            <div className="border border-zinc-200 dark:border-zinc-800 overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800">
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest font-bold text-zinc-500">$Address</th>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest font-bold text-zinc-500">Issuer</th>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest font-bold text-zinc-500 text-right">Price</th>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest font-bold text-zinc-500 text-right">Supply</th>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest font-bold text-zinc-500 text-right">Market Cap</th>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest font-bold text-zinc-500 text-right">Model</th>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest font-bold text-zinc-500 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
+                  {filtered.map((token) => (
+                    <motion.tr
+                      key={token.id}
+                      variants={fadeIn}
+                      className="group hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors"
+                    >
+                      <td className="py-4 px-6">
+                        <div className="font-bold text-sm tracking-tight">{token.name}</div>
+                        <div className="text-[10px] font-mono text-blue-500">{token.address}</div>
+                      </td>
+                      <td className="py-4 px-6">
+                        <span className="text-xs text-zinc-500">{token.issuer_handle}</span>
+                      </td>
+                      <td className="py-4 px-6 text-right font-mono text-sm">
+                        {formatSats(token.current_price_sats)} <span className="text-zinc-500 text-[10px]">SAT</span>
+                      </td>
+                      <td className="py-4 px-6 text-right font-mono text-sm text-zinc-500">
+                        {formatSats(token.total_supply)}
+                      </td>
+                      <td className="py-4 px-6 text-right font-mono text-sm text-zinc-500">
+                        {formatSats(token.market_cap_sats)}
+                      </td>
+                      <td className="py-4 px-6 text-right">
+                        <span className="text-[10px] font-mono text-zinc-600">{token.pricing_model}</span>
+                      </td>
+                      <td className="py-4 px-6 text-right">
+                        <Link
+                          href={`/token?address=${encodeURIComponent(token.address)}`}
+                          className="px-4 py-2 border border-zinc-200 dark:border-zinc-800 text-[10px] font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all inline-block"
+                        >
+                          ACQUIRE
+                        </Link>
+                      </td>
+                    </motion.tr>
                   ))}
-                </motion.div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+                </tbody>
+              </table>
+            </div>
+          </motion.section>
+        )}
 
-        {/* Agent Tools */}
+        {/* MCP Tools Reference */}
         <motion.div
-          className="border-t border-zinc-200 dark:border-zinc-800 pt-12"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={fadeIn}
+          className="border-t border-zinc-200 dark:border-zinc-800 pt-12 mt-12"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-sm font-medium text-zinc-500 mb-6 uppercase tracking-wider">
+          <h2 className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-6 border-b border-zinc-200 dark:border-zinc-900 pb-2">
             For AI Agents
           </h2>
-          <p className="text-zinc-600 dark:text-zinc-400 mb-6">
-            Use the path402 to discover, evaluate, and acquire tokens programmatically.
+          <p className="text-zinc-500 text-sm mb-6">
+            Use the path402 MCP server to discover, evaluate, and acquire tokens programmatically.
           </p>
-          <motion.pre
-            className="bg-zinc-200 dark:bg-zinc-900 p-6 font-mono text-sm text-zinc-700 dark:text-zinc-400 overflow-x-auto "
-          >
-            {`# Install the MCP server
-npm install path402
-
-# Discovery & Evaluation
+          <pre className="bg-zinc-100 dark:bg-zinc-900 p-6 font-mono text-sm text-zinc-600 dark:text-zinc-400 overflow-x-auto">
+            {`# Discovery & Evaluation
 path402_discover       # Probe a $address for pricing
 path402_batch_discover # Discover multiple addresses
 path402_evaluate       # Assess ROI before buying
@@ -243,21 +257,13 @@ path402_price_schedule # View price curve
 path402_acquire        # Pay and receive token
 path402_set_budget     # Configure spending
 path402_wallet         # View holdings
-path402_transfer       # Transfer tokens
-path402_history        # Transaction history
 
 # Serving & Revenue
 path402_serve          # Distribute content
-path402_servable       # List servable content
-path402_register       # Register new $address
-
-# x402 Facilitator
-x402_verify            # Verify cross-chain payment
-x402_settle            # Settle via facilitator
-x402_inscription       # Get BSV proof`}
-          </motion.pre>
+path402_servable       # List servable content`}
+          </pre>
         </motion.div>
-      </div>
+      </main>
     </div>
   );
 }

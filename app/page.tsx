@@ -70,7 +70,6 @@ const SYSTEM_READOUT = [
 
 function BootSequenceHero() {
   const heroVideoRef = useRef<HTMLVideoElement>(null);
-  const heroReversing = useRef(false);
   const [phase, setPhase] = useState(0); // 0=black, 1=booting, 2=title, 3=content
   const [bootLines, setBootLines] = useState<string[]>([]);
   const [particles, setParticles] = useState<Array<{
@@ -149,32 +148,15 @@ function BootSequenceHero() {
         ref={heroVideoRef}
         autoPlay
         muted
+        loop
         playsInline
         preload="auto"
-        onEnded={() => {
-          const v = heroVideoRef.current;
-          if (!v) return;
-          heroReversing.current = true;
-          const step = () => {
-            if (!heroVideoRef.current || !heroReversing.current) return;
-            const next = heroVideoRef.current.currentTime - 0.04;
-            if (next <= 0) {
-              heroVideoRef.current.currentTime = 0;
-              heroReversing.current = false;
-              heroVideoRef.current.play();
-              return;
-            }
-            heroVideoRef.current.currentTime = next;
-            requestAnimationFrame(step);
-          };
-          requestAnimationFrame(step);
-        }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 6, delay: 3, ease: [0.22, 1, 0.36, 1] }}
         className="absolute inset-6 w-[calc(100%-3rem)] h-[calc(100%-3rem)] object-cover rounded z-[1]"
       >
-        <source src="/402-BLUE-1-original.mp4" type="video/mp4" />
+        <source src="https://pub-fee9eb6b685a48f2aa263c104838ce5e.r2.dev/402-video-2.mp4" type="video/mp4" />
       </motion.video>
 
       {/* ═══════════ BACKGROUND LAYERS ═══════════ */}

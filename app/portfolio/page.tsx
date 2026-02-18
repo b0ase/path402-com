@@ -1,32 +1,138 @@
 'use client';
 
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
+interface Session {
+  connected: boolean;
+  provider: string | null;
+  handle: string | null;
+}
+
+interface Holding {
+  token_address: string;
+  balance: number;
+  total_spent_sats: number;
+  avg_cost_sats: number;
+  token?: {
+    address: string;
+    name: string;
+    current_price_sats: number;
+  };
+  current_value_sats?: number;
+  unrealized_pnl_sats?: number;
+  unrealized_pnl_percent?: number;
+}
+
+interface PortfolioData {
+  holdings: Holding[];
+  summary: {
+    total_value_sats: number;
+    total_cost_sats: number;
+    net_pnl_sats: number;
+    net_pnl_percent: number;
+  };
+}
+
 function formatSats(sats: number): string {
-  if (Math.abs(sats) >= 1000000) return `${(sats / 1000000).toFixed(2)}M`;
-  if (Math.abs(sats) >= 1000) return `${(sats / 1000).toFixed(1)}K`;
+  if (Math.abs(sats) >= 1_000_000) return `${(sats / 1_000_000).toFixed(2)}M`;
+  if (Math.abs(sats) >= 1_000) return `${(sats / 1_000).toFixed(1)}K`;
   return sats.toLocaleString();
 }
 
-const DEMO_HOLDINGS = [
-  { token_id: '402_BONES', name: 'ALEX BONES', balance: 420, total_spent_sats: 8400, total_revenue_sats: 12600, pnl_sats: 4200 },
-  { token_id: '402_CARLSBERG', name: 'FUCKER CARLSBERG', balance: 69, total_spent_sats: 4761, total_revenue_sats: 3200, pnl_sats: -1561 },
-  { token_id: '402_KWEG', name: 'KWEG WONG ESQ.', balance: 1000, total_spent_sats: 21000, total_revenue_sats: 34500, pnl_sats: 13500 },
-  { token_id: '402_HOENS', name: 'CANDY HOENS', balance: 88, total_spent_sats: 7744, total_revenue_sats: 9680, pnl_sats: 1936 },
-  { token_id: '402_FLUENZA', name: 'DICK FLUENZA', balance: 500, total_spent_sats: 7000, total_revenue_sats: 5500, pnl_sats: -1500 },
-  { token_id: '402_FAYLOOR', name: 'MICHAEL FAYLOOR', balance: 21, total_spent_sats: 441000, total_revenue_sats: 500000, pnl_sats: 59000 },
-];
-
 export default function PortfolioPage() {
-  const totalValue = DEMO_HOLDINGS.reduce((sum, h) => sum + h.total_revenue_sats, 0);
-  const totalCost = DEMO_HOLDINGS.reduce((sum, h) => sum + h.total_spent_sats, 0);
-  const totalPnL = DEMO_HOLDINGS.reduce((sum, h) => sum + h.pnl_sats, 0);
+  const [session, setSession] = useState<Session | null>(null);
+  const [portfolio, setPortfolio] = useState<PortfolioData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Check session first
+    fetch('/api/auth/session')
+      .then(r => r.json())
+      .then((sess: Session) => {
+        setSession(sess);
+        if (!sess.connected) {
+          setLoading(false);
+          return;
+        }
+        // Fetch holdings
+        return fetch('/api/tokens/holdings', {
+          headers: {
+            'x-wallet-handle': sess.handle || '',
+            'x-wallet-provider': sess.provider || '',
+          },
+        })
+          .then(r => r.json())
+          .then(data => {
+            setPortfolio(data);
+            setLoading(false);
+          });
+      })
+      .catch(() => {
+        setError('Failed to load session');
+        setLoading(false);
+      });
+  }, []);
+
+  // Not connected — show login prompt
+  if (!loading && session && !session.connected) {
+    return (
+      <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white font-mono flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-md text-center px-6"
+        >
+          <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-6">Authentication Required</div>
+          <h1 className="text-3xl font-black tracking-tighter mb-4">
+            PORTFOLIO<span className="text-zinc-300 dark:text-zinc-800">.SYS</span>
+          </h1>
+          <p className="text-zinc-500 text-sm mb-8">
+            Connect your wallet to view your token holdings, P&L, and dividend history.
+          </p>
+          <a
+            href="/api/auth/handcash"
+            className="inline-block px-8 py-3 bg-white text-black font-bold text-sm uppercase tracking-widest hover:bg-zinc-200 transition-colors border border-zinc-300"
+          >
+            Connect HandCash
+          </a>
+          <div className="mt-6">
+            <Link href="/exchange" className="text-zinc-500 text-xs hover:text-white transition-colors">
+              Browse the Exchange instead
+            </Link>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // Loading
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white font-mono flex items-center justify-center">
+        <div className="text-zinc-500 text-sm animate-pulse">Loading portfolio...</div>
+      </div>
+    );
+  }
+
+  // Error
+  if (error) {
+    return (
+      <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white font-mono flex items-center justify-center">
+        <div className="text-red-500 text-sm">{error}</div>
+      </div>
+    );
+  }
+
+  const summary = portfolio?.summary || { total_value_sats: 0, total_cost_sats: 0, net_pnl_sats: 0, net_pnl_percent: 0 };
+  const holdings = portfolio?.holdings || [];
 
   return (
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white font-mono">
       <main className="w-full px-4 md:px-8 py-16 max-w-[1920px] mx-auto">
-        {/* PageHeader */}
+        {/* Header */}
         <header className="mb-8 border-b border-zinc-200 dark:border-zinc-900 pb-6 flex items-end justify-between overflow-hidden relative">
           <div>
             <motion.div
@@ -36,7 +142,7 @@ export default function PortfolioPage() {
               className="flex items-center gap-3 mb-4 text-zinc-500 text-xs tracking-widest uppercase"
             >
               <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              Main Ledger / Holdings
+              {session?.handle} / Holdings
             </motion.div>
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -52,33 +158,20 @@ export default function PortfolioPage() {
               transition={{ duration: 0.5, delay: 0.3 }}
               className="text-zinc-500 max-w-lg"
             >
-              <b>Asset Performance.</b> Real-time valuation of acquired content tokens.
+              <b>Asset Performance.</b> Real-time valuation of your acquired content tokens.
             </motion.div>
           </div>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, rotate: -10 }}
-            animate={{ opacity: 0.1, scale: 1, rotate: 0 }}
-            transition={{ duration: 0.7, delay: 0.2, ease: "backOut" }}
-            className="hidden md:block text-6xl"
-          >
-            📊
-          </motion.div>
+          <div className="hidden md:flex items-center gap-4">
+            <Link href="/exchange" className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors border border-zinc-800 px-4 py-2">
+              Exchange
+            </Link>
+            <a href="/api/auth/logout" className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-red-400 transition-colors border border-zinc-800 px-4 py-2">
+              Disconnect
+            </a>
+          </div>
         </header>
 
-        {/* Demo Banner */}
-        <div className="mb-8 border border-amber-500/30 bg-amber-500/5 px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="w-2 h-2 bg-amber-500 rounded-full" />
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
-              Demo Data — Download the desktop client for live portfolio tracking
-            </span>
-          </div>
-          <Link href="/download" className="text-[10px] font-bold uppercase tracking-widest text-amber-600 dark:text-amber-400 hover:text-black dark:hover:text-white transition-colors">
-            Download →
-          </Link>
-        </div>
-
-        {/* Portfolio Summary - Sharp Grid */}
+        {/* Portfolio Summary */}
         <section className="mb-12">
           <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-4 border-b border-zinc-200 dark:border-zinc-900 pb-2">
             Ledger Summary
@@ -86,66 +179,74 @@ export default function PortfolioPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-0 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black">
             <div className="border-r border-b md:border-b-0 border-zinc-200 dark:border-zinc-800 p-8">
               <div className="text-[9px] text-zinc-500 font-mono uppercase tracking-widest mb-2">Total Value</div>
-              <div className="text-3xl md:text-4xl font-black tracking-tighter">{formatSats(totalValue)} <span className="text-base text-zinc-500 font-normal">SAT</span></div>
+              <div className="text-3xl md:text-4xl font-black tracking-tighter">{formatSats(summary.total_value_sats)} <span className="text-base text-zinc-500 font-normal">SAT</span></div>
             </div>
             <div className="border-b md:border-b-0 md:border-r border-zinc-200 dark:border-zinc-800 p-8">
               <div className="text-[9px] text-zinc-500 font-mono uppercase tracking-widest mb-2">Total Cost</div>
-              <div className="text-3xl md:text-4xl font-black tracking-tighter text-zinc-400">{formatSats(totalCost)} <span className="text-base text-zinc-500 font-normal">SAT</span></div>
+              <div className="text-3xl md:text-4xl font-black tracking-tighter text-zinc-400">{formatSats(summary.total_cost_sats)} <span className="text-base text-zinc-500 font-normal">SAT</span></div>
             </div>
             <div className="border-r border-zinc-200 dark:border-zinc-800 p-8">
               <div className="text-[9px] text-zinc-500 font-mono uppercase tracking-widest mb-2">Net P&L</div>
-              <div className={`text-3xl md:text-4xl font-black tracking-tighter ${totalPnL >= 0 ? 'text-black dark:text-white' : 'text-red-500'}`}>
-                {totalPnL >= 0 ? '+' : ''}{formatSats(totalPnL)} <span className="text-base text-zinc-500 font-normal">SAT</span>
+              <div className={`text-3xl md:text-4xl font-black tracking-tighter ${summary.net_pnl_sats >= 0 ? 'text-black dark:text-white' : 'text-red-500'}`}>
+                {summary.net_pnl_sats >= 0 ? '+' : ''}{formatSats(summary.net_pnl_sats)} <span className="text-base text-zinc-500 font-normal">SAT</span>
               </div>
             </div>
             <div className="p-8">
-              <div className="text-[9px] text-zinc-500 font-mono uppercase tracking-widest mb-2">Asset Count</div>
-              <div className="text-3xl md:text-4xl font-black tracking-tighter">{DEMO_HOLDINGS.length}</div>
+              <div className="text-[9px] text-zinc-500 font-mono uppercase tracking-widest mb-2">Assets</div>
+              <div className="text-3xl md:text-4xl font-black tracking-tighter">{holdings.length}</div>
             </div>
           </div>
         </section>
 
         {/* Holdings Table */}
-        <section>
-          <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-4 border-b border-zinc-200 dark:border-zinc-900 pb-2">
-            Asset Inventory
+        {holdings.length === 0 ? (
+          <div className="py-16 text-center border border-zinc-200 dark:border-zinc-800">
+            <div className="text-zinc-500 text-sm mb-4">No holdings yet.</div>
+            <Link
+              href="/exchange"
+              className="inline-block px-6 py-2 border border-zinc-800 text-[10px] font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all"
+            >
+              Browse Exchange
+            </Link>
           </div>
-          <div className="border border-zinc-200 dark:border-zinc-800 overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800">
-                  <th className="py-4 px-6 text-[9px] uppercase tracking-widest font-bold text-zinc-500">Token ID</th>
-                  <th className="py-4 px-6 text-[9px] uppercase tracking-widest font-bold text-zinc-500 text-right">Balance</th>
-                  <th className="py-4 px-6 text-[9px] uppercase tracking-widest font-bold text-zinc-500 text-right">Cost Basis</th>
-                  <th className="py-4 px-6 text-[9px] uppercase tracking-widest font-bold text-zinc-500 text-right">Revenue</th>
-                  <th className="py-4 px-6 text-[9px] uppercase tracking-widest font-bold text-zinc-500 text-right">P&L</th>
-                  <th className="py-4 px-6 text-[9px] uppercase tracking-widest font-bold text-zinc-500 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
-                {DEMO_HOLDINGS.map((holding) => (
-                  <tr key={holding.token_id} className="group hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors">
-                    <td className="py-4 px-6">
-                      <div className="font-bold text-sm tracking-tight">{holding.name}</div>
-                      <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">{holding.token_id}</div>
-                    </td>
-                    <td className="py-4 px-6 text-right font-mono text-sm">{holding.balance.toLocaleString()}</td>
-                    <td className="py-4 px-6 text-right font-mono text-sm text-zinc-500">{formatSats(holding.total_spent_sats)}</td>
-                    <td className="py-4 px-6 text-right font-mono text-sm text-zinc-500">{formatSats(holding.total_revenue_sats)}</td>
-                    <td className={`py-4 px-6 text-right font-mono text-sm font-bold ${holding.pnl_sats >= 0 ? 'text-black dark:text-white' : 'text-red-500'}`}>
-                      {holding.pnl_sats >= 0 ? '+' : ''}{formatSats(holding.pnl_sats)}
-                    </td>
-                    <td className="py-4 px-6 text-right">
-                      <Link href="/download" className="px-4 py-2 border border-zinc-200 dark:border-zinc-800 text-[10px] font-bold uppercase tracking-widest hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all">
-                        MANAGE
-                      </Link>
-                    </td>
+        ) : (
+          <section>
+            <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-4 border-b border-zinc-200 dark:border-zinc-900 pb-2">
+              Asset Inventory
+            </div>
+            <div className="border border-zinc-200 dark:border-zinc-800 overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800">
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest font-bold text-zinc-500">Token</th>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest font-bold text-zinc-500 text-right">Balance</th>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest font-bold text-zinc-500 text-right">Avg Cost</th>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest font-bold text-zinc-500 text-right">Current Price</th>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest font-bold text-zinc-500 text-right">Value</th>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest font-bold text-zinc-500 text-right">P&L</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
+                </thead>
+                <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
+                  {holdings.map((h) => (
+                    <tr key={h.token_address} className="group hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors">
+                      <td className="py-4 px-6">
+                        <div className="font-bold text-sm tracking-tight">{h.token?.name || h.token_address}</div>
+                        <div className="text-[10px] font-mono text-blue-500">{h.token_address}</div>
+                      </td>
+                      <td className="py-4 px-6 text-right font-mono text-sm">{h.balance.toLocaleString()}</td>
+                      <td className="py-4 px-6 text-right font-mono text-sm text-zinc-500">{formatSats(h.avg_cost_sats)}</td>
+                      <td className="py-4 px-6 text-right font-mono text-sm text-zinc-500">{formatSats(h.token?.current_price_sats || 0)}</td>
+                      <td className="py-4 px-6 text-right font-mono text-sm">{formatSats(h.current_value_sats || 0)}</td>
+                      <td className={`py-4 px-6 text-right font-mono text-sm font-bold ${(h.unrealized_pnl_sats || 0) >= 0 ? 'text-black dark:text-white' : 'text-red-500'}`}>
+                        {(h.unrealized_pnl_sats || 0) >= 0 ? '+' : ''}{formatSats(h.unrealized_pnl_sats || 0)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
       </main>
     </div>
   );

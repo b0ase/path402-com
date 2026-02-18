@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 
-export async function POST() {
-  const response = NextResponse.json({ success: true });
+function clearSession() {
+  const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://path402.com').trim();
+  const response = NextResponse.redirect(`${baseUrl}/exchange`);
 
-  // Clear HandCash cookies
   response.cookies.set('hc_handle', '', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
@@ -19,4 +19,12 @@ export async function POST() {
   });
 
   return response;
+}
+
+export async function GET() {
+  return clearSession();
+}
+
+export async function POST() {
+  return clearSession();
 }
