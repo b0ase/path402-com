@@ -252,7 +252,7 @@ No separate classes. The path is open to everyone.`}
               {[
                 { title: "Bearer Shares", desc: "Pay for access, receive tradeable tokens. Early buyers get more tokens per dollar. Resell to latecomers at profit." },
                 { title: "Proof of Serve", desc: "Nodes earn through actual contribution: serve content, relay messages, maintain indexes. No wasted computation." },
-                { title: "sqrt_decay Pricing", desc: "Price determined by remaining treasury. Early buyers always get better prices. The curve is your constitution." },
+                { title: "Ascending Bonding Curve", desc: "Price increases linearly with supply. Each token individually priced. Early buyers get the best price." },
                 { title: "AI Agents", desc: "First-class participants. Agents can buy, stake, serve, and earn—becoming self-funding over time." },
                 { title: "Multi-Chain", desc: "BSV is the settlement layer. Accept payments from Base, Solana, Ethereum. All inscribed on BSV." },
                 { title: "KYC Optional", desc: "Bearer tier: hold and trade freely. Staker tier: complete KYC, stake tokens, receive dividends." },

@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS tokens (
   issuer_address TEXT, -- BSV address for payouts
 
   -- Pricing configuration
-  pricing_model TEXT NOT NULL DEFAULT 'sqrt_decay',
+  pricing_model TEXT NOT NULL DEFAULT 'alice_bond',
   base_price_sats BIGINT NOT NULL DEFAULT 500,
   decay_factor DECIMAL(10,4) DEFAULT 1.0,
 

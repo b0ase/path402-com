@@ -346,7 +346,7 @@ export default function Page403() {
               {
                 code: '402',
                 title: 'Payment',
-                desc: 'Follow the money. Tokenized content access, sqrt_decay pricing, AI-native micropayments.',
+                desc: 'Follow the money. Tokenized content access, bonding curve pricing, AI-native micropayments.',
                 color: 'text-green-500',
                 borderColor: 'border-green-500/20',
                 href: 'https://path402.com',

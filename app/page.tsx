@@ -1048,7 +1048,7 @@ function TokenModel() {
             <div className="space-y-4">
               {[
                 ['Minted', 'By anyone, for any URL path'],
-                ['Pricing', 'sqrt_decay curve (early buyers win)'],
+                ['Pricing', 'ascending bonding curve (early buyers win)'],
                 ['1 Token', '1 second of access (reusable)'],
                 ['Hierarchy', 'Parent tokens grant child path access'],
               ].map(([label, desc]) => (

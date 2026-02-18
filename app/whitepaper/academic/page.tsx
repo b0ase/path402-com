@@ -153,7 +153,7 @@ export default function AcademicWhitepaper() {
             <h2 className="font-bold text-sm mb-2">4. Pricing Curves</h2>
             <p className="mb-2">
               $402 doesn't mandate one pricing model. It defines how to express pricing models.
-              The default is <span className="font-mono">sqrt_decay</span> with two variants:
+              The default is <span className="font-mono">alice_bond</span> with two variants:
             </p>
             <p className="mb-2">
               <strong>Investment (Treasury):</strong> <span className="font-mono">price = base / √(treasury + 1)</span><br />

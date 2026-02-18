@@ -147,7 +147,7 @@ export async function registerToken(
     access_url: request.access_url,
     issuer_handle: issuerHandle,
     issuer_address: request.issuer_address,
-    pricing_model: request.pricing_model || 'sqrt_decay',
+    pricing_model: request.pricing_model || 'alice_bond',
     base_price_sats: request.base_price_sats || DEFAULT_BASE_PRICE,
     max_supply: request.max_supply,
     treasury_balance: DEFAULT_TREASURY,

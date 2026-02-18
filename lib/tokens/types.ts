@@ -2,7 +2,7 @@
  * $402 Token Marketplace Types
  */
 
-export type PricingModel = 'sqrt_decay' | 'fixed' | 'linear_decay';
+export type PricingModel = 'alice_bond' | 'sqrt_decay' | 'fixed' | 'linear_decay';
 export type AccessMode = 'token' | 'usage' | 'hybrid' | 'public';
 export type TxType = 'acquire' | 'transfer' | 'serve' | 'stake' | 'unstake';
 

@@ -172,7 +172,7 @@ export default function ExchangePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
               {
-                title: "sqrt_decay",
+                title: "Ascending Bond",
                 desc: "Price = Base / √(treasury + 1). Early buyers pay less, price increases as treasury depletes.",
                 code: ["Treasury 500M: 10 SAT", "Treasury 10M: 71 SAT", "Treasury 1K: 7,072 SAT"]
               },

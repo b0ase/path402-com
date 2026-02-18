@@ -33,7 +33,7 @@ const AI_PLUGIN = {
     "wallet_management"
   ],
   supported_chains: ["BSV"],
-  pricing_model: "sqrt_decay"
+  pricing_model: "alice_bond"
 }
 
 export async function GET() {

@@ -134,7 +134,7 @@ export default function ExecSummaryPage() {
                   <span className="text-zinc-400 font-mono text-sm w-6">03</span>
                   <div>
                     <span className="font-bold">Price rises with demand</span>
-                    <span className="text-zinc-500"> — sqrt_decay curve rewards early buyers</span>
+                    <span className="text-zinc-500"> — ascending bonding curve rewards early buyers</span>
                   </div>
                 </div>
                 <div className="flex gap-4 items-start">

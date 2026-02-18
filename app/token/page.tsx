@@ -157,7 +157,7 @@ export default function TokenPage() {
                   <h3 className="text-sm font-bold mb-4 uppercase tracking-wide">Path Tokens ($yourname)</h3>
                   <ul className="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
                     <li><strong className="text-zinc-900 dark:text-white">Minted by:</strong> Anyone, for any path</li>
-                    <li><strong className="text-zinc-900 dark:text-white">Pricing:</strong> sqrt_decay curve (default)</li>
+                    <li><strong className="text-zinc-900 dark:text-white">Pricing:</strong> ascending bonding curve (default)</li>
                     <li><strong className="text-zinc-900 dark:text-white">1 Token:</strong> 1 second of access</li>
                     <li><strong className="text-zinc-900 dark:text-white">Tradeable:</strong> Secondary markets</li>
                   </ul>

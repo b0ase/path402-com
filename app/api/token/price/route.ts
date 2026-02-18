@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
     ];
 
     return NextResponse.json({
-      pricingModel: 'sqrt_decay',
+      pricingModel: 'alice_bond',
       formula: 'price = 500 / sqrt(supply_sold + 1)',
       basePriceSats: BASE_PRICE_SATS,
       initialTreasury: INITIAL_TREASURY,

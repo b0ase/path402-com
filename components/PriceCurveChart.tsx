@@ -288,7 +288,7 @@ export default function PriceCurveChart({
 
       {/* Curve explanation */}
       <div className="mt-4 text-xs text-gray-500 border-t border-gray-800 pt-4">
-        <strong className="text-gray-400">sqrt_decay pricing:</strong> price = 223,610 / sqrt(remaining + 1).
+        <strong className="text-gray-400">ascending bonding curve:</strong> price = 223,610 / sqrt(remaining + 1).
         At 500M treasury: ~10 sats/token. 1 BSV buys ~1% of supply. Early buyers win.
       </div>
     </motion.div>

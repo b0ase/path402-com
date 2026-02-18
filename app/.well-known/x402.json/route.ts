@@ -13,7 +13,7 @@ export async function GET() {
   try {
     const tokenStats = await getTokenStats();
 
-    // Calculate current price using sqrt_decay
+    // Calculate current price
     const BASE_PRICE_SATS = 223_610; // ~10 sats/token at 500M treasury, 1 BSV = 1% of supply
     const currentPrice = Math.ceil(BASE_PRICE_SATS / Math.sqrt(tokenStats.treasuryBalance + 1));
 
@@ -71,9 +71,9 @@ export async function GET() {
         marketUrl: TOKEN_CONFIG.marketUrl,
       },
 
-      // Current Token Pricing (sqrt_decay)
+      // Current Token Pricing (alice_bond)
       pricing: {
-        model: 'sqrt_decay',
+        model: 'alice_bond',
         formula: 'price = 223,610 / sqrt(treasury_remaining + 1)',
         basePriceSats: BASE_PRICE_SATS,
         currentPriceSats: currentPrice,

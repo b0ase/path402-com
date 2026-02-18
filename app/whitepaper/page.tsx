@@ -332,7 +332,7 @@ function WhitepaperContent() {
             $402 doesn't mandate one pricing model. It defines <em className="text-zinc-900 dark:text-white">how to express</em> pricing models.
           </p>
 
-          <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">sqrt_decay (Default)</h4>
+          <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">Ascending Bond (Default)</h4>
           <p className="text-zinc-400 leading-relaxed mb-6">
             <strong className="text-zinc-900 dark:text-white">Two variants</strong> with different dynamics:
           </p>

@@ -42,9 +42,9 @@ export default function DocsPage() {
   ];
 
   const pricingModels = [
-    { title: "sqrt_decay (Recommended)", desc: "Price = Base / √(supply + 1). Early buyers pay more, price decreases with supply.", note: "Key insight: Every buyer except the last achieves positive ROI." },
+    { title: "Ascending Bond (Recommended)", desc: "Price = c × n. Each token individually priced. Early buyers get the cheapest tokens.", note: "Key insight: Every buyer except the last achieves positive ROI." },
     { title: "Fixed", desc: "Same price for everyone, regardless of supply." },
-    { title: "Logarithmic Decay", desc: "Gentler price decrease than sqrt_decay." },
+    { title: "Logarithmic Decay", desc: "Gentler price decrease (legacy model)." },
     { title: "Linear with Floor", desc: "Linear decrease to a minimum price." },
   ];
 
@@ -458,7 +458,7 @@ $example.com/$blog/$my-post     → content token (the actual content)`}
             <li>Eventually operating at profit</li>
           </ol>
           <p className="text-zinc-400 mb-6 leading-relaxed">
-            This is possible because sqrt_decay pricing mathematically guarantees positive returns
+            This is possible because ascending bonding curves mathematically guarantee positive returns
             for early buyers. The agent's job is to identify good opportunities early.
           </p>
           <h3 className="text-xl font-semibold text-zinc-900 dark:text-white mb-4">Agent Strategy Tips</h3>

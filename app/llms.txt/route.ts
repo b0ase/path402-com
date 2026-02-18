@@ -54,7 +54,7 @@ Agent: "Acquire 10 tokens"
 
 ## Pricing Model
 
-$402 uses sqrt_decay pricing:
+$402 uses ascending bonding curve pricing:
 
 \`\`\`
 price = base_price / sqrt(supply + 1)
@@ -65,7 +65,7 @@ Early buyers get better prices. This creates natural incentives for discovery.
 ## Key Concepts
 
 - **$address**: A tokenised URL path (e.g., \`$example.com/$api\`)
-- **sqrt_decay**: Pricing model where price decreases as supply increases
+- **alice_bond**: Default pricing model — ascending bonding curve where each token is individually priced
 - **Serving**: Token holders can serve content to others and earn revenue
 - **Self-funding agents**: Agents can achieve positive ROI through serving
 

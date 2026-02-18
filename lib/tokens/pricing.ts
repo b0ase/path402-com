@@ -1,13 +1,60 @@
 /**
  * $402 Token Pricing Functions
  *
- * sqrt_decay: price = base / sqrt(treasury + 1)
- * - Price INCREASES as treasury depletes
- * - Early buyers get lower prices
- * - Mathematically guarantees ROI for early participants
+ * alice_bond (default): Ascending bonding curve — price(n) = c × n
+ * - Each token individually priced, price increases linearly
+ * - 1% of supply costs $1,000 (configurable)
+ * - Early buyers get more tokens per dollar
+ *
+ * sqrt_decay (legacy): price = base / sqrt(treasury + 1)
+ * - Kept for backward compatibility with existing tokens
  */
 
 import { PricingModel } from './types';
+
+/** Default supply for alice_bond tokens */
+export const ALICE_BOND_TOTAL_SUPPLY = 1_000_000_000;
+/** Default cost to acquire 1% of supply */
+export const ALICE_BOND_ONE_PERCENT_USD = 1_000;
+
+/**
+ * Calculate the bonding curve constant c such that 1% costs onePercentCostUsd.
+ * Integral from 0 to 0.01*S of c*n dn = onePercentCostUsd
+ * → c = 2 * onePercentCostUsd / (0.01 * S)²
+ */
+export function calibrateConstant(
+  totalSupply: number = ALICE_BOND_TOTAL_SUPPLY,
+  onePercentCostUsd: number = ALICE_BOND_ONE_PERCENT_USD
+): number {
+  const onePercent = totalSupply * 0.01;
+  return (2 * onePercentCostUsd) / (onePercent * onePercent);
+}
+
+/**
+ * Calculate how many tokens a buyer gets for $X at current queue position (alice_bond).
+ */
+export function buyTokensAliceBond(
+  amountUsd: number,
+  currentSold: number,
+  totalSupply: number = ALICE_BOND_TOTAL_SUPPLY,
+  onePercentCostUsd: number = ALICE_BOND_ONE_PERCENT_USD
+): { tokensAwarded: number; totalCostUsd: number; avgPriceUsd: number } {
+  const c = calibrateConstant(totalSupply, onePercentCostUsd);
+  const remaining = totalSupply - currentSold;
+  if (remaining <= 0) return { tokensAwarded: 0, totalCostUsd: 0, avgPriceUsd: 0 };
+
+  const posSquared = currentSold * currentSold;
+  const tokens = Math.floor(Math.sqrt(posSquared + (2 * amountUsd) / c) - currentSold);
+  const awarded = Math.min(Math.max(0, tokens), remaining);
+  if (awarded <= 0) return { tokensAwarded: 0, totalCostUsd: 0, avgPriceUsd: 0 };
+
+  const actualCost = c * ((currentSold + awarded) * (currentSold + awarded) - posSquared) / 2;
+  return {
+    tokensAwarded: awarded,
+    totalCostUsd: actualCost,
+    avgPriceUsd: actualCost / awarded
+  };
+}
 
 /**
  * Calculate current price based on pricing model
@@ -19,6 +66,11 @@ export function calculatePrice(
   decayFactor: number = 1.0
 ): number {
   switch (model) {
+    case 'alice_bond':
+      // For alice_bond, basePriceSats isn't used the same way
+      // Return a sats approximation based on position
+      return Math.ceil(basePriceSats * Math.sqrt(treasuryRemaining + 1));
+
     case 'sqrt_decay':
       return calculateSqrtDecayPrice(basePriceSats, treasuryRemaining);
 

@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
           model: child.pricing_model,
           base: child.base_price_sats,
           current_price: calculatePrice(
-            (child.pricing_model || 'sqrt_decay') as PricingModel,
+            (child.pricing_model || 'alice_bond') as PricingModel,
             child.base_price_sats || 0,
             child.treasury_balance || 0
           ),
