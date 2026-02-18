@@ -268,7 +268,7 @@ export async function getTokenStats() {
     totalHolders: allHolders.filter((h) => h.balance > 0).length,
     totalStaked,
     totalCirculating,
-    treasuryBalance: TOKEN_CONFIG.totalSupply - totalCirculating,
+    treasuryBalance: TREASURY_FOR_SALE - totalCirculating,
     totalSold: totalCirculating,
     totalRevenue: totalCirculating, // 1 sat per token
   };
@@ -825,6 +825,6 @@ export async function getCapTable(): Promise<Array<{ address: string; handle?: s
       address: h.address,
       handle: h.handle,
       balance: h.balance,
-      percentage: (h.balance / TOKEN_CONFIG.totalSupply) * 100,
+      percentage: (h.balance / TREASURY_FOR_SALE) * 100,
     }));
 }

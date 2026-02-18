@@ -119,7 +119,7 @@ export default function RegistryPage() {
   };
 
   const stats = [
-    { label: "Total Supply", value: formatCompact(TOKEN_CONFIG.totalSupply), fullValue: formatNumber(TOKEN_CONFIG.totalSupply) },
+    { label: "Platform Supply", value: formatCompact(500_000_000), fullValue: formatNumber(500_000_000) },
     { label: "Circulating", value: loading ? '...' : formatCompact(data?.stats.totalCirculating || 0), fullValue: loading ? '...' : formatNumber(data?.stats.totalCirculating || 0) },
     { label: "Total Staked", value: loading ? '...' : formatCompact(data?.stats.totalStaked || 0), fullValue: loading ? '...' : formatNumber(data?.stats.totalStaked || 0) },
     { label: "Holders", value: loading ? '...' : data?.stats.totalHolders || 0, fullValue: loading ? '...' : data?.stats.totalHolders || 0 },
@@ -234,12 +234,12 @@ export default function RegistryPage() {
             <div>
               <div className="text-zinc-500 text-xs uppercase tracking-wider mb-2">Database (Off-Chain)</div>
               <div className="text-xl font-bold text-zinc-900 dark:text-white">
-                {loading ? '...' : formatNumber(data?.stats.treasuryBalance || TOKEN_CONFIG.totalSupply)}
+                {loading ? '...' : formatNumber(data?.stats.treasuryBalance || 500_000_000)}
               </div>
               <div className="text-zinc-500 text-sm">
                 {loading
                   ? '...'
-                  : `${(((data?.stats.treasuryBalance || TOKEN_CONFIG.totalSupply) / TOKEN_CONFIG.totalSupply) * 100).toFixed(2)}%`}
+                  : `${(((data?.stats.treasuryBalance || 500_000_000) / 500_000_000) * 100).toFixed(2)}%`}
               </div>
             </div>
 
@@ -258,7 +258,7 @@ export default function RegistryPage() {
               </div>
               <div className="text-zinc-500 text-sm">
                 {onChainData
-                  ? `${((onChainData.onChain.treasuryBalance / TOKEN_CONFIG.totalSupply) * 100).toFixed(2)}%`
+                  ? `${((onChainData.onChain.treasuryBalance / 500_000_000) * 100).toFixed(2)}%`
                   : '...'}
               </div>
             </div>

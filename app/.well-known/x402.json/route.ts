@@ -60,8 +60,9 @@ export async function GET() {
         },
       },
 
-      // $402 Protocol Token Info
-      token: {
+      // $402 HTM Token (on-chain, BSV-21 PoW20 — mined via Proof of Indexing)
+      // This is the PROTOCOL token. NOT sold on the website.
+      htm_token: {
         symbol: TOKEN_CONFIG.symbol,
         name: TOKEN_CONFIG.name,
         protocol: TOKEN_CONFIG.protocol,
@@ -69,23 +70,27 @@ export async function GET() {
         totalSupply: TOKEN_CONFIG.totalSupply,
         decimals: TOKEN_CONFIG.decimals,
         marketUrl: TOKEN_CONFIG.marketUrl,
+        note: 'Earned by running path402d nodes — NOT purchasable via API',
       },
 
-      // Current Token Pricing (alice_bond)
-      pricing: {
-        model: 'alice_bond',
-        formula: 'price = 223,610 / sqrt(treasury_remaining + 1)',
-        basePriceSats: BASE_PRICE_SATS,
-        currentPriceSats: currentPrice,
-        treasuryRemaining: tokenStats.treasuryBalance,
-      },
-
-      // Token Acquisition Endpoints
-      tokenEndpoints: {
-        buy: 'https://path402.com/api/token/buy',
-        preview: 'https://path402.com/api/token/preview',
-        stats: 'https://path402.com/api/token/stats',
-        holding: 'https://path402.com/api/token/holding',
+      // Platform Token (500M supply, sold on path402.com website)
+      // This is a SEPARATE token from $402 HTM.
+      platform_token: {
+        name: 'path402.com Platform Token',
+        totalSupply: 500_000_000,
+        pricing: {
+          model: 'sqrt_decay',
+          formula: 'price = 223,610 / sqrt(treasury_remaining + 1)',
+          basePriceSats: BASE_PRICE_SATS,
+          currentPriceSats: currentPrice,
+          treasuryRemaining: tokenStats.treasuryBalance,
+        },
+        endpoints: {
+          buy: 'https://path402.com/api/token/buy',
+          preview: 'https://path402.com/api/token/preview',
+          stats: 'https://path402.com/api/token/stats',
+          holding: 'https://path402.com/api/token/holding',
+        },
       },
 
       // Staking Tiers

@@ -273,7 +273,7 @@ export default function WalletPage() {
         },
       });
 
-      const withdrawMessage = `Withdraw ${amount.toLocaleString()} $402 to ${destination}. Timestamp: ${timestamp}`;
+      const withdrawMessage = `Withdraw ${amount.toLocaleString()} platform tokens to ${destination}. Timestamp: ${timestamp}`;
       const signRes = await fetch('/api/auth/sign', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -316,7 +316,7 @@ export default function WalletPage() {
       const res = await fetch('/api/stake/claim', { method: 'POST' });
       if (!res.ok) throw new Error('Claim failed');
       const data = await res.json();
-      setClaimResult(`Claimed ${(data.amount ?? 0).toLocaleString()} $402`);
+      setClaimResult(`Claimed ${(data.amount ?? 0).toLocaleString()} platform tokens`);
       fetchData();
     } catch {
       setClaimResult('Claim failed');
@@ -379,7 +379,7 @@ export default function WalletPage() {
             <div className="border border-zinc-200 dark:border-zinc-800 p-4 bg-zinc-50 dark:bg-zinc-950">
               <div className="text-[9px] text-zinc-400 dark:text-zinc-600 uppercase tracking-widest mb-2">Total</div>
               <div className="text-xl font-mono font-bold text-zinc-900 dark:text-white">{formatNumber(holding?.balance)}</div>
-              <div className="text-[10px] text-zinc-500 font-mono">$402</div>
+              <div className="text-[10px] text-zinc-500 font-mono">Platform</div>
             </div>
             <div className="border border-zinc-200 dark:border-zinc-800 p-4 bg-zinc-50 dark:bg-zinc-950">
               <div className="text-[9px] text-zinc-400 dark:text-zinc-600 uppercase tracking-widest mb-2">On-Chain</div>
@@ -622,7 +622,7 @@ export default function WalletPage() {
               {withdrawResult && (
                 <div className="mt-3 p-3 bg-green-500/10 border border-green-500/30">
                   <span className="text-green-600 dark:text-green-400 text-sm">
-                    Withdrew {withdrawResult.amount.toLocaleString()} $402
+                    Withdrew {withdrawResult.amount.toLocaleString()} platform tokens
                   </span>
                   <a
                     href={`https://whatsonchain.com/tx/${withdrawResult.txId}`}

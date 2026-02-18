@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         purchaseId: purchase.id,
         amount: tokenAmount,
-        pricingModel: 'alice_bond',
+        pricingModel: 'sqrt_decay',
         currentPrice,
         avgPrice,
         totalSats,
@@ -249,7 +249,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
           purchaseId: purchase.id,
           amount: tokenAmount,
-          pricingModel: 'alice_bond',
+          pricingModel: 'sqrt_decay',
           currentPrice,
           avgPrice,
           totalSats,
