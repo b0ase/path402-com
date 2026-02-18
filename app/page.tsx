@@ -74,8 +74,6 @@ function BootSequenceHero() {
   const [particles, setParticles] = useState<Array<{
     id: number; x: number; y: number; size: number; opacity: number; duration: number; delay: number;
   }>>([]);
-  const heroVideoRef = useRef<HTMLVideoElement>(null);
-  const [heroVideoEnded, setHeroVideoEnded] = useState(false);
 
   const BOOT_MESSAGES = [
     'INITIALIZING PROTOCOL STACK...',
@@ -146,42 +144,18 @@ function BootSequenceHero() {
 
       {/* ═══════════ BACKGROUND VIDEO ═══════════ */}
       <motion.video
-        ref={heroVideoRef}
         autoPlay
         muted
+        loop
         playsInline
         preload="auto"
-        onEnded={() => setHeroVideoEnded(true)}
         initial={{ opacity: 0 }}
-        animate={{ opacity: 0.5 }}
+        animate={{ opacity: 1 }}
         transition={{ duration: 6, delay: 3, ease: [0.22, 1, 0.36, 1] }}
         className="absolute inset-6 w-[calc(100%-3rem)] h-[calc(100%-3rem)] object-cover rounded z-[1]"
       >
-        <source src="/402-YELLOW-1.mp4" type="video/mp4" />
+        <source src="/402-BLUE-1-original.mp4" type="video/mp4" />
       </motion.video>
-
-      {/* Play button — appears after video ends */}
-      <AnimatePresence>
-        {heroVideoEnded && (
-          <motion.button
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            onClick={() => {
-              if (heroVideoRef.current) {
-                heroVideoRef.current.currentTime = 0;
-                heroVideoRef.current.play();
-                setHeroVideoEnded(false);
-              }
-            }}
-            className="absolute bottom-10 left-1/2 -translate-x-1/2 z-[6] flex items-center gap-2 px-4 py-2 rounded border border-white/10 bg-black/40 backdrop-blur-sm text-[10px] font-mono text-zinc-500 tracking-[0.2em] uppercase hover:text-white hover:border-white/20 transition-colors cursor-pointer"
-          >
-            <svg width="10" height="12" viewBox="0 0 10 12" fill="currentColor"><polygon points="0,0 10,6 0,12" /></svg>
-            REPLAY
-          </motion.button>
-        )}
-      </AnimatePresence>
 
       {/* ═══════════ BACKGROUND LAYERS ═══════════ */}
 
