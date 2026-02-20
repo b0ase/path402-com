@@ -21,6 +21,7 @@ const staggerContainer = {
 const GITHUB_RELEASE = "https://github.com/b0ase/path402/releases/tag/v4.0.0-alpha.3";
 const RELEASE_BASE_MAC = "https://github.com/b0ase/path402/releases/download/v4.0.0-alpha.3";
 const RELEASE_BASE_WIN_LINUX = "https://github.com/b0ase/path402/releases/download/v4.0.0-alpha.1";
+const CLAWMINER_RELEASE = "https://github.com/b0ase/path402/releases/download/v0.2.0";
 
 const APPLE_ICON = (
   <svg className="w-8 h-8" viewBox="0 0 24 24" fill="currentColor">
@@ -39,6 +40,52 @@ const LINUX_ICON = (
     <path d="M12.504 0c-.155 0-.315.008-.48.021-4.226.333-3.105 4.807-3.17 6.298-.076 1.092-.3 1.953-1.05 3.02-.885 1.051-2.127 2.75-2.716 4.521-.278.832-.41 1.684-.287 2.489a.424.424 0 00-.11.135c-.26.268-.45.6-.663.839-.199.199-.485.267-.797.4-.313.136-.658.269-.864.68-.09.189-.136.394-.132.602 0 .199.027.4.055.536.058.399.116.728.04.97-.249.68-.28 1.145-.106 1.484.174.334.535.47.94.601.81.2 1.91.135 2.774.6.926.466 1.866.67 2.616.47.526-.116.97-.464 1.208-.946.587-.003 1.23-.269 2.26-.334.699-.058 1.574.267 2.577.2.025.134.063.198.114.333l.003.003c.391.778 1.113 1.132 1.884 1.071.771-.06 1.592-.536 2.257-1.306.631-.765 1.683-1.084 2.378-1.503.348-.199.629-.469.649-.853.023-.4-.2-.811-.714-1.376v-.097l-.003-.003c-.17-.2-.25-.535-.338-.926-.085-.401-.182-.786-.492-1.046h-.003c-.059-.054-.123-.067-.188-.135a.357.357 0 00-.19-.064c.431-1.278.264-2.55-.173-3.694-.533-1.41-1.465-2.638-2.175-3.483-.796-1.005-1.576-1.957-1.56-3.368.026-2.152.236-6.133-3.544-6.139z"/>
   </svg>
 );
+
+const TERMINAL_ICON = (
+  <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="4 17 10 11 4 5" />
+    <line x1="12" y1="19" x2="20" y2="19" />
+  </svg>
+);
+
+const CLAWMINER_DOWNLOADS = [
+  {
+    platform: "macOS",
+    subtitle: "Apple Silicon",
+    filename: "clawminerd-v0.2.0-darwin-arm64",
+    url: `${CLAWMINER_RELEASE}/clawminerd-v0.2.0-darwin-arm64`,
+    icon: APPLE_ICON,
+    note: "Signed + notarized — M1, M2, M3, M4",
+    label: "Download Binary"
+  },
+  {
+    platform: "macOS",
+    subtitle: "Intel",
+    filename: "clawminerd-v0.2.0-darwin-amd64",
+    url: `${CLAWMINER_RELEASE}/clawminerd-v0.2.0-darwin-amd64`,
+    icon: APPLE_ICON,
+    note: "Signed + notarized — Intel Macs",
+    label: "Download Binary"
+  },
+  {
+    platform: "Linux",
+    subtitle: "x86_64",
+    filename: "clawminerd-v0.2.0-linux-amd64",
+    url: `${CLAWMINER_RELEASE}/clawminerd-v0.2.0-linux-amd64`,
+    icon: LINUX_ICON,
+    note: "Static binary — chmod +x and run",
+    label: "Download Binary"
+  },
+  {
+    platform: "Windows",
+    subtitle: "x86_64",
+    filename: "clawminerd-v0.2.0-windows-amd64.exe",
+    url: `${CLAWMINER_RELEASE}/clawminerd-v0.2.0-windows-amd64.exe`,
+    icon: WINDOWS_ICON,
+    note: "Standalone executable — no installer",
+    label: "Download EXE"
+  }
+];
 
 const DOWNLOADS = [
   {
@@ -98,6 +145,17 @@ const DOWNLOADS = [
 ];
 
 const RELEASE_NOTES = [
+  {
+    version: "0.2.0",
+    date: "February 2026",
+    tag: "clawminerd",
+    changes: [
+      "Kademlia DHT for global peer discovery beyond LAN",
+      "Persistent bootstrap node on 135.181.103.181:4020",
+      "mDNS for automatic local network discovery",
+      "All platforms: macOS (signed + notarized), Linux, Windows",
+    ]
+  },
   {
     version: "4.0.0-alpha.3",
     date: "February 2026",
@@ -206,6 +264,75 @@ export default function DownloadPage() {
               ))}
             </div>
 
+            {/* ClawMinerd CLI */}
+            <motion.div variants={fadeIn}>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="text-zinc-400 dark:text-zinc-600">
+                  {TERMINAL_ICON}
+                </div>
+                <div>
+                  <h2 className="text-2xl font-black uppercase tracking-tight">
+                    ClawMinerd
+                  </h2>
+                  <p className="text-xs text-zinc-500">CLI Miner &mdash; v0.2.0</p>
+                </div>
+              </div>
+              <p className="text-zinc-600 dark:text-zinc-400 max-w-2xl mb-6 text-sm">
+                Headless $402 miner daemon. Proof-of-Indexing mining, Kademlia DHT peer discovery,
+                GossipSub messaging. No GUI &mdash; perfect for servers, VPS, and power users.
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+              {CLAWMINER_DOWNLOADS.map((download, i) => (
+                <motion.div
+                  key={`cli-${i}`}
+                  className="border p-8 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors"
+                  variants={fadeIn}
+                  transition={{ delay: i * 0.1 }}
+                >
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="text-zinc-400 dark:text-zinc-600">
+                      {download.icon}
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold uppercase tracking-tight">
+                        {download.platform}
+                      </h3>
+                      <p className="text-sm text-zinc-500">{download.subtitle}</p>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-zinc-500 mb-6">{download.note}</p>
+
+                  <a
+                    href={download.url}
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-zinc-900 dark:bg-white text-white dark:text-black font-bold uppercase tracking-widest text-xs hover:bg-zinc-700 dark:hover:bg-zinc-200 transition-colors w-full justify-center"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    {download.label}
+                  </a>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Quick Start */}
+            <motion.div
+              className="border border-zinc-200 dark:border-zinc-800 p-6 bg-zinc-50 dark:bg-zinc-950 mb-12"
+              variants={fadeIn}
+            >
+              <h3 className="text-xs font-bold text-zinc-900 dark:text-white uppercase tracking-wide mb-3">Quick Start</h3>
+              <pre className="bg-white dark:bg-black p-4 font-mono text-xs text-zinc-600 dark:text-zinc-400 overflow-x-auto border border-zinc-200 dark:border-zinc-800">
+{`chmod +x clawminerd-v0.2.0-*    # macOS / Linux
+./clawminerd-v0.2.0-darwin-arm64  # run it
+
+# Auto-connects to bootstrap node via Kademlia DHT
+# API available at http://localhost:8402/status`}
+              </pre>
+            </motion.div>
+
             {/* Installation Note */}
             <motion.div
               className="border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-950/20 p-6 mb-12"
@@ -215,7 +342,8 @@ export default function DownloadPage() {
                 Installation Note
               </h3>
               <p className="text-sm text-amber-700 dark:text-amber-500">
-                macOS builds are code-signed with a Developer ID certificate. On first launch, right-click the app and select &quot;Open&quot; to bypass Gatekeeper.
+                macOS desktop app: code-signed &mdash; right-click and select &quot;Open&quot; on first launch.
+                ClawMinerd CLI: signed AND notarized &mdash; runs without Gatekeeper prompts.
                 Windows builds are unsigned &mdash; you may see a SmartScreen warning. This is alpha software.
               </p>
             </motion.div>
