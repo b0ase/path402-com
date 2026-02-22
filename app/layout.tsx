@@ -41,10 +41,10 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "https://path402.com/og-402.jpg",
-        width: 1200,
-        height: 630,
-        alt: "$402 Protocol — Traffic lights representing HTTP 401, 402, 403 status codes",
+        url: "https://path402.com/402-OG.png",
+        width: 741,
+        height: 412,
+        alt: "$402 — Access Tokens for the Open Web",
       },
     ],
     videos: [
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     description: "Mint an access token for anything addressable.",
     creator: "@b0ase",
     site: "@b0ase",
-    images: ["https://path402.com/og-402.jpg"],
+    images: ["https://path402.com/402-OG.png"],
   },
   robots: {
     index: true,
