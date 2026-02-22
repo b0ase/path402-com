@@ -49,9 +49,9 @@ export const metadata: Metadata = {
     ],
     videos: [
       {
-        url: "https://path402.com/x-lights.mp4",
-        width: 688,
-        height: 464,
+        url: "https://path402.com/402-BLUE-1.mp4",
+        width: 752,
+        height: 416,
         type: "video/mp4",
       },
     ],
