@@ -44,15 +44,18 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
 
   // Check for Yours Wallet on mount
   useEffect(() => {
-    const checkYours = () => {
+    const checkYours = async () => {
       if (typeof window !== 'undefined' && window.yours) {
         setIsYoursAvailable(true);
-        // Check if already connected
-        window.yours.isConnected().then((connected) => {
+        try {
+          // isConnected may return a boolean or Promise<boolean> depending on version
+          const connected = await Promise.resolve(window.yours.isConnected());
           if (connected) {
             restoreYoursSession();
           }
-        });
+        } catch {
+          // Extension present but not ready yet
+        }
       }
     };
 
@@ -90,13 +93,14 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     try {
       const addresses = await window.yours.getAddresses();
       const balanceData = await window.yours.getBalance();
+      if (!addresses) return;
       setWallet({
         connected: true,
         provider: 'yours',
         address: addresses.bsvAddress,
         ordinalsAddress: addresses.ordAddress,
         handle: null,
-        balance: balanceData.satoshis,
+        balance: balanceData?.satoshis ?? 0,
       });
     } catch (error) {
       console.error('Failed to restore Yours session:', error);
@@ -110,16 +114,23 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const result = await window.yours.connect();
+      // v4.5.x: connect() returns pubKey string, not { addresses }
+      // Must call getAddresses() separately after connecting
+      await window.yours.connect();
+      const addresses = await window.yours.getAddresses();
       const balanceData = await window.yours.getBalance();
+
+      if (!addresses) {
+        throw new Error('Failed to get addresses from Yours Wallet');
+      }
 
       setWallet({
         connected: true,
         provider: 'yours',
-        address: result.addresses.bsvAddress,
-        ordinalsAddress: result.addresses.ordAddress,
+        address: addresses.bsvAddress,
+        ordinalsAddress: addresses.ordAddress,
         handle: null,
-        balance: balanceData.satoshis,
+        balance: balanceData?.satoshis ?? 0,
       });
 
       // Register wallet with backend
@@ -128,8 +139,8 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           provider: 'yours',
-          address: result.addresses.bsvAddress,
-          ordinalsAddress: result.addresses.ordAddress,
+          address: addresses.bsvAddress,
+          ordinalsAddress: addresses.ordAddress,
         }),
       });
     } catch (error) {
@@ -183,7 +194,8 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
   const disconnect = useCallback(async () => {
     if (wallet.provider === 'yours' && window.yours) {
       try {
-        await window.yours.disconnect();
+        // disconnect() may return boolean or Promise<boolean> depending on version
+        await Promise.resolve(window.yours.disconnect());
       } catch (error) {
         console.error('Failed to disconnect Yours:', error);
       }

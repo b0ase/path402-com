@@ -93,19 +93,20 @@ export interface DividendClaim {
   status: 'pending' | 'claimed';
 }
 
-// Yours Wallet provider interface (injected as window.yours)
+// Yours Wallet provider interface (injected as window.yours AND window.panda)
+// Updated for Yours Wallet v4.5.x — some methods return sync values, not Promises
 export interface YoursWallet {
   isReady: boolean;
-  connect: () => Promise<{ pubKey: string; addresses: YoursAddresses }>;
-  disconnect: () => Promise<void>;
-  isConnected: () => Promise<boolean>;
-  getPubKeys: () => Promise<{ bsvPubKey: string; ordPubKey: string; identityPubKey: string }>;
-  getAddresses: () => Promise<YoursAddresses>;
-  getBalance: () => Promise<{ bsv: number; satoshis: number }>;
+  connect: () => Promise<string | undefined>;
+  disconnect: () => Promise<boolean> | boolean;
+  isConnected: () => Promise<boolean> | boolean;
+  getPubKeys: () => Promise<{ bsvPubKey: string; ordPubKey: string; identityPubKey: string } | undefined>;
+  getAddresses: () => Promise<YoursAddresses | undefined>;
+  getBalance: () => Promise<{ bsv: number; satoshis: number; usdInCents: number } | undefined>;
   getOrdinals: () => Promise<YoursOrdinal[]>;
-  sendBsv: (params: { address: string; satoshis: number }) => Promise<{ txid: string }>;
-  transferOrdinal: (params: { address: string; origin: string }) => Promise<{ txid: string }>;
-  signMessage: (params: { message: string }) => Promise<{ sig: string; pubKey: string }>;
+  sendBsv: (params: { address: string; satoshis: number }[]) => Promise<string | undefined>;
+  transferOrdinal: (params: { address: string; origin: string }) => Promise<string | undefined>;
+  signMessage: (params: { message: string }) => Promise<{ sig: string; pubKey: string } | undefined>;
 }
 
 export interface YoursAddresses {
