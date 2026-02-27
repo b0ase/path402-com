@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useWallet } from '@/components/WalletProvider';
 import { formatSupply } from '@/lib/token';
+import type { StrengthScore } from '@/lib/strand-strength';
 
 interface IdentityToken {
   id: string;
@@ -18,6 +19,74 @@ interface IdentityToken {
   broadcast_status: string;
   metadata: Record<string, unknown> | null;
   created_at: string;
+}
+
+interface IdentityStrand {
+  id: string;
+  provider: string;
+  strand_type: string;
+  strand_subtype: string | null;
+  label: string | null;
+  source: string;
+  on_chain: boolean;
+  strand_txid: string | null;
+  created_at: string;
+}
+
+const LEVEL_COLORS: Record<string, string> = {
+  none: 'bg-zinc-500/20 text-zinc-500 border-zinc-500/30',
+  basic: 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border-blue-500/30',
+  verified: 'bg-purple-500/20 text-purple-600 dark:text-purple-400 border-purple-500/30',
+  strong: 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/30',
+  sovereign: 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/30',
+};
+
+function StrengthBadge({ strength, strandCount }: { strength: StrengthScore; strandCount: number }) {
+  return (
+    <div className={`inline-flex items-center gap-2 px-3 py-1.5 border text-xs font-mono ${LEVEL_COLORS[strength.level] || LEVEL_COLORS.none}`}>
+      <span className="font-bold">$401 Lv.{strength.levelNumber} {strength.label}</span>
+      <span className="opacity-60">&middot;</span>
+      <span>{strandCount} strand{strandCount !== 1 ? 's' : ''}</span>
+      <span className="opacity-60">&middot;</span>
+      <span>{strength.score}pts</span>
+    </div>
+  );
+}
+
+function StrandList({ strands }: { strands: IdentityStrand[] }) {
+  if (strands.length === 0) return null;
+
+  return (
+    <div className="space-y-1">
+      {strands.map((s) => (
+        <div key={s.id} className="flex items-center justify-between bg-white dark:bg-black border border-zinc-200 dark:border-zinc-900 px-3 py-2">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-mono font-bold text-zinc-900 dark:text-white uppercase">
+              {s.provider}
+            </span>
+            <span className="text-[9px] font-mono text-zinc-400 dark:text-zinc-600 uppercase tracking-widest">
+              {s.strand_type}{s.strand_subtype ? `/${s.strand_subtype}` : ''}
+            </span>
+            {s.label && (
+              <span className="text-[9px] font-mono text-zinc-500 truncate max-w-[120px]">
+                {s.label}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-[9px] font-mono text-zinc-400 dark:text-zinc-600 uppercase tracking-widest">
+              {s.source}
+            </span>
+            {s.on_chain ? (
+              <span className="text-[9px] font-mono text-emerald-500 uppercase tracking-widest">on-chain</span>
+            ) : (
+              <span className="text-[9px] font-mono text-zinc-400 dark:text-zinc-700 uppercase tracking-widest">local</span>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 function StatusBadge({ status }: { status: string }) {
@@ -183,7 +252,11 @@ function PreMintView({ onMint, isMinting, mintError }: {
   );
 }
 
-function PostMintView({ identity }: { identity: IdentityToken }) {
+function PostMintView({ identity, strands, strength }: {
+  identity: IdentityToken;
+  strands: IdentityStrand[];
+  strength: StrengthScore | null;
+}) {
   return (
     <div className="mt-8 space-y-6">
       {/* Identity Header */}
@@ -259,6 +332,46 @@ function PostMintView({ identity }: { identity: IdentityToken }) {
           </pre>
         </div>
       )}
+
+      {/* $401 Identity Verification */}
+      <div className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <div className="text-[9px] text-zinc-400 dark:text-zinc-600 uppercase tracking-widest mb-1">$401 Identity Verification</div>
+            {strength ? (
+              <StrengthBadge strength={strength} strandCount={strands.length} />
+            ) : (
+              <span className="text-xs font-mono text-zinc-400 dark:text-zinc-600">No identity strands linked</span>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <a
+              href="https://path401.com/identity"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[10px] font-mono uppercase tracking-widest px-3 py-1.5 border border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors"
+            >
+              Manage Strands
+            </a>
+            <a
+              href="https://bit-sign.online"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[10px] font-mono uppercase tracking-widest px-3 py-1.5 border border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors"
+            >
+              Verify Lv.2+
+            </a>
+          </div>
+        </div>
+
+        {strands.length > 0 && <StrandList strands={strands} />}
+
+        {strands.length === 0 && (
+          <p className="text-xs font-mono text-zinc-400 dark:text-zinc-600 mt-2">
+            Link OAuth providers or submit verification documents at path401.com to increase your identity level.
+          </p>
+        )}
+      </div>
     </div>
   );
 }
@@ -266,6 +379,8 @@ function PostMintView({ identity }: { identity: IdentityToken }) {
 export default function IdentityPage() {
   const { wallet, connectHandCash } = useWallet();
   const [identity, setIdentity] = useState<IdentityToken | null>(null);
+  const [strands, setStrands] = useState<IdentityStrand[]>([]);
+  const [strength, setStrength] = useState<StrengthScore | null>(null);
   const [loading, setLoading] = useState(true);
   const [isMinting, setIsMinting] = useState(false);
   const [mintError, setMintError] = useState<string | null>(null);
@@ -275,6 +390,8 @@ export default function IdentityPage() {
       const res = await fetch('/api/client/identity');
       const data = await res.json();
       setIdentity(data.identity);
+      setStrands(data.strands || []);
+      setStrength(data.strength || null);
     } catch {
       // Identity not found
     } finally {
@@ -365,7 +482,7 @@ export default function IdentityPage() {
         </div>
 
         {identity ? (
-          <PostMintView identity={identity} />
+          <PostMintView identity={identity} strands={strands} strength={strength} />
         ) : (
           <PreMintView onMint={handleMint} isMinting={isMinting} mintError={mintError} />
         )}

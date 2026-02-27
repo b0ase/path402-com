@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { validateSymbol, generateBSV21Inscription } from '@/lib/token';
+import { calculateStrength } from '@/lib/strand-strength';
 import { createHash } from 'crypto';
 
 function generateTokenIdServer(symbol: string, issuerAddress: string): string {
@@ -39,7 +40,22 @@ export async function GET(request: NextRequest) {
     .eq('holder_id', holder.id)
     .single();
 
-  return NextResponse.json({ identity: identity || null });
+  if (!identity) {
+    return NextResponse.json({ identity: null, strands: [], strength: null });
+  }
+
+  // Fetch $401 strands for this identity
+  const { data: strands } = await supabase
+    .from('path401_identity_strands')
+    .select('id, provider, strand_type, strand_subtype, label, source, on_chain, strand_txid, created_at')
+    .eq('identity_token_id', identity.id)
+    .eq('is_active', true)
+    .order('created_at', { ascending: true });
+
+  const activeStrands = strands || [];
+  const strength = activeStrands.length > 0 ? calculateStrength(activeStrands) : null;
+
+  return NextResponse.json({ identity, strands: activeStrands, strength });
 }
 
 export async function POST(request: NextRequest) {

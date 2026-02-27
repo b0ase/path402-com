@@ -2,6 +2,44 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getHolder, stakeTokens, unstakeTokens } from '@/lib/store';
 import { supabase, isDbConnected } from '@/lib/supabase';
 import { verifySignatureOwnership, SIGN_MESSAGES } from '@/lib/address-derivation';
+import { calculateStrength } from '@/lib/strand-strength';
+
+// Fetch $401 identity level for a holder
+async function getIdentity401(holderId: string): Promise<{
+  level: string;
+  label: string;
+  levelNumber: number;
+  hasIdentity: boolean;
+}> {
+  const noIdentity = { level: 'none', label: 'None', levelNumber: 0, hasIdentity: false };
+  if (!isDbConnected() || !supabase) return noIdentity;
+
+  const { data: identity } = await supabase
+    .from('path402_identity_tokens')
+    .select('id')
+    .eq('holder_id', holderId)
+    .single();
+
+  if (!identity) return noIdentity;
+
+  const { data: strands } = await supabase
+    .from('path401_identity_strands')
+    .select('provider, strand_type, strand_subtype')
+    .eq('identity_token_id', identity.id)
+    .eq('is_active', true);
+
+  if (!strands || strands.length === 0) {
+    return { level: 'none', label: 'None', levelNumber: 0, hasIdentity: true };
+  }
+
+  const strength = calculateStrength(strands);
+  return {
+    level: strength.level,
+    label: strength.label,
+    levelNumber: strength.levelNumber,
+    hasIdentity: true,
+  };
+}
 
 // GET /api/stake - Get staking info and message to sign
 export async function GET(request: NextRequest) {
@@ -53,12 +91,16 @@ export async function GET(request: NextRequest) {
 
   const availableBalance = holder.balance - holder.stakedBalance;
 
+  // Fetch $401 identity level
+  const identity401 = await getIdentity401(holder.id);
+
   return NextResponse.json({
     balance: holder.balance,
     stakedBalance: holder.stakedBalance,
     availableBalance,
     walletAddress,
     activeStakes,
+    identity401,
     stakingRequirements: {
       signature: true,
       kyc: true,
@@ -186,11 +228,22 @@ export async function POST(request: NextRequest) {
       // Update holder staked balance (legacy store)
       await stakeTokens(holder.id, amount);
 
+      // Calculate identity-aware staking tier
+      const identity401 = await getIdentity401(holder.id);
+      let stakingTier: 'basic' | 'verified' | 'premium' = 'basic';
+      if (identity401.levelNumber >= 3) {
+        stakingTier = 'premium';
+      } else if (identity401.levelNumber >= 2) {
+        stakingTier = 'verified';
+      }
+
       return NextResponse.json({
         success: true,
         stakeId: stake.id,
         stakedAmount: amount,
         newStakedBalance: holder.stakedBalance + amount,
+        stakingTier,
+        identityLevel: identity401,
         capTableEntry: {
           handle,
           tokensStaked: amount,
