@@ -11,6 +11,11 @@ export function middleware(request: NextRequest) {
     return NextResponse.rewrite(new URL('/token-402', request.url));
   }
 
+  // Rewrite /.well-known/$402.json to renamed route
+  if (pathname === '/.well-known/$402.json' || pathname === '/.well-known/%24402.json') {
+    return NextResponse.rewrite(new URL('/.well-known/token-402-discovery', request.url));
+  }
+
   // Only rewrite the root path for host-based routing
   if (pathname !== '/') return NextResponse.next();
 
@@ -26,5 +31,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/$402', '/%24402'],
+  matcher: ['/', '/$402', '/%24402', '/.well-known/$402.json', '/.well-known/%24402.json'],
 };
