@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export const alt = '$402 — PoW20 Hash-to-Mint Token on BSV Mainnet';
 export const size = {
