@@ -4,20 +4,10 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const host = request.headers.get('host') || '';
-
-  // Rewrite /$402 to /token-402 ($ in folder names breaks Vercel deploys)
-  if (pathname === '/$402' || pathname === '/%24402') {
-    return NextResponse.rewrite(new URL('/token-402', request.url));
-  }
-
-  // Rewrite /.well-known/$402.json to renamed route
-  if (pathname === '/.well-known/$402.json' || pathname === '/.well-known/%24402.json') {
-    return NextResponse.rewrite(new URL('/.well-known/token-402-discovery', request.url));
-  }
-
-  // Only rewrite the root path for host-based routing
+  // Only rewrite the root path
   if (pathname !== '/') return NextResponse.next();
+
+  const host = request.headers.get('host') || '';
 
   if (host.includes('path401')) {
     return NextResponse.rewrite(new URL('/401', request.url));
@@ -31,5 +21,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|mp4|webm|ico|woff|woff2|ttf)$).*)'],
+  matcher: '/',
 };
