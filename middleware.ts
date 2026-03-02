@@ -31,5 +31,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/$402', '/%24402', '/.well-known/$402.json', '/.well-known/%24402.json'],
+  matcher: ['/', '/%24402', '/.well-known/%24402.json'],
 };
