@@ -16,6 +16,7 @@ interface SignalRecord {
   senderId: string;
   type: string;
   payload: unknown;
+  targetId?: string;
   ts: number;
 }
 
@@ -33,13 +34,13 @@ function gc() {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { room, senderId, type, payload } = body;
+  const { room, senderId, type, payload, targetId } = body;
 
   if (!room || !senderId || !type) {
     return NextResponse.json({ error: 'room, senderId, type required' }, { status: 400 });
   }
 
-  const record: SignalRecord = { room, senderId, type, payload, ts: Date.now() };
+  const record: SignalRecord = { room, senderId, type, payload, targetId, ts: Date.now() };
   const list = rooms.get(room) || [];
   list.push(record);
   rooms.set(room, list);
@@ -63,7 +64,10 @@ export async function GET(req: NextRequest) {
   gc();
 
   const list = rooms.get(room) || [];
-  const messages = list.filter((m) => m.senderId !== senderId && m.ts > since);
+  const messages = list.filter(
+    (m) => m.senderId !== senderId && m.ts > since &&
+    (!m.targetId || m.targetId === senderId)
+  );
 
   return NextResponse.json({ messages, ts: Date.now() });
 }

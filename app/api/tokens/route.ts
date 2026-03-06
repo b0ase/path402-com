@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { listTokens, registerToken, RegisterTokenRequest } from '@/lib/tokens';
+import { listTokens, getToken, registerToken, RegisterTokenRequest } from '@/lib/tokens';
 import { verifyDomainOwnership } from '@/lib/domain-verification';
 
 /**
@@ -33,6 +33,10 @@ export async function GET(request: NextRequest) {
  * POST /api/tokens
  *
  * Register a new $address token
+ *
+ * Two auth modes:
+ * - Handle-based ($zerodice, $zerodice/$video-1): issuer_handle must match the root handle
+ * - Domain-based ($zerodice.com/$premium): requires DNS TXT + .well-known verification
  */
 export async function POST(request: NextRequest) {
   try {
@@ -51,7 +55,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'address and name are required' }, { status: 400 });
     }
 
-    // Validate $address format
     if (!body.address.startsWith('$')) {
       return NextResponse.json({ error: 'Address must start with $' }, { status: 400 });
     }
@@ -73,13 +76,41 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const domain = extractDomain(body.address);
-    const verified = await verifyDomainOwnership(domain, issuerHandle, body.issuer_address);
-    if (!verified) {
-      return NextResponse.json({
-        error: 'Domain ownership verification failed',
-        details: `Add a TXT record at _path402.${domain} with value path402=${issuerHandle} and issuer_address=${body.issuer_address}, and configure https://${domain}/.well-known/path402.json with issuer + issuer_address + on-chain signature.`,
-      }, { status: 403 });
+    // Extract root handle/domain from $address
+    const root = extractRoot(body.address);
+    const isHandleToken = !root.includes('.');
+
+    if (isHandleToken) {
+      // Handle-based token: $zerodice, $zerodice/$video-1, etc.
+      // The root handle must match the issuer, OR the issuer must own the parent token
+      const isRootOwner = root.toLowerCase() === issuerHandle.toLowerCase();
+
+      if (!isRootOwner) {
+        // Check if issuer owns the parent token in the chain
+        const parentAddress = body.parent_address || `$${root}`;
+        const parentToken = await getToken(parentAddress);
+
+        if (!parentToken || parentToken.issuer_handle.toLowerCase() !== issuerHandle.toLowerCase()) {
+          return NextResponse.json({
+            error: 'Handle verification failed',
+            details: `You must be logged in as "${root}" to create $${root} tokens, or own the parent token ${parentAddress}.`,
+          }, { status: 403 });
+        }
+      }
+
+      // Auto-set parent_address for child tokens if not provided
+      if (!body.parent_address && body.address.includes('/')) {
+        body.parent_address = `$${root}`;
+      }
+    } else {
+      // Domain-based token: verify ownership via DNS + .well-known
+      const verified = await verifyDomainOwnership(root, issuerHandle, body.issuer_address);
+      if (!verified) {
+        return NextResponse.json({
+          error: 'Domain ownership verification failed',
+          details: `Add a TXT record at _path402.${root} with value path402=${issuerHandle} and issuer_address=${body.issuer_address}, and configure https://${root}/.well-known/path402.json with issuer + issuer_address + on-chain signature.`,
+        }, { status: 403 });
+      }
     }
 
     const token = await registerToken(issuerHandle, body);
@@ -95,7 +126,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-function extractDomain(address: string): string {
+function extractRoot(address: string): string {
   const parts = address.split('/').filter(Boolean);
   if (!parts.length) return '';
   const root = parts[0];

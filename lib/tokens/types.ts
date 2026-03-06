@@ -196,6 +196,12 @@ export interface AcquireTokenResponse {
     value: string;
     expires?: string;
   };
+  revenue_split?: {
+    issuer_sats: number;
+    facilitator_sats: number;
+    parent_sats: number;
+    parent_address: string | null;
+  };
   tx_id?: string;
   error?: string;
 }

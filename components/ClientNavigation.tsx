@@ -49,6 +49,7 @@ const sharedNavItems = [
   { href: '/issue', label: 'ISSUE' },
   { href: '/wallet', label: 'WALLET' },
   { href: '/chat', label: 'CHAT' },
+  { href: '/live', label: 'LIVE' },
   { href: '/settings', label: 'SETTINGS' },
   { href: '/whitepaper', label: 'WHITEPAPER' },
   { href: '/token', label: 'TOKEN' },

@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const authToken = searchParams.get('authToken');
-    const redirect = searchParams.get('redirect') || '/token';
+    const redirect = searchParams.get('redirect') || '/';
 
     const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://path402.com').trim();
     const appId = process.env.HANDCASH_APP_ID?.trim();

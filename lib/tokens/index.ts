@@ -227,9 +227,22 @@ export async function acquireTokens(
     return { success: false, acquired: 0, total_cost_sats: 0, avg_price_sats: 0, new_balance: 0, error: 'Insufficient treasury' };
   }
 
-  // Calculate revenue split
-  const issuerRevenue = Math.floor(totalCost * token.issuer_share_bps / 10000);
-  const facilitatorRevenue = totalCost - issuerRevenue;
+  // Calculate revenue split with parent cascade
+  // If token has a parent, parent gets parent_share_bps of the total revenue first.
+  // Remainder splits between issuer and facilitator.
+  // e.g., $zerodice/$video-1 → 50% to $zerodice, then 80/20 issuer/facilitator on remainder
+  let parentRevenue = 0;
+  let parentAddress: string | null = null;
+
+  if (token.parent_address) {
+    parentAddress = token.parent_address;
+    const parentShareBps = token.parent_share_bps ?? 5000;
+    parentRevenue = Math.floor(totalCost * parentShareBps / 10000);
+  }
+
+  const afterParent = totalCost - parentRevenue;
+  const issuerRevenue = Math.floor(afterParent * token.issuer_share_bps / 10000);
+  const facilitatorRevenue = afterParent - issuerRevenue;
 
   // Update token treasury
   const { error: tokenError } = await getSupabase()
@@ -297,12 +310,64 @@ export async function acquireTokens(
       payment_tx_id: options.paymentTxId,
     });
 
+  // Cascade revenue to parent token (recursive up the chain)
+  if (parentAddress && parentRevenue > 0) {
+    const parentToken = await getToken(parentAddress);
+    if (parentToken) {
+      // Record parent revenue as a separate transaction
+      await getSupabase()
+        .from('token_transactions')
+        .insert({
+          token_address: parentAddress,
+          from_handle: tokenAddress,  // Child token as source
+          to_handle: parentToken.issuer_handle,
+          tx_type: 'acquire' as TxType,
+          amount: 0,  // No tokens moved, just revenue
+          price_sats: parentRevenue,
+          unit_price_sats: 0,
+          issuer_revenue_sats: parentRevenue,
+          facilitator_revenue_sats: 0,
+        });
+
+      // If the parent also has a parent, cascade further
+      // e.g., $zerodice/$video-1 → $zerodice → $NPGX → $AIGF
+      if (parentToken.parent_address) {
+        const grandparentShareBps = parentToken.parent_share_bps ?? 5000;
+        const grandparentRevenue = Math.floor(parentRevenue * grandparentShareBps / 10000);
+        if (grandparentRevenue > 0) {
+          const grandparent = await getToken(parentToken.parent_address);
+          if (grandparent) {
+            await getSupabase()
+              .from('token_transactions')
+              .insert({
+                token_address: parentToken.parent_address,
+                from_handle: parentAddress,
+                to_handle: grandparent.issuer_handle,
+                tx_type: 'acquire' as TxType,
+                amount: 0,
+                price_sats: grandparentRevenue,
+                unit_price_sats: 0,
+                issuer_revenue_sats: grandparentRevenue,
+                facilitator_revenue_sats: 0,
+              });
+          }
+        }
+      }
+    }
+  }
+
   return {
     success: true,
     acquired: amount,
     total_cost_sats: totalCost,
     avg_price_sats: avgPrice,
     new_balance: newBalance,
+    revenue_split: {
+      issuer_sats: issuerRevenue,
+      facilitator_sats: facilitatorRevenue,
+      parent_sats: parentRevenue,
+      parent_address: parentAddress,
+    },
   };
 }
 

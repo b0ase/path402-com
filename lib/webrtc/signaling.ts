@@ -1,9 +1,10 @@
-export type SignalType = 'sdp-offer' | 'sdp-answer' | 'ice-candidate' | 'hangup' | 'ready';
+export type SignalType = 'sdp-offer' | 'sdp-answer' | 'ice-candidate' | 'hangup' | 'ready' | 'broadcast-end';
 
 export interface SignalMessage {
   type: SignalType;
   senderId: string;
   payload: unknown;
+  targetId?: string;
 }
 
 export interface Signaling {
@@ -70,6 +71,7 @@ export function createSignaling(roomId: string, senderId: string): Signaling {
           senderId: msg.senderId,
           type: msg.type,
           payload: msg.payload,
+          targetId: msg.targetId,
         }),
       }).catch(() => {});
     },
