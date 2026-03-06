@@ -14,6 +14,7 @@ export function useWebRTC() {
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [videoEnabled, setVideoEnabled] = useState(true);
   const [callDuration, setCallDuration] = useState(0);
+  const [mediaError, setMediaError] = useState<string | null>(null);
 
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const signalingRef = useRef<Signaling | null>(null);
@@ -70,16 +71,28 @@ export function useWebRTC() {
   }, []);
 
   const startPreview = useCallback(async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
-      });
-      setLocalStream(stream);
-      setCallState('lobby');
-    } catch (err) {
-      console.error('Camera access denied:', err);
+    setMediaError(null);
+    // Try video + audio first, then audio-only, then fail gracefully
+    const attempts: MediaStreamConstraints[] = [
+      { video: true, audio: true },
+      { video: false, audio: true },
+    ];
+    for (const constraints of attempts) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        setLocalStream(stream);
+        setCallState('lobby');
+        if (!constraints.video) {
+          setMediaError('No camera found — audio only');
+        }
+        return;
+      } catch {
+        // Try next fallback
+      }
     }
+    // All attempts failed — still allow lobby for receiving calls
+    setMediaError('No camera or microphone found. Check device permissions.');
+    setCallState('lobby');
   }, []);
 
   const createRoom = useCallback(
@@ -305,6 +318,7 @@ export function useWebRTC() {
     audioEnabled,
     videoEnabled,
     callDuration,
+    mediaError,
     startPreview,
     createRoom,
     joinRoom,

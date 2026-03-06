@@ -28,6 +28,7 @@ export default function VideoCallPage() {
     audioEnabled,
     videoEnabled,
     callDuration,
+    mediaError,
     startPreview,
     createRoom,
     joinRoom,
@@ -301,17 +302,30 @@ export default function VideoCallPage() {
               className="w-full h-full object-cover"
             />
 
-            {!localStream && callState === 'idle' && (
+            {!localStream && (
               <div className="absolute inset-0 flex flex-col items-center justify-center text-zinc-600">
-                <div className="text-[10px] font-bold uppercase tracking-widest mb-4">
-                  Camera Access Required
-                </div>
-                <button
-                  onClick={startPreview}
-                  className="px-6 py-3 border border-zinc-700 text-[10px] font-bold uppercase tracking-widest text-white hover:bg-zinc-800 transition-colors"
-                >
-                  Enable Camera
-                </button>
+                {mediaError ? (
+                  <>
+                    <div className="text-[10px] font-bold uppercase tracking-widest mb-2 text-amber-500">
+                      {mediaError}
+                    </div>
+                    <div className="text-[10px] text-zinc-500">
+                      You can still join calls — video will be one-way
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="text-[10px] font-bold uppercase tracking-widest mb-4">
+                      Camera Access Required
+                    </div>
+                    <button
+                      onClick={startPreview}
+                      className="px-6 py-3 border border-zinc-700 text-[10px] font-bold uppercase tracking-widest text-white hover:bg-zinc-800 transition-colors"
+                    >
+                      Enable Camera
+                    </button>
+                  </>
+                )}
               </div>
             )}
 
@@ -365,14 +379,14 @@ export default function VideoCallPage() {
             <div className="flex gap-3">
               <button
                 onClick={() => createRoom(roomId)}
-                disabled={!localStream || roomId.length < 4}
+                disabled={callState === 'idle' || roomId.length < 4}
                 className="flex-1 px-6 py-3 border border-zinc-200 dark:border-zinc-800 text-[10px] font-bold uppercase tracking-widest hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors disabled:opacity-30 disabled:pointer-events-none"
               >
                 Create Room
               </button>
               <button
                 onClick={() => joinRoom(roomId)}
-                disabled={!localStream || roomId.length < 4}
+                disabled={callState === 'idle' || roomId.length < 4}
                 className="flex-1 px-6 py-3 border border-zinc-200 dark:border-zinc-800 text-[10px] font-bold uppercase tracking-widest hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors disabled:opacity-30 disabled:pointer-events-none"
               >
                 Join Room
