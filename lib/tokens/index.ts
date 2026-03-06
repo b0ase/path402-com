@@ -16,6 +16,7 @@ import {
   TxType,
 } from './types';
 import { calculatePrice, calculateTotalCost, calculateTokensForSpend } from './pricing';
+import { createAndBroadcastInscription } from '../bsv-inscribe';
 
 // Re-export types and pricing functions
 export * from './types';
@@ -127,6 +128,59 @@ export async function getToken(address: string): Promise<TokenWithPrice | null> 
 }
 
 /**
+ * Mint token on-chain as BSV-21 inscription (async, best-effort)
+ * DB insert succeeds first; on-chain follows. If broadcast fails,
+ * the token still exists in the DB and can be retried.
+ */
+async function mintOnChain(token: Token): Promise<void> {
+  const treasuryKey = process.env.TREASURY_PRIVATE_KEY_WIF;
+  if (!treasuryKey) {
+    console.warn('[tokens] TREASURY_PRIVATE_KEY_WIF not set, skipping on-chain mint');
+    return;
+  }
+
+  const inscription = {
+    p: 'bsv-21',
+    op: 'deploy',
+    tick: token.address,
+    max: (token.max_supply || token.total_supply || DEFAULT_TREASURY).toString(),
+    dec: '0',
+    path402: {
+      accessRate: 1,
+      protocol: 'path402',
+      version: '1.1.0',
+      ...(token.parent_address ? {
+        parent: token.parent_address,
+        parentShareBps: token.parent_share_bps ?? 5000,
+      } : {}),
+    },
+    metadata: {
+      name: token.name,
+      description: token.description || `Access token for ${token.name}`,
+    },
+  };
+
+  try {
+    const result = await createAndBroadcastInscription({
+      data: inscription,
+      contentType: 'application/bsv-20',
+      toAddress: token.issuer_address || process.env.TREASURY_ADDRESS || '',
+      privateKeyWIF: treasuryKey,
+    });
+
+    // Store inscription_id back on the token
+    await getSupabase()
+      .from('tokens')
+      .update({ inscription_id: result.inscriptionId })
+      .eq('address', token.address);
+
+    console.log(`[tokens] On-chain mint: ${token.address} → ${result.inscriptionId}`);
+  } catch (err) {
+    console.error(`[tokens] On-chain mint failed for ${token.address}:`, err);
+  }
+}
+
+/**
  * Register a new token
  */
 export async function registerToken(
@@ -169,6 +223,11 @@ export async function registerToken(
   if (error) {
     console.error('[tokens] registerToken error:', error);
     throw new Error(error.message);
+  }
+
+  // Fire-and-forget on-chain BSV-21 inscription
+  if (data) {
+    mintOnChain(data as Token).catch(() => {});
   }
 
   return data;

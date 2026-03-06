@@ -2,6 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { listTokens, getToken, registerToken, RegisterTokenRequest } from '@/lib/tokens';
 import { verifyDomainOwnership } from '@/lib/domain-verification';
 
+/** CORS preflight */
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, x-wallet-handle, x-wallet-provider',
+    },
+  });
+}
+
 /**
  * GET /api/tokens
  *
@@ -17,12 +29,15 @@ export async function GET(request: NextRequest) {
 
     const tokens = await listTokens({ issuer, content_type, limit, offset });
 
-    return NextResponse.json({
+    const res = NextResponse.json({
       tokens,
       count: tokens.length,
       limit,
       offset,
     });
+    res.headers.set('Access-Control-Allow-Origin', '*');
+    res.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    return res;
   } catch (error) {
     console.error('[/api/tokens GET] Error:', error);
     return NextResponse.json({ error: 'Failed to list tokens' }, { status: 500 });
