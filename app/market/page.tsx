@@ -17,6 +17,38 @@ const R2 = 'https://pub-fee9eb6b685a48f2aa263c104838ce5e.r2.dev';
 const R2_VIDEOS = `${R2}/videos`;
 const R2_IMAGES = `${R2}/images`;
 
+const NPGX = 'https://www.npg-x.com';
+
+const ADULT_TOKENS = [
+  {
+    id: 'NPGX',
+    name: 'NINJA PUNK GIRLS X',
+    description: '26 AI content creators on autonomous phones. Each girl has her own Bitcoin identity, socials, and wallet. Buy the phone, hustle the audience, keep the profit.',
+    price: '402 SAT',
+    link: NPGX,
+    tag: 'AI INFLUENCER NETWORK',
+    video: `${NPGX}/NPG-X-10/grok-video-0f8b0eaf-bfd3-46cb-b7d0-30ddb0bb693c.mp4`,
+  },
+  {
+    id: 'CHERRYX',
+    name: 'CHERRY X',
+    description: 'Premium AI-generated adult content platform. Token-gated galleries, character customization, and BSV micropayment integration.',
+    price: '100 SAT',
+    link: 'https://www.cherryx.app',
+    tag: 'ADULT CONTENT',
+    video: `${NPGX}/NPG-X-10/grok-video-4f69f678-55f3-4b51-ab11-aadbf662c48e.mp4`,
+  },
+  {
+    id: 'AIGF',
+    name: 'AI GIRLFRIENDS',
+    description: 'AI girlfriend franchise. Each girlfriend runs on her own phone with OpenClaw. Operators buy the device, pay API credits, keep all revenue.',
+    price: '402 SAT',
+    link: 'https://aigirlfriends.website',
+    tag: 'AI COMPANIONS',
+    video: `${NPGX}/NPG-X-10/grok-video-1ef5a2ff-6384-4ab9-b078-17a755e5ae29.mp4`,
+  },
+];
+
 const SAMPLE_SATIRE_TOKENS: FNewsToken[] = [
   {
     token_id: '402_BONES',
@@ -251,8 +283,10 @@ function FNewsCard({ token }: { token: FNewsToken }) {
 export default function MarketPage() {
   const [activeTab, setActiveTab] = useState('All Assets');
   const isFNews = activeTab === 'F.NEWS';
+  const isAdult = activeTab === 'Adult';
   const isAllAssets = activeTab === 'All Assets';
   const showFNews = isFNews || isAllAssets;
+  const showAdult = isAdult || isAllAssets;
 
   return (
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white font-mono">
@@ -324,7 +358,7 @@ export default function MarketPage() {
             Asset Class
           </div>
           <div className="flex flex-wrap gap-0 bg-zinc-100 dark:bg-zinc-900/20 border border-zinc-200 dark:border-zinc-800">
-            {['All Assets', 'F.NEWS', 'Video Streams', 'API Endpoints', 'Knowledge Bases', 'Scientific Data'].map((cat) => (
+            {['All Assets', 'F.NEWS', 'Adult', 'Video Streams', 'API Endpoints', 'Knowledge Bases', 'Scientific Data'].map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveTab(cat)}
@@ -357,7 +391,62 @@ export default function MarketPage() {
             </>
           )}
 
-          {!isFNews && !isAllAssets && (
+          {showAdult && (
+            <>
+              {isAllAssets && (
+                <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-4 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 bg-pink-600 rounded-full" />
+                  ADULT — {ADULT_TOKENS.length} networks
+                </div>
+              )}
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+                {ADULT_TOKENS.map((token) => (
+                  <a
+                    key={token.id}
+                    href={token.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black hover:border-pink-500 dark:hover:border-pink-500 transition-colors"
+                  >
+                    <div className="aspect-[9/16] max-h-[320px] bg-black border-b border-zinc-200 dark:border-zinc-800 relative overflow-hidden">
+                      <video
+                        src={token.video}
+                        muted
+                        playsInline
+                        loop
+                        preload="metadata"
+                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                        onMouseEnter={(e) => (e.target as HTMLVideoElement).play().catch(() => {})}
+                        onMouseLeave={(e) => { const v = e.target as HTMLVideoElement; v.pause(); v.currentTime = 0 }}
+                      />
+                      <div className="absolute top-0 right-0 bg-black dark:bg-white text-white dark:text-black px-3 py-1 font-mono text-xs font-bold z-20">
+                        {token.price}
+                      </div>
+                      <div className="absolute bottom-0 left-0 bg-pink-600 text-white px-2 py-0.5 text-[8px] font-bold font-mono uppercase tracking-widest z-20">
+                        {token.tag}
+                      </div>
+                    </div>
+                    <div className="p-6 space-y-4">
+                      <div>
+                        <h3 className="font-bold text-lg tracking-tight uppercase">{token.name}</h3>
+                        <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">${token.id}</div>
+                      </div>
+                      <p className="text-xs text-zinc-500 font-mono h-12 leading-relaxed line-clamp-3">
+                        {token.description}
+                      </p>
+                      <div className="pt-4 border-t border-zinc-100 dark:border-zinc-900">
+                        <span className="inline-block py-3 w-full text-center bg-pink-600/10 hover:bg-pink-600/20 text-pink-500 text-[10px] font-bold uppercase tracking-widest transition-all">
+                          Visit Network
+                        </span>
+                      </div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </>
+          )}
+
+          {!isFNews && !isAdult && !isAllAssets && (
             <div className="border border-dashed border-zinc-300 dark:border-zinc-800 py-24 text-center bg-zinc-50 dark:bg-zinc-900/20">
               <div className="text-4xl mb-6 opacity-20">📡</div>
               <h3 className="text-sm font-bold uppercase tracking-[0.2em] mb-2">No Tokens Indexed</h3>
