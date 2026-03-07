@@ -952,6 +952,13 @@ function Examples() {
       detail: 'AI-generated videos served P2P. Speculators fund production. Content pays for itself.',
       link: 'https://fnews.online',
     },
+    {
+      path: '$npgx',
+      title: 'AI Influencer Network',
+      desc: 'NPGX runs 26 AI content creators on autonomous phones.',
+      detail: 'Each girl has her own phone, socials, and wallet. Operators pay $402/month. Brand deals flow through the network.',
+      link: 'https://www.npg-x.com',
+    },
   ];
 
   return (
@@ -965,13 +972,13 @@ function Examples() {
         <motion.div custom={0} variants={fadeIn} className="section-label">
           Examples
         </motion.div>
-        <div className="grid md:grid-cols-3 gap-0 border border-zinc-200 dark:border-zinc-800">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-0 border border-zinc-200 dark:border-zinc-800">
           {examples.map((ex, i) => (
             <motion.div
               key={ex.path}
               custom={0.1 + i * 0.1}
               variants={scaleIn}
-              className={`p-8 ${i < 2 ? 'border-b md:border-b-0 md:border-r border-zinc-200 dark:border-zinc-800' : ''} hover:bg-zinc-50 dark:hover:bg-zinc-900/20 transition-colors`}
+              className={`p-8 ${i < examples.length - 1 ? 'border-b md:border-b-0 md:border-r border-zinc-200 dark:border-zinc-800' : ''} hover:bg-zinc-50 dark:hover:bg-zinc-900/20 transition-colors`}
             >
               <code className="text-blue-600 dark:text-blue-400 font-mono text-lg font-bold block mb-4">{ex.path}</code>
               <h3 className="text-sm font-black uppercase tracking-wider mb-3">{ex.title}</h3>
@@ -1179,6 +1186,7 @@ function Ecosystem() {
     { href: '/protocol', title: 'Protocol Economics', desc: 'Staking, serving revenue, hierarchical ownership', tag: 'advanced', external: false },
     { href: '/docs', title: 'Documentation', desc: 'Protocol spec, API reference, guides', tag: 'docs', external: false },
     { href: 'https://fnews.online', title: 'F.NEWS', desc: 'The adversarial satire factory \u2014 $402 in action', tag: 'demo', external: true },
+    { href: 'https://www.npg-x.com', title: 'NPGX', desc: 'AI influencer network \u2014 26 autonomous content creators on phones', tag: 'network', external: true },
   ];
 
   return (
