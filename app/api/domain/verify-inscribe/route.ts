@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAndBroadcastInscription } from '@/lib/bsv-inscribe';
 import { verifyBsvMessageSignature, isValidBsvAddress } from '@/lib/bsv-domain-proof';
+import { computeHash, getURLForHash } from '@/lib/uhrp/index';
+import { createClient } from '@supabase/supabase-js';
 
 const TREASURY_ADDRESS = (process.env.X402_TREASURY_ADDRESS || process.env.TREASURY_ADDRESS || '').trim();
 const TREASURY_PRIVATE_KEY = (process.env.X402_TREASURY_PRIVATE_KEY || process.env.TREASURY_PRIVATE_KEY || '').trim();
@@ -64,10 +66,39 @@ export async function POST(request: NextRequest) {
       privateKeyWIF: TREASURY_PRIVATE_KEY,
     });
 
+    // UHRP anchor: compute content hash and record advertisement
+    let uhrp_url: string | null = null;
+    try {
+      const payloadBytes = Buffer.from(JSON.stringify(payload), 'utf-8');
+      const contentHash = computeHash(payloadBytes);
+      uhrp_url = getURLForHash(contentHash);
+
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+      if (supabaseUrl && supabaseKey) {
+        const supabase = createClient(supabaseUrl, supabaseKey);
+        await supabase.from('uhrp_advertisements').insert({
+          uhrp_url,
+          content_hash: contentHash,
+          content_type: 'application/json',
+          content_size: payloadBytes.length,
+          download_url: `/api/domain/proof/${inscriptionId}`,
+          advertiser_address: issuer_address,
+          inscription_txid: txId,
+          inscription_status: 'confirmed',
+          source_type: 'domain_verify',
+          source_id: inscriptionId,
+        });
+      }
+    } catch (uhrpErr) {
+      console.warn('[domain/verify-inscribe] UHRP anchor failed (non-fatal):', uhrpErr);
+    }
+
     return NextResponse.json({
       success: true,
       tx_id: txId,
       inscription_id: inscriptionId,
+      uhrp_url,
       payload,
     });
   } catch (error) {

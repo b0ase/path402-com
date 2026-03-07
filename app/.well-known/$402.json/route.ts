@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       '$402_version': '2.0.0',
-      extensions: ['$402-curves', '$402-hierarchy', '$402-usage', '$402-compliance'],
+      extensions: ['$402-curves', '$402-hierarchy', '$402-usage', '$402-compliance', '$402-uhrp'],
       root: rootToken ? {
         path: rootPath,
         inscription_id: rootToken.inscription_id || null,
@@ -83,6 +83,12 @@ export async function GET(request: NextRequest) {
         access_mode: child.access_mode || 'token',
         usage_pricing: child.usage_pricing || null,
       })),
+      uhrp: {
+        supported: true,
+        resolve_endpoint: '/api/uhrp/resolve',
+        advertise_endpoint: '/api/uhrp/advertise',
+        protocol_prefix: '1UHRPYnMHPuQ5Tgb3AF8JXqwKkmZVy5hG',
+      },
       payment: {
         address: PAYMENT_ADDRESS,
         accepted_currencies: ['BSV'],

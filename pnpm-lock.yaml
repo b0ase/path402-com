@@ -11,6 +11,9 @@ importers:
       '@babbage/sdk':
         specifier: ^0.4.48
         version: 0.4.48
+      '@bsv/sdk':
+        specifier: ^1.10.1
+        version: 1.10.4
       '@handcash/sdk':
         specifier: ^1.0.3
         version: 1.0.3(@hey-api/openapi-ts@0.91.1(magicast@0.5.1)(typescript@5.9.3))
@@ -128,6 +131,9 @@ packages:
   '@bcoe/v8-coverage@1.0.2':
     resolution: {integrity: sha512-6zABk/ECA/QYSCQ1NGiVwwbQerUCZ+TQbp64Q3AgmfNvurHH0j8TtXa1qbShXA6qqkpAj4V5W8pP6mLe1mcMqA==}
     engines: {node: '>=18'}
+
+  '@bsv/sdk@1.10.4':
+    resolution: {integrity: sha512-NuEXWwtuZ3WbER9wLtm33QCfhVwLyTyAzGholOeHo1imNDLLe7d2HADmf8hlSqAkNud3Y03S2poRc6aJMRWDrA==}
 
   '@emnapi/core@1.8.1':
     resolution: {integrity: sha512-AvT9QFpxK0Zd8J0jopedNm+w/2fIzvtPKPjqyw9jwvBaReTTqPBk9Hixaz7KbjimP+QNz605/XnjFcDAL2pqBg==}
@@ -3040,6 +3046,8 @@ snapshots:
       '@babel/helper-validator-identifier': 7.28.5
 
   '@bcoe/v8-coverage@1.0.2': {}
+
+  '@bsv/sdk@1.10.4': {}
 
   '@emnapi/core@1.8.1':
     dependencies:

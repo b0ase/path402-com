@@ -36,16 +36,17 @@ const ADULT_TOKENS = [
     price: '100 SAT',
     link: 'https://cherryx.space',
     tag: 'ADULT CONTENT',
-    video: `${NPGX}/NPG-X-10/grok-video-4f69f678-55f3-4b51-ab11-aadbf662c48e.mp4`,
+    image: '/cherryx-hero.png',
+    video: '/cherryx-video.mp4',
   },
   {
-    id: 'AIGF',
-    name: 'AI GIRLFRIENDS',
-    description: 'AI girlfriend franchise. Each girlfriend runs on her own phone with OpenClaw. Operators buy the device, pay API credits, keep all revenue.',
+    id: 'ZERODICE',
+    name: 'ZERO DICE',
+    description: 'AI-powered DJ character with cinematic universe. Tokenised episodes, music, and merchandise. Community-driven narrative on BSV.',
     price: '402 SAT',
-    link: 'https://aigirlfriends.website',
-    tag: 'AI COMPANIONS',
-    video: `${NPGX}/NPG-X-10/grok-video-1ef5a2ff-6384-4ab9-b078-17a755e5ae29.mp4`,
+    link: 'https://zerodice.store',
+    tag: 'AI ENTERTAINMENT',
+    image: '/zerodice-hero.webp',
   },
 ];
 
@@ -409,16 +410,30 @@ export default function MarketPage() {
                     className="group border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black hover:border-pink-500 dark:hover:border-pink-500 transition-colors"
                   >
                     <div className="aspect-[9/14] bg-black border-b border-zinc-200 dark:border-zinc-800 relative overflow-hidden">
-                      <video
-                        src={token.video}
-                        muted
-                        playsInline
-                        loop
-                        preload="metadata"
-                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
-                        onMouseEnter={(e) => (e.target as HTMLVideoElement).play().catch(() => {})}
-                        onMouseLeave={(e) => { const v = e.target as HTMLVideoElement; v.pause(); v.currentTime = 0 }}
-                      />
+                      {token.image && (
+                        <img
+                          src={token.image}
+                          alt={token.name}
+                          className={`w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 ${token.video ? 'group-hover:opacity-0' : ''}`}
+                        />
+                      )}
+                      {token.video && (
+                        <video
+                          src={token.video}
+                          muted
+                          playsInline
+                          loop
+                          preload="metadata"
+                          className={`w-full h-full object-cover transition-all duration-500 ${token.image ? 'absolute inset-0 opacity-0 group-hover:opacity-100' : 'grayscale group-hover:grayscale-0'}`}
+                          onMouseEnter={(e) => (e.target as HTMLVideoElement).play().catch(() => {})}
+                          onMouseLeave={(e) => { const v = e.target as HTMLVideoElement; v.pause(); v.currentTime = 0 }}
+                        />
+                      )}
+                      {!token.image && !token.video && (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <span className="text-zinc-800 font-mono text-4xl font-bold">?</span>
+                        </div>
+                      )}
                       <div className="absolute top-0 right-0 bg-black dark:bg-white text-white dark:text-black px-3 py-1 font-mono text-xs font-bold z-20">
                         {token.price}
                       </div>

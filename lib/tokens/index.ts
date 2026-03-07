@@ -17,6 +17,7 @@ import {
 } from './types';
 import { calculatePrice, calculateTotalCost, calculateTokensForSpend } from './pricing';
 import { createAndBroadcastInscription } from '../bsv-inscribe';
+import { computeHash, getURLForHash } from '../uhrp/index';
 
 // Re-export types and pricing functions
 export * from './types';
@@ -368,6 +369,29 @@ export async function acquireTokens(
       facilitator_revenue_sats: facilitatorRevenue,
       payment_tx_id: options.paymentTxId,
     });
+
+  // UHRP: Record content serve advertisement if token has access_url
+  if (token.access_url) {
+    try {
+      const contentHash = computeHash(Buffer.from(token.access_url, 'utf-8'));
+      const uhrpUrl = getURLForHash(contentHash);
+      await getSupabase().from('uhrp_advertisements').insert({
+        uhrp_url: uhrpUrl,
+        content_hash: contentHash,
+        content_type: token.content_type || 'application/octet-stream',
+        content_size: 0,
+        download_url: token.access_url,
+        advertiser_address: buyerHandle,
+        inscription_status: 'pending',
+        source_type: 'content_serve',
+        source_id: tokenAddress,
+        token_address: tokenAddress,
+      });
+    } catch (uhrpErr) {
+      // Non-fatal: UHRP recording is best-effort
+      console.warn('[tokens] UHRP content serve ad failed:', uhrpErr);
+    }
+  }
 
   // Cascade revenue to parent token (recursive up the chain)
   if (parentAddress && parentRevenue > 0) {
