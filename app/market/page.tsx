@@ -17,46 +17,6 @@ const R2 = 'https://pub-fee9eb6b685a48f2aa263c104838ce5e.r2.dev';
 const R2_VIDEOS = `${R2}/videos`;
 const R2_IMAGES = `${R2}/images`;
 
-interface AdultToken {
-  token_id: string;
-  name: string;
-  description: string;
-  base_price_sats: number;
-  image: string;
-  link: string;
-  tag: string;
-}
-
-const ADULT_TOKENS: AdultToken[] = [
-  {
-    token_id: 'NPGX',
-    name: 'NINJA PUNK GIRLS X',
-    description: '26 AI-generated content creators on autonomous phones. Each girl has her own identity, socials, and wallet. Operators hustle the audience. The network brings brand deals.',
-    base_price_sats: 402,
-    image: 'https://www.npg-x.com/npgx-still-1.jpg',
-    link: 'https://www.npg-x.com',
-    tag: 'AI INFLUENCER NETWORK',
-  },
-  {
-    token_id: 'CHERRYX',
-    name: 'CHERRY X',
-    description: 'Premium AI-generated adult content platform. Token-gated galleries, AI character customization, and BSV micropayment integration.',
-    base_price_sats: 100,
-    image: 'https://www.cherryx.app/og.png',
-    link: 'https://www.cherryx.app',
-    tag: 'ADULT CONTENT',
-  },
-  {
-    token_id: 'AIGF',
-    name: 'AI GIRLFRIENDS',
-    description: 'AI girlfriend franchise platform. Each girlfriend runs on her own phone with OpenClaw. Operators buy the device, pay API credits, keep the profit.',
-    base_price_sats: 402,
-    image: 'https://aigirlfriends.website/og.png',
-    link: 'https://aigirlfriends.website',
-    tag: 'AI COMPANIONS',
-  },
-];
-
 const SAMPLE_SATIRE_TOKENS: FNewsToken[] = [
   {
     token_id: '402_BONES',
@@ -291,10 +251,8 @@ function FNewsCard({ token }: { token: FNewsToken }) {
 export default function MarketPage() {
   const [activeTab, setActiveTab] = useState('All Assets');
   const isFNews = activeTab === 'F.NEWS';
-  const isAdult = activeTab === 'Adult / XXX';
   const isAllAssets = activeTab === 'All Assets';
   const showFNews = isFNews || isAllAssets;
-  const showAdult = isAdult || isAllAssets;
 
   return (
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white font-mono">
@@ -366,7 +324,7 @@ export default function MarketPage() {
             Asset Class
           </div>
           <div className="flex flex-wrap gap-0 bg-zinc-100 dark:bg-zinc-900/20 border border-zinc-200 dark:border-zinc-800">
-            {['All Assets', 'F.NEWS', 'Adult / XXX', 'Video Streams', 'API Endpoints', 'Knowledge Bases', 'Scientific Data'].map((cat) => (
+            {['All Assets', 'F.NEWS', 'Video Streams', 'API Endpoints', 'Knowledge Bases', 'Scientific Data'].map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveTab(cat)}
@@ -399,55 +357,7 @@ export default function MarketPage() {
             </>
           )}
 
-          {showAdult && (
-            <>
-              {isAllAssets && (
-                <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-4 flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-pink-600 rounded-full" />
-                  ADULT / XXX — {ADULT_TOKENS.length} networks
-                </div>
-              )}
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-                {ADULT_TOKENS.map((token) => (
-                  <a
-                    key={token.token_id}
-                    href={token.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black hover:border-pink-500 dark:hover:border-pink-500 transition-colors"
-                  >
-                    <div className="aspect-video bg-zinc-100 dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-center relative overflow-hidden">
-                      <div className="absolute inset-0 bg-gradient-to-br from-pink-950/40 to-black flex items-center justify-center">
-                        <span className="text-4xl font-black text-white/10 font-mono">{token.token_id}</span>
-                      </div>
-                      <div className="absolute top-0 right-0 bg-black dark:bg-white text-white dark:text-black px-3 py-1 font-mono text-xs font-bold z-20">
-                        {token.base_price_sats} SAT
-                      </div>
-                      <div className="absolute bottom-0 left-0 bg-pink-600 text-white px-2 py-0.5 text-[8px] font-bold font-mono uppercase tracking-widest z-20">
-                        {token.tag}
-                      </div>
-                    </div>
-                    <div className="p-6 space-y-4">
-                      <div>
-                        <h3 className="font-bold text-lg tracking-tight uppercase">{token.name}</h3>
-                        <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">${token.token_id}</div>
-                      </div>
-                      <p className="text-xs text-zinc-500 font-mono h-12 leading-relaxed line-clamp-3">
-                        {token.description}
-                      </p>
-                      <div className="pt-4 border-t border-zinc-100 dark:border-zinc-900">
-                        <span className="inline-block py-3 w-full text-center bg-pink-600/10 hover:bg-pink-600/20 text-pink-500 text-[10px] font-bold uppercase tracking-widest transition-all">
-                          Visit Network
-                        </span>
-                      </div>
-                    </div>
-                  </a>
-                ))}
-              </div>
-            </>
-          )}
-
-          {!isFNews && !isAdult && !isAllAssets && (
+          {!isFNews && !isAllAssets && (
             <div className="border border-dashed border-zinc-300 dark:border-zinc-800 py-24 text-center bg-zinc-50 dark:bg-zinc-900/20">
               <div className="text-4xl mb-6 opacity-20">📡</div>
               <h3 className="text-sm font-bold uppercase tracking-[0.2em] mb-2">No Tokens Indexed</h3>
