@@ -34,7 +34,7 @@ const ADULT_TOKENS = [
     name: 'CHERRY X',
     description: 'Premium AI-generated adult content platform. Token-gated galleries, character customization, and BSV micropayment integration.',
     price: '100 SAT',
-    link: 'https://www.cherryx.app',
+    link: 'https://cherryx.space',
     tag: 'ADULT CONTENT',
     video: `${NPGX}/NPG-X-10/grok-video-4f69f678-55f3-4b51-ab11-aadbf662c48e.mp4`,
   },
@@ -408,7 +408,7 @@ export default function MarketPage() {
                     rel="noopener noreferrer"
                     className="group border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black hover:border-pink-500 dark:hover:border-pink-500 transition-colors"
                   >
-                    <div className="aspect-[9/16] max-h-[320px] bg-black border-b border-zinc-200 dark:border-zinc-800 relative overflow-hidden">
+                    <div className="aspect-[9/14] bg-black border-b border-zinc-200 dark:border-zinc-800 relative overflow-hidden">
                       <video
                         src={token.video}
                         muted
