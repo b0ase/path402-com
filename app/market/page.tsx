@@ -181,7 +181,11 @@ function FNewsCard({ token }: { token: FNewsToken }) {
         </div>
       )}
 
-      <div className="aspect-video bg-zinc-100 dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-center relative overflow-hidden">
+      <div
+        className="aspect-video bg-zinc-100 dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-center relative overflow-hidden cursor-pointer"
+        onMouseEnter={() => { if (!showVideo && !isPlaying) { setShowVideo(true); setIsPlaying(true); setPreviewTime(0); } }}
+        onMouseLeave={() => { if (!isUnlocked && isPlaying) { const vid = videoRef.current; if (vid) { vid.pause(); vid.currentTime = 0; } setIsPlaying(false); setShowVideo(false); setPreviewTime(0); } }}
+      >
         {token.image && !showVideo && (
           <img
             src={token.image}
@@ -197,6 +201,7 @@ function FNewsCard({ token }: { token: FNewsToken }) {
             poster={token.image}
             className="w-full h-full object-cover"
             playsInline
+            muted
             onTimeUpdate={handleVideoTimeUpdate}
             onLoadedData={handleVideoLoaded}
             onEnded={() => setIsPlaying(false)}
