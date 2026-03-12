@@ -34,10 +34,22 @@ export async function GET() {
 
       // API Endpoints (x402 compatible)
       endpoints: {
+        // x402 facilitator
         verify: 'https://path402.com/api/x402/verify',
         settle: 'https://path402.com/api/x402/settle',
         inscription: 'https://path402.com/api/x402/inscription/:id',
         stats: 'https://path402.com/api/x402/stats',
+        // Content/token resolution (public, CORS-enabled)
+        resolve: 'https://path402.com/api/content/resolve',
+        uhrp: 'https://path402.com/api/uhrp/resolve',
+      },
+
+      // X Protocol — subdomain activation
+      xProtocol: {
+        description: 'CNAME x402.yourdomain.com → path402.com to activate payments for your domain',
+        dnsRecord: 'x402.example.com CNAME path402.com',
+        txtRecord: '_x-protocol.example.com TXT "v=xp1; x402=1"',
+        resolveEndpoint: '/api/content/resolve?domain=example.com',
       },
 
       // Fee Structure
