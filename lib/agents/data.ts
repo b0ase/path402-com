@@ -188,7 +188,7 @@ export const AGENTS: Agent[] = [
     priceSats: 402,
     link: 'https://zerodice.store',
     image: '/zerodice-cinematic.jpg',
-    video: 'https://b0ase.com/videos/zero-dice-02.mp4',
+    video: '/zerodice-video.mp4',
     accent: ADULT_ACCENT,
   },
 ];
