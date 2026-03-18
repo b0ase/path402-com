@@ -135,3 +135,11 @@ export interface HandCashProfile {
   avatarUrl?: string;
   paymail: string;
 }
+
+// Chat message for P2P text chat over RTCDataChannel
+export interface ChatMessage {
+  id: string;
+  sender: string; // HandCash handle
+  text: string;
+  timestamp: number; // Unix milliseconds
+}

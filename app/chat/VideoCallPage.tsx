@@ -19,12 +19,19 @@ function formatDuration(secs: number): string {
   return `${m}:${s}`;
 }
 
+function getHandleFromCookie(): string {
+  if (typeof document === 'undefined') return 'You';
+  const match = document.cookie.match(/hc_handle=([^;]*)/);
+  return match ? decodeURIComponent(match[1]) : 'You';
+}
+
 export default function VideoCallPage() {
   const {
     callState,
     localStream,
     remoteStream,
     paymentChannel,
+    chatMessages,
     audioEnabled,
     videoEnabled,
     callDuration,
@@ -35,6 +42,7 @@ export default function VideoCallPage() {
     hangUp,
     toggleAudio,
     toggleVideo,
+    sendChatMessage,
     reset,
   } = useWebRTC();
 
@@ -42,10 +50,14 @@ export default function VideoCallPage() {
     usePaymentChannel(paymentChannel);
 
   const [roomId, setRoomId] = useState(generateRoomId);
+  const [chatInput, setChatInput] = useState('');
+  const [chatVisible, setChatVisible] = useState(true);
 
   const localPreviewRef = useRef<HTMLVideoElement>(null);
   const localPipRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
+  const chatMessagesEndRef = useRef<HTMLDivElement>(null);
+  const myHandle = getHandleFromCookie();
 
   // Attach local stream to preview (lobby) and PiP (connected)
   useEffect(() => {
@@ -76,98 +88,177 @@ export default function VideoCallPage() {
   const handleNewCall = useCallback(() => {
     reset();
     setRoomId(generateRoomId());
+    setChatInput('');
   }, [reset]);
+
+  // Auto-scroll to latest message
+  useEffect(() => {
+    chatMessagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages]);
+
+  const handleSendChat = useCallback(() => {
+    if (!chatInput.trim()) return;
+    sendChatMessage(chatInput.trim());
+    setChatInput('');
+  }, [chatInput, sendChatMessage]);
 
   // ── CONNECTED ──────────────────────────────────────────────
   if (callState === 'connected') {
     return (
-      <div className="fixed inset-0 bg-black z-50 flex flex-col font-mono">
-        {/* Remote Video */}
-        <div className="flex-1 relative min-h-0">
-          <video
-            ref={remoteVideoRef}
-            autoPlay
-            playsInline
-            className="w-full h-full object-cover"
-          />
-
-          {/* Live indicator */}
-          <div className="absolute top-4 left-4 flex items-center gap-2 bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded">
-            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-green-400">
-              Live &mdash; {formatDuration(callDuration)}
-            </span>
-          </div>
-
-          {/* Room badge */}
-          <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded">
-            <span className="text-[10px] font-mono text-zinc-400">
-              Room: {roomId}
-            </span>
-          </div>
-
-          {/* Local PiP */}
-          <div className="absolute bottom-4 right-4 w-36 md:w-48 aspect-video border border-zinc-700 rounded overflow-hidden bg-zinc-900 shadow-xl">
+      <div className="fixed inset-0 bg-black z-50 flex font-mono">
+        {/* Video Area */}
+        <div className="flex-1 flex flex-col min-h-0">
+          {/* Remote Video */}
+          <div className="flex-1 relative min-h-0">
             <video
-              ref={localPipRef}
+              ref={remoteVideoRef}
               autoPlay
-              muted
               playsInline
               className="w-full h-full object-cover"
             />
+
+            {/* Live indicator */}
+            <div className="absolute top-4 left-4 flex items-center gap-2 bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded">
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              <span className="text-[10px] font-bold uppercase tracking-widest text-green-400">
+                Live &mdash; {formatDuration(callDuration)}
+              </span>
+            </div>
+
+            {/* Room badge */}
+            <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded">
+              <span className="text-[10px] font-mono text-zinc-400">
+                Room: {roomId}
+              </span>
+            </div>
+
+            {/* Local PiP */}
+            <div className="absolute bottom-4 right-4 w-36 md:w-48 aspect-video border border-zinc-700 rounded overflow-hidden bg-zinc-900 shadow-xl">
+              <video
+                ref={localPipRef}
+                autoPlay
+                muted
+                playsInline
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+
+          {/* Token Ticker */}
+          <div className="border-t border-zinc-800 px-4 py-2 flex items-center justify-center gap-6 bg-zinc-950">
+            {isStreaming && (
+              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+            )}
+            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+              &uarr; Sent:{' '}
+              <span className="text-white tabular-nums">{tokensSent}</span> tok
+            </span>
+            <span className="text-zinc-700">|</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+              &darr; Recv:{' '}
+              <span className="text-white tabular-nums">{tokensReceived}</span>{' '}
+              tok
+            </span>
+            <span className="text-zinc-700">|</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-600">
+              $402/video &middot; 1 tok/sec
+            </span>
+          </div>
+
+          {/* Controls */}
+          <div className="px-4 py-4 flex justify-center gap-3 bg-zinc-950 border-t border-zinc-800">
+            <button
+              onClick={toggleAudio}
+              className={`px-5 py-2.5 border text-[10px] font-bold uppercase tracking-widest transition-colors ${
+                audioEnabled
+                  ? 'border-zinc-700 text-white hover:bg-zinc-800'
+                  : 'border-red-800 bg-red-900/50 text-red-400'
+              }`}
+            >
+              {audioEnabled ? 'Mic On' : 'Mic Off'}
+            </button>
+            <button
+              onClick={toggleVideo}
+              className={`px-5 py-2.5 border text-[10px] font-bold uppercase tracking-widest transition-colors ${
+                videoEnabled
+                  ? 'border-zinc-700 text-white hover:bg-zinc-800'
+                  : 'border-red-800 bg-red-900/50 text-red-400'
+              }`}
+            >
+              {videoEnabled ? 'Cam On' : 'Cam Off'}
+            </button>
+            <button
+              onClick={hangUp}
+              className="px-8 py-2.5 bg-red-600 hover:bg-red-700 text-white text-[10px] font-bold uppercase tracking-widest transition-colors"
+            >
+              End Call
+            </button>
+            <button
+              onClick={() => setChatVisible(!chatVisible)}
+              className="ml-auto px-4 py-2.5 border border-zinc-700 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-zinc-800 transition-colors md:hidden"
+            >
+              {chatVisible ? 'Hide' : 'Show'} Chat
+            </button>
           </div>
         </div>
 
-        {/* Token Ticker */}
-        <div className="border-t border-zinc-800 px-4 py-2 flex items-center justify-center gap-6 bg-zinc-950">
-          {isStreaming && (
-            <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-          )}
-          <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">
-            &uarr; Sent:{' '}
-            <span className="text-white tabular-nums">{tokensSent}</span> tok
-          </span>
-          <span className="text-zinc-700">|</span>
-          <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">
-            &darr; Recv:{' '}
-            <span className="text-white tabular-nums">{tokensReceived}</span>{' '}
-            tok
-          </span>
-          <span className="text-zinc-700">|</span>
-          <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-600">
-            $402/video &middot; 1 tok/sec
-          </span>
-        </div>
+        {/* Chat Panel */}
+        {chatVisible && (
+          <div className="w-80 md:w-96 flex flex-col border-l border-zinc-800 bg-black">
+            {/* Chat Header */}
+            <div className="px-4 py-3 border-b border-zinc-800">
+              <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+                Text Chat
+              </div>
+            </div>
 
-        {/* Controls */}
-        <div className="px-4 py-4 flex justify-center gap-3 bg-zinc-950 border-t border-zinc-800">
-          <button
-            onClick={toggleAudio}
-            className={`px-5 py-2.5 border text-[10px] font-bold uppercase tracking-widest transition-colors ${
-              audioEnabled
-                ? 'border-zinc-700 text-white hover:bg-zinc-800'
-                : 'border-red-800 bg-red-900/50 text-red-400'
-            }`}
-          >
-            {audioEnabled ? 'Mic On' : 'Mic Off'}
-          </button>
-          <button
-            onClick={toggleVideo}
-            className={`px-5 py-2.5 border text-[10px] font-bold uppercase tracking-widest transition-colors ${
-              videoEnabled
-                ? 'border-zinc-700 text-white hover:bg-zinc-800'
-                : 'border-red-800 bg-red-900/50 text-red-400'
-            }`}
-          >
-            {videoEnabled ? 'Cam On' : 'Cam Off'}
-          </button>
-          <button
-            onClick={hangUp}
-            className="px-8 py-2.5 bg-red-600 hover:bg-red-700 text-white text-[10px] font-bold uppercase tracking-widest transition-colors"
-          >
-            End Call
-          </button>
-        </div>
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto p-3 space-y-3 min-h-0">
+              {chatMessages.length === 0 ? (
+                <div className="text-[10px] text-zinc-600 text-center py-8">
+                  No messages yet
+                </div>
+              ) : (
+                chatMessages.map((msg) => (
+                  <div key={msg.id} className="text-[10px]">
+                    <div className="font-bold text-zinc-300">
+                      {msg.sender === myHandle ? 'You' : msg.sender}
+                    </div>
+                    <div className="text-zinc-400 break-words">{msg.text}</div>
+                    <div className="text-[8px] text-zinc-600 mt-0.5">
+                      {new Date(msg.timestamp).toLocaleTimeString()}
+                    </div>
+                  </div>
+                ))
+              )}
+              <div ref={chatMessagesEndRef} />
+            </div>
+
+            {/* Input */}
+            <div className="px-3 py-3 border-t border-zinc-800 flex gap-2">
+              <input
+                type="text"
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendChat();
+                  }
+                }}
+                placeholder="Type message..."
+                className="flex-1 bg-zinc-900 border border-zinc-700 rounded px-2 py-1.5 text-[10px] text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-500"
+              />
+              <button
+                onClick={handleSendChat}
+                disabled={!chatInput.trim()}
+                className="px-3 py-1.5 bg-green-600 hover:bg-green-700 disabled:bg-zinc-800 disabled:text-zinc-600 text-white text-[10px] font-bold uppercase tracking-widest transition-colors rounded"
+              >
+                Send
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     );
   }

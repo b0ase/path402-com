@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ICE_SERVERS } from './ice-servers';
 import { createSignaling, type Signaling, type SignalMessage } from './signaling';
+import type { ChatMessage } from '../types';
 
 export type CallState = 'idle' | 'lobby' | 'connecting' | 'connected' | 'ended';
 
@@ -11,6 +12,8 @@ export function useWebRTC() {
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [paymentChannel, setPaymentChannel] = useState<RTCDataChannel | null>(null);
+  const [chatChannel, setChatChannel] = useState<RTCDataChannel | null>(null);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [videoEnabled, setVideoEnabled] = useState(true);
   const [callDuration, setCallDuration] = useState(0);
@@ -24,11 +27,35 @@ export function useWebRTC() {
   const callStartRef = useRef(0);
   const pendingCandidatesRef = useRef<RTCIceCandidateInit[]>([]);
   const hasRemoteDescRef = useRef(false);
+  const roomIdRef = useRef<string | null>(null);
+
+  // Get hc_handle from cookie
+  const getHandleFromCookie = useCallback(() => {
+    if (typeof document === 'undefined') return 'anonymous';
+    const match = document.cookie.match(/hc_handle=([^;]*)/);
+    return match ? decodeURIComponent(match[1]) : 'anonymous';
+  }, []);
 
   // Keep ref in sync with state for async callbacks
   useEffect(() => {
     localStreamRef.current = localStream;
   }, [localStream]);
+
+  const persistChatMessages = useCallback(async (messages: ChatMessage[]) => {
+    if (messages.length === 0 || !roomIdRef.current) return;
+    try {
+      await fetch('/api/chat/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          room_id: roomIdRef.current,
+          messages,
+        }),
+      });
+    } catch (error) {
+      console.error('Failed to persist chat messages:', error);
+    }
+  }, []);
 
   const teardown = useCallback(() => {
     if (durationRef.current) clearInterval(durationRef.current);
@@ -39,9 +66,15 @@ export function useWebRTC() {
     hasRemoteDescRef.current = false;
     pendingCandidatesRef.current = [];
     setPaymentChannel(null);
+    setChatChannel(null);
     setRemoteStream(null);
+    // Persist chat messages before ending call
+    setChatMessages((msgs) => {
+      persistChatMessages(msgs);
+      return msgs;
+    });
     setCallState('ended');
-  }, []);
+  }, [persistChatMessages]);
 
   const addIceCandidate = useCallback(async (candidate: RTCIceCandidateInit) => {
     const pc = pcRef.current;
@@ -69,6 +102,31 @@ export function useWebRTC() {
       setCallDuration(Math.floor((Date.now() - callStartRef.current) / 1000));
     }, 1000);
   }, []);
+
+  const setupChatChannel = useCallback((channel: RTCDataChannel) => {
+    channel.onopen = () => setChatChannel(channel);
+    channel.onmessage = (event) => {
+      try {
+        const msg = JSON.parse(event.data) as ChatMessage;
+        setChatMessages((prev) => [...prev, msg]);
+      } catch (error) {
+        console.error('Failed to parse chat message:', error);
+      }
+    };
+    channel.onerror = (error) => console.error('Chat channel error:', error);
+  }, []);
+
+  const sendChatMessage = useCallback((text: string) => {
+    if (!chatChannel || chatChannel.readyState !== 'open') return;
+    const msg: ChatMessage = {
+      id: crypto.randomUUID(),
+      sender: getHandleFromCookie(),
+      text,
+      timestamp: Date.now(),
+    };
+    chatChannel.send(JSON.stringify(msg));
+    setChatMessages((prev) => [...prev, msg]);
+  }, [chatChannel, getHandleFromCookie]);
 
   const startPreview = useCallback(async () => {
     setMediaError(null);
@@ -100,6 +158,8 @@ export function useWebRTC() {
       const stream = localStreamRef.current;
       if (!stream) return;
       setCallState('connecting');
+      roomIdRef.current = roomId;
+      setChatMessages([]);
 
       const signaling = createSignaling(roomId, senderIdRef.current);
       signalingRef.current = signaling;
@@ -146,6 +206,10 @@ export function useWebRTC() {
       const dc = pc.createDataChannel('$402-payment', { ordered: true });
       dc.onopen = () => setPaymentChannel(dc);
 
+      // Create chat-text data channel (offerer creates it)
+      const chatDc = pc.createDataChannel('chat-text', { ordered: true });
+      setupChatChannel(chatDc);
+
       // Handle signaling messages
       signaling.onMessage(async (msg: SignalMessage) => {
         if (msg.type === 'ready') {
@@ -173,7 +237,7 @@ export function useWebRTC() {
 
       await signaling.ready;
     },
-    [teardown, startDurationTimer, addIceCandidate, flushCandidates]
+    [teardown, startDurationTimer, addIceCandidate, flushCandidates, setupChatChannel]
   );
 
   const joinRoom = useCallback(
@@ -181,6 +245,8 @@ export function useWebRTC() {
       const stream = localStreamRef.current;
       if (!stream) return;
       setCallState('connecting');
+      roomIdRef.current = roomId;
+      setChatMessages([]);
 
       const signaling = createSignaling(roomId, senderIdRef.current);
       signalingRef.current = signaling;
@@ -223,7 +289,7 @@ export function useWebRTC() {
       // Add local tracks
       stream.getTracks().forEach((t) => pc.addTrack(t, stream));
 
-      // Answerer receives data channel
+      // Answerer receives data channels
       pc.ondatachannel = (e) => {
         if (e.channel.label === '$402-payment') {
           const ch = e.channel;
@@ -232,6 +298,8 @@ export function useWebRTC() {
           } else {
             ch.onopen = () => setPaymentChannel(ch);
           }
+        } else if (e.channel.label === 'chat-text') {
+          setupChatChannel(e.channel);
         }
       };
 
@@ -266,7 +334,7 @@ export function useWebRTC() {
         payload: null,
       });
     },
-    [teardown, startDurationTimer, addIceCandidate, flushCandidates]
+    [teardown, startDurationTimer, addIceCandidate, flushCandidates, setupChatChannel]
   );
 
   const hangUp = useCallback(() => {
@@ -315,6 +383,7 @@ export function useWebRTC() {
     localStream,
     remoteStream,
     paymentChannel,
+    chatMessages,
     audioEnabled,
     videoEnabled,
     callDuration,
@@ -325,6 +394,7 @@ export function useWebRTC() {
     hangUp,
     toggleAudio,
     toggleVideo,
+    sendChatMessage,
     reset,
   };
 }
