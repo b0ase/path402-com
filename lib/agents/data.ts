@@ -33,6 +33,14 @@ export interface Agent {
   accent: AccentClasses;
 }
 
+export interface TokenGroup {
+  tokenAddress: string;   // e.g. 'ip_fnews'
+  tokenName: string;      // e.g. '$FNEWS'
+  agentIds: string[];     // which AGENTS belong to this group
+  description: string;
+  accent: AccentClasses;
+}
+
 const FNEWS_ACCENT: AccentClasses = {
   bg: 'bg-red-600',
   text: 'text-red-600',
@@ -203,4 +211,31 @@ export function getChannel(slug: string): Channel | undefined {
 
 export function getAgentsByChannel(slug: string): Agent[] {
   return AGENTS.filter((a) => a.channel === slug);
+}
+
+export const TOKEN_GROUPS: TokenGroup[] = [
+  {
+    tokenAddress: 'ip_npgx',
+    tokenName: '$NPGX',
+    agentIds: ['NPGX', 'CHERRYX', 'ZERODICE'],
+    description: 'Ninja Punk Girls universe — AI influencers, adult content, and DJ characters.',
+    accent: ADULT_ACCENT,
+  },
+  {
+    tokenAddress: 'ip_fnews',
+    tokenName: '$FNEWS',
+    agentIds: ['402_BONES', '402_CARLSBERG', '402_HOENS', '402_FLUENZA', '402_SMIRK', '402_KWEG', '402_FAYLOOR'],
+    description: 'F.NEWS synthetic media network — satirical AI characters and deepfake news.',
+    accent: FNEWS_ACCENT,
+  },
+];
+
+export function getTokenGroup(tokenAddress: string): TokenGroup | undefined {
+  return TOKEN_GROUPS.find((g) => g.tokenAddress === tokenAddress);
+}
+
+export function getAgentsForTokenGroup(tokenAddress: string): Agent[] {
+  const group = getTokenGroup(tokenAddress);
+  if (!group) return [];
+  return AGENTS.filter((a) => group.agentIds.includes(a.id));
 }
