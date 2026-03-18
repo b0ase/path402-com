@@ -145,42 +145,44 @@ export default function AgentCard({ agent, index }: { agent: Agent; index: numbe
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 rounded-lg max-w-5xl w-full overflow-hidden"
+              className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 rounded-lg max-w-6xl w-full"
             >
               {/* Landscape Layout: Media Left, Content Right */}
-              <div className="flex flex-col md:flex-row">
+              <div className="flex flex-col md:flex-row gap-8 p-8">
                 {/* Media Section */}
                 {(agent.image || agent.video) && (
-                  <div className="relative w-full md:w-2/5 h-64 md:h-96 bg-zinc-100 dark:bg-zinc-900 flex-shrink-0">
-                    {agent.video ? (
-                      <video
-                        src={agent.video}
-                        className="w-full h-full object-cover"
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                      />
-                    ) : agent.image ? (
-                      <Image src={agent.image} alt={agent.name} fill className="object-cover" />
-                    ) : null}
+                  <div className="w-full md:w-96 flex-shrink-0 flex items-center justify-center">
+                    <div className="w-full border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-900 aspect-video">
+                      {agent.video ? (
+                        <video
+                          src={agent.video}
+                          className="w-full h-full object-contain"
+                          autoPlay
+                          muted
+                          loop
+                          playsInline
+                        />
+                      ) : agent.image ? (
+                        <Image src={agent.image} alt={agent.name} fill className="object-contain" />
+                      ) : null}
+                    </div>
                   </div>
                 )}
 
                 {/* Content */}
-                <div className="p-8 space-y-6 flex-1">
-                {/* Header */}
-                <div>
-                  <h2 className="text-3xl font-black uppercase mb-2">{agent.name}</h2>
-                  <p className={`text-sm font-mono ${agent.accent.text}`}>{agent.tag}</p>
-                </div>
+                <div className="space-y-6 flex-1">
+              {/* Header */}
+              <div>
+                <h2 className="text-3xl font-black uppercase mb-2">{agent.name}</h2>
+                <p className={`text-sm font-mono ${agent.accent.text}`}>{agent.tag}</p>
+              </div>
 
-                {loading ? (
-                  <div className="py-8 text-center text-sm text-zinc-500">Loading price data...</div>
-                ) : (
-                  <>
-                    {/* Pricing Info */}
-                    <div className={`rounded-lg p-4 ${agent.accent.bg} text-white space-y-3`}>
+              {loading ? (
+                <div className="py-8 text-center text-sm text-zinc-500">Loading price data...</div>
+              ) : (
+                <>
+                  {/* Pricing Info */}
+                  <div className={`rounded-lg p-4 ${agent.accent.bg} text-white space-y-3`}>
                       <div>
                         <p className="text-xs opacity-75 mb-1">ONE PENNY GETS YOU</p>
                         <p className="text-3xl font-black">
@@ -193,73 +195,73 @@ export default function AgentCard({ agent, index }: { agent: Agent; index: numbe
                       </p>
                     </div>
 
-                    {/* Spend Input Section */}
-                    <div className="space-y-4">
-                      <div>
-                        <label className="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-3 block">
-                          How Much Do You Want To Spend?
-                        </label>
-                        <div className="flex items-center gap-3">
-                          <span className="text-2xl font-black">$</span>
-                          <input
-                            type="number"
-                            min="0.01"
-                            max={MAX_SPEND_USD}
-                            step="0.01"
-                            value={spendUsd}
-                            onChange={(e) => setSpendUsd(Math.min(parseFloat(e.target.value) || 0.01, MAX_SPEND_USD))}
-                            className="flex-1 px-4 py-3 text-2xl font-black font-mono bg-zinc-100 dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 rounded focus:outline-none focus:ring-2 focus:ring-pink-500"
-                          />
-                          <span className="text-sm text-zinc-500">USD</span>
-                        </div>
-                        {spendUsd > MAX_SPEND_USD && (
-                          <p className="text-xs text-red-500 mt-2">Max: ${MAX_SPEND_USD} (KYC required for larger amounts)</p>
-                        )}
+                  {/* Spend Input Section */}
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-3 block">
+                        How Much Do You Want To Spend?
+                      </label>
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl font-black">$</span>
+                        <input
+                          type="number"
+                          min="0.01"
+                          max={MAX_SPEND_USD}
+                          step="0.01"
+                          value={spendUsd}
+                          onChange={(e) => setSpendUsd(Math.min(parseFloat(e.target.value) || 0.01, MAX_SPEND_USD))}
+                          className="flex-1 px-4 py-3 text-2xl font-black font-mono bg-zinc-100 dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 rounded focus:outline-none focus:ring-2 focus:ring-pink-500"
+                        />
+                        <span className="text-sm text-zinc-500">USD</span>
                       </div>
-
-                      {/* Visual Breakdown */}
-                      <div className="bg-zinc-50 dark:bg-zinc-900/50 rounded-lg p-4 space-y-2">
-                        <p className="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-3">Your Purchase</p>
-                        <div className="flex justify-between items-baseline">
-                          <span className="text-sm text-zinc-600 dark:text-zinc-400">Amount:</span>
-                          <span className="text-xl font-black">${spendUsd.toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between items-baseline border-t border-zinc-200 dark:border-zinc-800 pt-2">
-                          <span className="text-sm text-zinc-600 dark:text-zinc-400">Tokens you'll get:</span>
-                          <span className={`text-2xl font-black ${agent.accent.text}`}>
-                            {estimatedTokens.toLocaleString()}
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-baseline text-xs text-zinc-500">
-                          <span>Price per token:</span>
-                          <span className="font-mono">${(spendUsd / estimatedTokens).toFixed(10)}</span>
-                        </div>
-                      </div>
+                      {spendUsd > MAX_SPEND_USD && (
+                        <p className="text-xs text-red-500 mt-2">Max: ${MAX_SPEND_USD} (KYC required for larger amounts)</p>
+                      )}
                     </div>
 
-                    {/* Buy Button */}
-                    <button
-                      onClick={handleBuy}
-                      disabled={spendUsd > MAX_SPEND_USD || estimatedTokens === 0}
-                      className={`w-full py-3.5 px-6 rounded-lg font-bold uppercase text-base tracking-widest transition-all ${
-                        spendUsd > MAX_SPEND_USD || estimatedTokens === 0
-                          ? 'opacity-50 cursor-not-allowed bg-zinc-300 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400'
-                          : `${agent.accent.bg} text-white hover:opacity-90 hover:shadow-lg`
-                      }`}
-                    >
-                      {isConnected ? `Buy ${estimatedTokens.toLocaleString()} Tokens` : 'Connect HandCash & Buy'}
-                    </button>
-                  </>
-                )}
+                    {/* Visual Breakdown */}
+                    <div className="bg-zinc-50 dark:bg-zinc-900/50 rounded-lg p-4 space-y-2">
+                      <p className="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-3">Your Purchase</p>
+                      <div className="flex justify-between items-baseline">
+                        <span className="text-sm text-zinc-600 dark:text-zinc-400">Amount:</span>
+                        <span className="text-xl font-black">${spendUsd.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between items-baseline border-t border-zinc-200 dark:border-zinc-800 pt-2">
+                        <span className="text-sm text-zinc-600 dark:text-zinc-400">Tokens you'll get:</span>
+                        <span className={`text-2xl font-black ${agent.accent.text}`}>
+                          {estimatedTokens.toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-baseline text-xs text-zinc-500">
+                        <span>Price per token:</span>
+                        <span className="font-mono">${(spendUsd / estimatedTokens).toFixed(10)}</span>
+                      </div>
+                    </div>
+                  </div>
 
-                  {/* Close Button */}
+                  {/* Buy Button */}
                   <button
-                    onClick={() => setIsOpen(false)}
-                    className="w-full py-2 text-xs font-mono text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 uppercase tracking-widest"
+                    onClick={handleBuy}
+                    disabled={spendUsd > MAX_SPEND_USD || estimatedTokens === 0}
+                    className={`w-full py-3.5 px-6 rounded-lg font-bold uppercase text-base tracking-widest transition-all ${
+                      spendUsd > MAX_SPEND_USD || estimatedTokens === 0
+                        ? 'opacity-50 cursor-not-allowed bg-zinc-300 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400'
+                        : `${agent.accent.bg} text-white hover:opacity-90 hover:shadow-lg`
+                    }`}
                   >
-                    Close
+                    {isConnected ? `Buy ${estimatedTokens.toLocaleString()} Tokens` : 'Connect HandCash & Buy'}
                   </button>
-                </div>
+                </>
+              )}
+
+                {/* Close Button */}
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="w-full py-2 text-xs font-mono text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 uppercase tracking-widest"
+                >
+                  Close
+                </button>
+              </div>
               </div>
             </motion.div>
           </motion.div>
