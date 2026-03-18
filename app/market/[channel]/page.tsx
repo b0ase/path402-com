@@ -85,8 +85,8 @@ export default function ChannelPage() {
             {channel.name} &mdash; {agents.length} {agents.length === 1 ? 'agent' : 'agents'}
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {agents.map((agent) => (
-              <AgentCard key={agent.id} agent={agent} />
+            {agents.map((agent, i) => (
+              <AgentCard key={agent.id} agent={agent} index={i} />
             ))}
           </div>
 
