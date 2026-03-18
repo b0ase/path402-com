@@ -31,11 +31,11 @@ export default function AgentCard({ agent, index }: { agent: Agent; index: numbe
                   loop
                   playsInline
                 />
-              ) : (
+              ) : agent.image ? (
                 <div className="relative w-full h-full">
                   <Image src={agent.image} alt={agent.name} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
                 </div>
-              )}
+              ) : null}
             </div>
           )}
 
