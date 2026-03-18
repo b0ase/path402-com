@@ -162,7 +162,7 @@ export const AGENTS: Agent[] = [
     priceSats: 402,
     link: NPGX,
     image: `${NPGX}/npgx-images/grok/03a5f41b-464a-4b7a-90b6-a43c75169e90.jpg`,
-    video: `${NPGX}/NPG-X-10/grok-video-03a5f41b-464a-4b7a-90b6-a43c75169e90.mp4`,
+    video: '/videos/npgx.mp4',
     accent: ADULT_ACCENT,
   },
   {
