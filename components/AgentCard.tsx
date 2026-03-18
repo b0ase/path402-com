@@ -150,28 +150,30 @@ export default function AgentCard({ agent, index }: { agent: Agent; index: numbe
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 rounded-lg max-w-2xl w-full overflow-hidden"
+              className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 rounded-lg max-w-5xl w-full overflow-hidden"
             >
-              {/* Media Section */}
-              {(agent.image || agent.video) && (
-                <div className="relative w-full h-64 bg-zinc-100 dark:bg-zinc-900">
-                  {agent.video ? (
-                    <video
-                      src={agent.video}
-                      className="w-full h-full object-cover"
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                    />
-                  ) : agent.image ? (
-                    <Image src={agent.image} alt={agent.name} fill className="object-cover" />
-                  ) : null}
-                </div>
-              )}
+              {/* Landscape Layout: Media Left, Content Right */}
+              <div className="flex flex-col md:flex-row">
+                {/* Media Section */}
+                {(agent.image || agent.video) && (
+                  <div className="relative w-full md:w-2/5 h-64 md:h-96 bg-zinc-100 dark:bg-zinc-900 flex-shrink-0">
+                    {agent.video ? (
+                      <video
+                        src={agent.video}
+                        className="w-full h-full object-cover"
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                      />
+                    ) : agent.image ? (
+                      <Image src={agent.image} alt={agent.name} fill className="object-cover" />
+                    ) : null}
+                  </div>
+                )}
 
-              {/* Content */}
-              <div className="p-8 space-y-6">
+                {/* Content */}
+                <div className="p-8 space-y-6 flex-1">
                 {/* Header */}
                 <div>
                   <h2 className="text-3xl font-black uppercase mb-2">{agent.name}</h2>
@@ -255,13 +257,14 @@ export default function AgentCard({ agent, index }: { agent: Agent; index: numbe
                   </>
                 )}
 
-                {/* Close Button */}
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="w-full py-2 text-xs font-mono text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 uppercase tracking-widest"
-                >
-                  Close
-                </button>
+                  {/* Close Button */}
+                  <button
+                    onClick={() => setIsOpen(false)}
+                    className="w-full py-2 text-xs font-mono text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 uppercase tracking-widest"
+                  >
+                    Close
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>
