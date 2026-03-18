@@ -143,75 +143,126 @@ export default function AgentCard({ agent, index }: { agent: Agent; index: numbe
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsOpen(false)}
-            className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 rounded-lg max-w-md w-full p-6 space-y-4"
+              className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 rounded-lg max-w-2xl w-full overflow-hidden"
             >
-              {/* Header */}
-              <div>
-                <h2 className="text-2xl font-black uppercase mb-1">{agent.name}</h2>
-                <p className="text-xs text-zinc-500">{agent.tag}</p>
-              </div>
-
-              {/* Spend Input */}
-              {loading ? (
-                <div className="py-6 text-center text-sm text-zinc-500">Loading...</div>
-              ) : (
-                <>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-zinc-500">Spend Amount (USD)</label>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-mono">$</span>
-                      <input
-                        type="number"
-                        min="0.01"
-                        max={MAX_SPEND_USD}
-                        step="0.01"
-                        value={spendUsd}
-                        onChange={(e) => setSpendUsd(Math.min(parseFloat(e.target.value) || 0.01, MAX_SPEND_USD))}
-                        className="flex-1 px-3 py-2 text-sm font-mono bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded focus:outline-none focus:ring-2 focus:ring-pink-500"
-                      />
-                    </div>
-                    {spendUsd > MAX_SPEND_USD && (
-                      <p className="text-xs text-red-500">Max: ${MAX_SPEND_USD}</p>
-                    )}
-                  </div>
-
-                  {/* Estimate */}
-                  {estimatedTokens > 0 && (
-                    <div className={`rounded px-3 py-2 ${agent.accent.bg} text-white`}>
-                      <p className="text-xs opacity-75">You will receive</p>
-                      <p className="text-lg font-black">{estimatedTokens.toLocaleString()} tokens</p>
-                    </div>
-                  )}
-
-                  {/* Buy Button */}
-                  <button
-                    onClick={handleBuy}
-                    disabled={spendUsd > MAX_SPEND_USD}
-                    className={`w-full py-2.5 px-4 rounded font-bold uppercase text-sm tracking-widest transition-all ${
-                      spendUsd > MAX_SPEND_USD
-                        ? 'opacity-50 cursor-not-allowed bg-zinc-300 dark:bg-zinc-700'
-                        : `${agent.accent.bg} text-white hover:opacity-90`
-                    }`}
-                  >
-                    {isConnected ? 'Buy Now' : 'Connect & Buy'}
-                  </button>
-                </>
+              {/* Media Section */}
+              {(agent.image || agent.video) && (
+                <div className="relative w-full h-64 bg-zinc-100 dark:bg-zinc-900">
+                  {agent.video ? (
+                    <video
+                      src={agent.video}
+                      className="w-full h-full object-cover"
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                    />
+                  ) : agent.image ? (
+                    <Image src={agent.image} alt={agent.name} fill className="object-cover" />
+                  ) : null}
+                </div>
               )}
 
-              {/* Close Button */}
-              <button
-                onClick={() => setIsOpen(false)}
-                className="w-full py-2 text-xs font-mono text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
-              >
-                Close
-              </button>
+              {/* Content */}
+              <div className="p-8 space-y-6">
+                {/* Header */}
+                <div>
+                  <h2 className="text-3xl font-black uppercase mb-2">{agent.name}</h2>
+                  <p className={`text-sm font-mono ${agent.accent.text}`}>{agent.tag}</p>
+                </div>
+
+                {loading ? (
+                  <div className="py-8 text-center text-sm text-zinc-500">Loading price data...</div>
+                ) : (
+                  <>
+                    {/* Pricing Info */}
+                    <div className={`rounded-lg p-4 ${agent.accent.bg} text-white space-y-3`}>
+                      <div>
+                        <p className="text-xs opacity-75 mb-1">ONE PENNY GETS YOU</p>
+                        <p className="text-3xl font-black">
+                          {(buyTokensAliceBond(0.01, tokenData?.total_supply ? tokenData.total_supply - tokenData.treasury_balance : 0).tokensAwarded).toLocaleString()}
+                        </p>
+                        <p className="text-xs opacity-75">tokens for $0.01</p>
+                      </div>
+                      <p className="text-xs opacity-90 border-t border-white/20 pt-3">
+                        As more tokens are purchased, you get fewer tokens per penny. Early buyers get the best deal on this ascending bonding curve.
+                      </p>
+                    </div>
+
+                    {/* Spend Input Section */}
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-3 block">
+                          How Much Do You Want To Spend?
+                        </label>
+                        <div className="flex items-center gap-3">
+                          <span className="text-2xl font-black">$</span>
+                          <input
+                            type="number"
+                            min="0.01"
+                            max={MAX_SPEND_USD}
+                            step="0.01"
+                            value={spendUsd}
+                            onChange={(e) => setSpendUsd(Math.min(parseFloat(e.target.value) || 0.01, MAX_SPEND_USD))}
+                            className="flex-1 px-4 py-3 text-2xl font-black font-mono bg-zinc-100 dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 rounded focus:outline-none focus:ring-2 focus:ring-pink-500"
+                          />
+                          <span className="text-sm text-zinc-500">USD</span>
+                        </div>
+                        {spendUsd > MAX_SPEND_USD && (
+                          <p className="text-xs text-red-500 mt-2">Max: ${MAX_SPEND_USD} (KYC required for larger amounts)</p>
+                        )}
+                      </div>
+
+                      {/* Visual Breakdown */}
+                      <div className="bg-zinc-50 dark:bg-zinc-900/50 rounded-lg p-4 space-y-2">
+                        <p className="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-3">Your Purchase</p>
+                        <div className="flex justify-between items-baseline">
+                          <span className="text-sm text-zinc-600 dark:text-zinc-400">Amount:</span>
+                          <span className="text-xl font-black">${spendUsd.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between items-baseline border-t border-zinc-200 dark:border-zinc-800 pt-2">
+                          <span className="text-sm text-zinc-600 dark:text-zinc-400">Tokens you'll get:</span>
+                          <span className={`text-2xl font-black ${agent.accent.text}`}>
+                            {estimatedTokens.toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-baseline text-xs text-zinc-500">
+                          <span>Price per token:</span>
+                          <span className="font-mono">${(spendUsd / estimatedTokens).toFixed(10)}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Buy Button */}
+                    <button
+                      onClick={handleBuy}
+                      disabled={spendUsd > MAX_SPEND_USD || estimatedTokens === 0}
+                      className={`w-full py-3.5 px-6 rounded-lg font-bold uppercase text-base tracking-widest transition-all ${
+                        spendUsd > MAX_SPEND_USD || estimatedTokens === 0
+                          ? 'opacity-50 cursor-not-allowed bg-zinc-300 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400'
+                          : `${agent.accent.bg} text-white hover:opacity-90 hover:shadow-lg`
+                      }`}
+                    >
+                      {isConnected ? `Buy ${estimatedTokens.toLocaleString()} Tokens` : 'Connect HandCash & Buy'}
+                    </button>
+                  </>
+                )}
+
+                {/* Close Button */}
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="w-full py-2 text-xs font-mono text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 uppercase tracking-widest"
+                >
+                  Close
+                </button>
+              </div>
             </motion.div>
           </motion.div>
         )}
