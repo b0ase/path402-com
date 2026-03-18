@@ -29,25 +29,50 @@ export default function AgentCard({ agent, index }: { agent: Agent; index: numbe
   useEffect(() => {
     if (!isOpen) return;
     const fetchTokenData = async () => {
+      let tokenAddress = 'ip_fnews'; // default
       try {
         setLoading(true);
-        // For now, use agent.id as a simple token address mapping
-        // In production, would need proper token address lookup
-        const tokenAddress = `ip_${agent.id.toLowerCase()}`;
+        // Map agent to token address based on channel/id
+        if (agent.id === 'NPGX') tokenAddress = 'ip_npgx';
+        else if (agent.id === 'CHERRYX') tokenAddress = 'ip_cherryx';
+        else if (agent.id === 'ZERODICE') tokenAddress = 'ip_zerodice';
+        else if (agent.channel === 'fnews') tokenAddress = 'ip_fnews';
+        else if (agent.channel === 'adult') tokenAddress = 'ip_npgx';
+
         const encodedAddress = encodeURIComponent(tokenAddress);
         const response = await fetch(`/api/tokens/${encodedAddress}`);
         if (response.ok) {
           const { token } = await response.json();
           setTokenData(token);
+        } else {
+          console.error('Token not found:', tokenAddress);
+          // Fallback mock data
+          setTokenData({
+            address: tokenAddress,
+            name: tokenAddress,
+            total_supply: 1_000_000_000,
+            treasury_balance: 950_000_000,
+            pricing_model: 'alice_bond',
+            max_supply: 1_000_000_000,
+          } as TokenData);
         }
       } catch (err) {
         console.error('Error fetching token:', err);
+        // Fallback mock data on error
+        setTokenData({
+          address: tokenAddress,
+          name: tokenAddress,
+          total_supply: 1_000_000_000,
+          treasury_balance: 950_000_000,
+          pricing_model: 'alice_bond',
+          max_supply: 1_000_000_000,
+        } as TokenData);
       } finally {
         setLoading(false);
       }
     };
     fetchTokenData();
-  }, [isOpen, agent.id]);
+  }, [isOpen, agent.id, agent.channel]);
 
   // Calculate tokens for spend amount
   useEffect(() => {
@@ -64,11 +89,16 @@ export default function AgentCard({ agent, index }: { agent: Agent; index: numbe
 
   const handleBuy = async () => {
     if (!isConnected) {
-      window.location.href = '/api/auth/handcash';
+      // Navigate to HandCash auth
+      window.location.href = `/api/auth/handcash`;
       return;
     }
     if (spendUsd > MAX_SPEND_USD) {
       alert(`Max $${MAX_SPEND_USD}. Contact support for larger amounts.`);
+      return;
+    }
+    if (estimatedTokens === 0) {
+      alert('Loading token data... Please try again.');
       return;
     }
     // Purchase would happen here via API
