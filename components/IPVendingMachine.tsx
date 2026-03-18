@@ -29,12 +29,23 @@ export default function IPVendingMachine({ tokenGroup, index }: VendingMachinePr
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [tokensPerPenny, setTokensPerPenny] = useState<number>(0);
+  const [spendUsd, setSpendUsd] = useState<number>(0.01);
+  const [estimatedTokens, setEstimatedTokens] = useState<number>(0);
+
+  const MAX_SPEND_USD = 10000;
 
   const agents = getAgentsForTokenGroup(tokenGroup.tokenAddress);
   const currentTier = getTierForBalance(userBalance);
   const percentSold = tokenData
     ? ((tokenData.total_supply - tokenData.treasury_balance) / tokenData.total_supply) * 100
     : 0;
+
+  // Calculate tokens for specified spend amount
+  useEffect(() => {
+    if (!tokenData) return;
+    const result = buyTokensAliceBond(spendUsd, tokenData.total_supply - tokenData.treasury_balance);
+    setEstimatedTokens(result.tokensAwarded);
+  }, [spendUsd, tokenData]);
 
   useEffect(() => {
     const fetchTokenData = async () => {
@@ -104,8 +115,12 @@ export default function IPVendingMachine({ tokenGroup, index }: VendingMachinePr
         return;
       }
 
-      // For now, trigger payment flow
-      // In real implementation, this would show payment QR
+      if (spendUsd > MAX_SPEND_USD) {
+        alert(`Maximum purchase is $${MAX_SPEND_USD}. Please contact support for larger amounts (KYC required).`);
+        return;
+      }
+
+      // Trigger payment flow with specified amount
       const encodedAddress = encodeURIComponent(tokenGroup.tokenAddress);
       const response = await fetch(`/api/tokens/${encodedAddress}`, {
         method: 'POST',
@@ -114,7 +129,7 @@ export default function IPVendingMachine({ tokenGroup, index }: VendingMachinePr
           'x-wallet-provider': 'handcash',
         },
         body: JSON.stringify({
-          amount_usd: 0.01,
+          amount_usd: spendUsd,
         }),
       });
 
@@ -129,6 +144,7 @@ export default function IPVendingMachine({ tokenGroup, index }: VendingMachinePr
       } else {
         const result = await response.json();
         alert(`Success! You received ${result.tokensAwarded} tokens`);
+        setSpendUsd(0.01); // Reset to minimum
         // Refresh balance
         location.reload();
       }
@@ -287,20 +303,58 @@ export default function IPVendingMachine({ tokenGroup, index }: VendingMachinePr
         )}
 
         {/* Buy Panel */}
-        <button
-          onClick={isConnected ? handleBuy : handleConnect}
-          className={`w-full py-3 px-4 rounded font-bold uppercase text-sm tracking-widest transition-all ${
-            isConnected
-              ? `${tokenGroup.accent.bg} text-white hover:opacity-90`
-              : 'bg-zinc-200 dark:bg-zinc-800 text-black dark:text-white hover:bg-zinc-300 dark:hover:bg-zinc-700'
-          }`}
-        >
-          {isConnected
-            ? userBalance > 0
-              ? `Buy More — ${tokensPerPenny.toLocaleString()} tokens/$0.01`
-              : `Buy Licence — ${tokensPerPenny.toLocaleString()} tokens/$0.01`
-            : 'Connect HandCash'}
-        </button>
+        {isConnected ? (
+          <div className="space-y-3">
+            {/* Spend Amount Input */}
+            <div>
+              <label className="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-2 block">
+                Spend Amount (USD)
+              </label>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-mono">$</span>
+                <input
+                  type="number"
+                  min="0.01"
+                  max={MAX_SPEND_USD}
+                  step="0.01"
+                  value={spendUsd}
+                  onChange={(e) => setSpendUsd(Math.min(parseFloat(e.target.value) || 0.01, MAX_SPEND_USD))}
+                  className="flex-1 px-3 py-2 text-sm font-mono bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded focus:outline-none focus:ring-2 focus:ring-pink-500"
+                />
+              </div>
+              {spendUsd > MAX_SPEND_USD && (
+                <p className="text-xs text-red-500 mt-1">Max: ${MAX_SPEND_USD}</p>
+              )}
+            </div>
+
+            {/* Estimated Tokens */}
+            <div className={`rounded px-3 py-2 ${tokenGroup.accent.bg} text-white`}>
+              <p className="text-xs opacity-75">You will receive</p>
+              <p className="text-lg font-black">{estimatedTokens.toLocaleString()} tokens</p>
+              <p className="text-[10px] opacity-75 mt-1">at current price (~${(spendUsd / estimatedTokens).toFixed(10)}/token)</p>
+            </div>
+
+            {/* Buy Button */}
+            <button
+              onClick={handleBuy}
+              disabled={spendUsd > MAX_SPEND_USD || estimatedTokens === 0}
+              className={`w-full py-3 px-4 rounded font-bold uppercase text-sm tracking-widest transition-all ${
+                spendUsd > MAX_SPEND_USD || estimatedTokens === 0
+                  ? 'opacity-50 cursor-not-allowed bg-zinc-300 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400'
+                  : `${tokenGroup.accent.bg} text-white hover:opacity-90`
+              }`}
+            >
+              {userBalance > 0 ? 'Buy More' : 'Buy Licence'}
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={handleConnect}
+            className="w-full py-3 px-4 rounded font-bold uppercase text-sm tracking-widest bg-zinc-200 dark:bg-zinc-800 text-black dark:text-white hover:bg-zinc-300 dark:hover:bg-zinc-700 transition-all"
+          >
+            Connect HandCash
+          </button>
+        )}
       </div>
     </motion.div>
   );
