@@ -114,6 +114,50 @@ export async function POST(request: NextRequest) {
         console.log(
           `[kyc-webhook] KYC approved for ${session.user_handle} — now eligible for high-value token purchases`
         );
+
+        // Write kyc/veriff strand to identity strands table
+        try {
+          const { data: holder } = await supabase
+            .from('path402_holders')
+            .select('id')
+            .eq('user_handle', session.user_handle)
+            .maybeSingle();
+
+          if (holder) {
+            const { data: identityToken } = await supabase
+              .from('path402_identity_tokens')
+              .select('id')
+              .eq('holder_id', holder.id)
+              .maybeSingle();
+
+            if (identityToken) {
+              const { error: strandError } = await supabase
+                .from('path401_identity_strands')
+                .upsert(
+                  {
+                    identity_token_id: identityToken.id,
+                    provider: 'veriff',
+                    strand_type: 'kyc',
+                    strand_subtype: 'veriff',
+                    label: 'Veriff KYC',
+                    source: 'veriff',
+                    on_chain: false,
+                  },
+                  { onConflict: 'identity_token_id,provider' }
+                );
+
+              if (strandError) {
+                console.error('[kyc-webhook] Failed to write strand:', strandError);
+              } else {
+                console.log(
+                  `[kyc-webhook] Strand kyc/veriff written for ${session.user_handle} — identity now Sovereign Lv.4`
+                );
+              }
+            }
+          }
+        } catch (strandErr) {
+          console.error('[kyc-webhook] Error writing strand:', strandErr);
+        }
       }
     } else if (status === 'declined') {
       await supabase

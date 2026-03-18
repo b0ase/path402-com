@@ -1,37 +1,35 @@
 /**
  * KYC Status Helper
- * Checks if a user is verified for high-value token purchases
+ * Client-safe functions for KYC verification
  */
-
-import { createAdminClient } from '@/lib/supabase/admin';
 
 export interface KycStatus {
   isVerified: boolean;
   status: 'unverified' | 'verified' | 'rejected' | 'pending';
-  verifiedAt?: string;
+  authenticated?: boolean;
 }
 
-export async function checkKycStatus(userHandle: string): Promise<KycStatus> {
+/**
+ * Check current user's KYC status (calls /api/kyc/status)
+ * Safe to call from client components
+ */
+export async function checkKycStatus(): Promise<KycStatus> {
   try {
-    const supabase = createAdminClient();
+    const response = await fetch('/api/kyc/status');
 
-    const { data: subject } = await supabase
-      .from('kyc_subjects')
-      .select('kyc_status, kyc_verified_at')
-      .eq('user_handle', userHandle)
-      .maybeSingle();
-
-    if (!subject) {
+    if (!response.ok) {
+      console.error('Failed to check KYC status:', response.statusText);
       return {
         isVerified: false,
         status: 'unverified',
       };
     }
 
+    const data = await response.json();
     return {
-      isVerified: subject.kyc_status === 'verified',
-      status: subject.kyc_status || 'unverified',
-      verifiedAt: subject.kyc_verified_at,
+      isVerified: data.isVerified,
+      status: data.status,
+      authenticated: data.authenticated,
     };
   } catch (error) {
     console.error('Error checking KYC status:', error);

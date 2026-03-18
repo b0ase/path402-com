@@ -91,8 +91,8 @@ export default function AgentCard({ agent, index }: { agent: Agent; index: numbe
     setIsConnected(!!handle);
     setUserHandle(handle);
 
-    if (handle && isOpen) {
-      checkKycStatus(handle).then(setKycStatus).catch(err => {
+    if (isOpen) {
+      checkKycStatus().then(setKycStatus).catch(err => {
         console.error('Failed to check KYC status:', err);
       });
     }
