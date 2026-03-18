@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useWallet } from '@/components/WalletProvider';
 import { formatSupply } from '@/lib/token';
+import { initiateKyc, type KycStatus } from '@/lib/kyc/status';
 import type { StrengthScore } from '@/lib/strand-strength';
 
 interface IdentityToken {
@@ -257,6 +258,44 @@ function PostMintView({ identity, strands, strength }: {
   strands: IdentityStrand[];
   strength: StrengthScore | null;
 }) {
+  const [kycStatus, setKycStatus] = useState<KycStatus>({ isVerified: false, status: 'unverified' });
+  const [kycInitiating, setKycInitiating] = useState(false);
+
+  // Check KYC status on mount
+  useEffect(() => {
+    const checkKyc = async () => {
+      try {
+        const response = await fetch('/api/kyc/status');
+        if (response.ok) {
+          const data = await response.json();
+          setKycStatus(data);
+        }
+      } catch (error) {
+        console.error('Failed to check KYC status:', error);
+      }
+    };
+    checkKyc();
+  }, []);
+
+  // Derive verification status from strands
+  const isKycVerified = strands.some(s => s.strand_type === 'kyc' && s.strand_subtype === 'veriff');
+  const isGithubLinked = strands.some(s => s.provider === 'github');
+
+  const handleKyc = async () => {
+    setKycInitiating(true);
+    try {
+      const verificationUrl = await initiateKyc('');
+      window.location.href = verificationUrl;
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Failed to initiate KYC');
+      setKycInitiating(false);
+    }
+  };
+
+  const handleGithubConnect = () => {
+    window.location.href = '/api/auth/github';
+  };
+
   return (
     <div className="mt-8 space-y-6">
       {/* Identity Header */}
@@ -267,15 +306,12 @@ function PostMintView({ identity, strands, strength }: {
               <h2 className="text-3xl font-mono font-bold text-zinc-900 dark:text-white">{identity.symbol}</h2>
               <StatusBadge status={identity.broadcast_status} />
             </div>
-            <div className="flex items-center gap-2 text-xs font-mono text-zinc-500">
-              <span>Token ID: {identity.token_id.slice(0, 16)}...{identity.token_id.slice(-8)}</span>
-              <CopyButton text={identity.token_id} />
-            </div>
-            {identity.issuer_address && (
-              <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 dark:text-zinc-600 mt-1">
-                <span>Issuer: {identity.issuer_address.slice(0, 20)}...</span>
-                <CopyButton text={identity.issuer_address} />
+            {strength ? (
+              <div className="mt-2">
+                <StrengthBadge strength={strength} strandCount={strands.length} />
               </div>
+            ) : (
+              <span className="text-xs font-mono text-zinc-400 dark:text-zinc-600">No identity strands linked</span>
             )}
           </div>
 
@@ -284,29 +320,137 @@ function PostMintView({ identity, strands, strength }: {
             <div className="text-2xl font-mono font-bold text-zinc-900 dark:text-white">
               {formatSupply(identity.total_supply, identity.decimals)}
             </div>
-            <div className="text-[10px] font-mono text-zinc-500">
-              {identity.decimals} decimals &middot; {identity.access_rate} tok/sec
-            </div>
           </div>
         </div>
       </div>
 
-      {/* Info Panels */}
+      {/* VERIFY IDENTITY - KYC Section */}
+      <div className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-900 p-6">
+        <div className="flex items-start justify-between gap-4 mb-4">
+          <div>
+            <div className="text-[9px] text-zinc-400 dark:text-zinc-600 uppercase tracking-widest mb-2">Verify Identity</div>
+            <h3 className="text-lg font-mono font-bold text-zinc-900 dark:text-white uppercase mb-1">Veriff KYC</h3>
+            <p className="text-xs font-mono text-zinc-500">
+              {isKycVerified ? (
+                <span className="text-emerald-600 dark:text-emerald-400">✓ Verified — Sovereign Lv.4 (+10pts)</span>
+              ) : (
+                <span>Complete identity verification via Veriff to unlock high-value purchases and dividend claims</span>
+              )}
+            </p>
+          </div>
+          {!isKycVerified && (
+            <button
+              onClick={handleKyc}
+              disabled={kycInitiating}
+              className="px-4 py-2 bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50 font-mono text-xs uppercase tracking-widest rounded transition-all shrink-0"
+            >
+              {kycInitiating ? 'Redirecting...' : 'Verify Now'}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* LINK ACCOUNTS - Social OAuth Section */}
+      <div className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-900 p-6">
+        <div className="mb-4">
+          <div className="text-[9px] text-zinc-400 dark:text-zinc-600 uppercase tracking-widest mb-2">Link Accounts</div>
+          <h3 className="text-lg font-mono font-bold text-zinc-900 dark:text-white uppercase">Social Verification</h3>
+          <p className="text-xs font-mono text-zinc-500 mt-2">Link GitHub, Twitter, and other accounts to strengthen your identity</p>
+        </div>
+
+        <div className="space-y-2">
+          {/* GitHub */}
+          <div className="flex items-center justify-between bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-3 rounded">
+            <div className="flex items-center gap-3">
+              <span className="font-mono font-bold text-zinc-900 dark:text-white text-sm">GitHub</span>
+              <span className="text-[9px] font-mono text-zinc-500">+2pts (Basic)</span>
+            </div>
+            {isGithubLinked ? (
+              <span className="text-emerald-600 dark:text-emerald-400 font-mono text-xs font-bold">✓ Linked</span>
+            ) : (
+              <button
+                onClick={handleGithubConnect}
+                className="px-3 py-1 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 font-mono text-xs uppercase tracking-widest rounded transition-all"
+              >
+                Connect →
+              </button>
+            )}
+          </div>
+
+          {/* Twitter - Coming Soon */}
+          <div className="flex items-center justify-between bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-3 rounded opacity-60">
+            <div className="flex items-center gap-3">
+              <span className="font-mono font-bold text-zinc-900 dark:text-white text-sm">Twitter</span>
+              <span className="text-[9px] font-mono text-zinc-500">+1pt</span>
+            </div>
+            <span className="text-zinc-400 dark:text-zinc-600 font-mono text-xs uppercase tracking-widest">coming soon</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ELIGIBILITY - What Unlocks */}
+      <div className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6">
+        <div className="mb-4">
+          <div className="text-[9px] text-zinc-400 dark:text-zinc-600 uppercase tracking-widest mb-2">Eligibility</div>
+          <h3 className="text-lg font-mono font-bold text-zinc-900 dark:text-white uppercase">What This Unlocks</h3>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className={`p-3 border rounded ${strength?.level === 'basic' ? 'bg-blue-500/10 border-blue-500/30' : 'border-zinc-200 dark:border-zinc-800'}`}>
+            <div className="text-[9px] font-mono uppercase tracking-widest text-zinc-500 mb-1">Basic</div>
+            <p className="text-xs font-mono text-zinc-600 dark:text-zinc-400">Identity token + 1 strand</p>
+          </div>
+
+          <div className={`p-3 border rounded ${strength?.level === 'verified' ? 'bg-purple-500/10 border-purple-500/30' : 'border-zinc-200 dark:border-zinc-800'}`}>
+            <div className="text-[9px] font-mono uppercase tracking-widest text-zinc-500 mb-1">Verified</div>
+            <p className="text-xs font-mono text-zinc-600 dark:text-zinc-400">ID document + vending machine</p>
+          </div>
+
+          <div className={`p-3 border rounded ${strength?.level === 'strong' ? 'bg-amber-500/10 border-amber-500/30' : 'border-zinc-200 dark:border-zinc-800'}`}>
+            <div className="text-[9px] font-mono uppercase tracking-widest text-zinc-500 mb-1">Strong</div>
+            <p className="text-xs font-mono text-zinc-600 dark:text-zinc-400">Paid signing + attestation</p>
+          </div>
+
+          <div className={`p-3 border rounded ${strength?.level === 'sovereign' ? 'bg-emerald-500/10 border-emerald-500/30' : 'border-zinc-200 dark:border-zinc-800'}`}>
+            <div className="text-[9px] font-mono uppercase tracking-widest text-zinc-500 mb-1">Sovereign</div>
+            <p className="text-xs font-mono text-zinc-600 dark:text-zinc-400">KYC verified + all unlocks</p>
+          </div>
+        </div>
+      </div>
+
+      {/* STRANDS - Verification Details */}
+      <div className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-900 p-6">
+        <div className="mb-4">
+          <div className="text-[9px] text-zinc-400 dark:text-zinc-600 uppercase tracking-widest mb-2">Verification Details</div>
+          <h3 className="text-lg font-mono font-bold text-zinc-900 dark:text-white uppercase">Strands</h3>
+        </div>
+
+        {strands.length > 0 ? (
+          <StrandList strands={strands} />
+        ) : (
+          <p className="text-xs font-mono text-zinc-400 dark:text-zinc-600">
+            No strands linked yet. Complete KYC or link a social account to build your identity.
+          </p>
+        )}
+      </div>
+
+      {/* TOKEN DATA - Raw Info */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-900 p-4">
-          <div className="text-[9px] text-zinc-400 dark:text-zinc-600 uppercase tracking-widest mb-1">Balance</div>
-          <div className="text-xl font-mono font-bold text-zinc-900 dark:text-white">
-            {formatSupply(identity.total_supply, identity.decimals)}
+          <div className="text-[9px] text-zinc-400 dark:text-zinc-600 uppercase tracking-widest mb-1">Token ID</div>
+          <div className="text-xs font-mono text-zinc-900 dark:text-white break-all">
+            {identity.token_id.slice(0, 16)}...
+            <CopyButton text={identity.token_id} />
           </div>
         </div>
         <div className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-900 p-4">
           <div className="text-[9px] text-zinc-400 dark:text-zinc-600 uppercase tracking-widest mb-1">Broadcast</div>
-          <div className="text-sm font-mono text-zinc-900 dark:text-white mt-1">
+          <div className="text-xs font-mono text-zinc-900 dark:text-white">
             {identity.broadcast_txid ? (
-              <span className="flex items-center gap-2">
+              <>
                 {identity.broadcast_txid.slice(0, 16)}...
                 <CopyButton text={identity.broadcast_txid} />
-              </span>
+              </>
             ) : (
               <span className="text-zinc-400 dark:text-zinc-600">Not broadcast yet</span>
             )}
@@ -314,13 +458,13 @@ function PostMintView({ identity, strands, strength }: {
         </div>
         <div className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-900 p-4">
           <div className="text-[9px] text-zinc-400 dark:text-zinc-600 uppercase tracking-widest mb-1">Created</div>
-          <div className="text-sm font-mono text-zinc-900 dark:text-white mt-1">
+          <div className="text-xs font-mono text-zinc-900 dark:text-white">
             {new Date(identity.created_at).toLocaleDateString()}
           </div>
         </div>
       </div>
 
-      {/* Inscription Data */}
+      {/* BSV21 Inscription */}
       {identity.inscription_data && (
         <div className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-900 p-4">
           <div className="flex items-center justify-between mb-2">
@@ -332,46 +476,6 @@ function PostMintView({ identity, strands, strength }: {
           </pre>
         </div>
       )}
-
-      {/* $401 Identity Verification */}
-      <div className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <div className="text-[9px] text-zinc-400 dark:text-zinc-600 uppercase tracking-widest mb-1">$401 Identity Verification</div>
-            {strength ? (
-              <StrengthBadge strength={strength} strandCount={strands.length} />
-            ) : (
-              <span className="text-xs font-mono text-zinc-400 dark:text-zinc-600">No identity strands linked</span>
-            )}
-          </div>
-          <div className="flex gap-2">
-            <a
-              href="https://path401.com/identity"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[10px] font-mono uppercase tracking-widest px-3 py-1.5 border border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors"
-            >
-              Manage Strands
-            </a>
-            <a
-              href="https://bit-sign.online"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[10px] font-mono uppercase tracking-widest px-3 py-1.5 border border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors"
-            >
-              Verify Lv.2+
-            </a>
-          </div>
-        </div>
-
-        {strands.length > 0 && <StrandList strands={strands} />}
-
-        {strands.length === 0 && (
-          <p className="text-xs font-mono text-zinc-400 dark:text-zinc-600 mt-2">
-            Link OAuth providers or submit verification documents at path401.com to increase your identity level.
-          </p>
-        )}
-      </div>
     </div>
   );
 }
@@ -422,6 +526,8 @@ export default function IdentityPage() {
         return;
       }
       setIdentity(data.identity);
+      setStrands(data.strands || []);
+      setStrength(data.strength || null);
     } catch {
       setMintError('Network error');
     } finally {
@@ -466,19 +572,16 @@ export default function IdentityPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-black pt-20 px-6 md:px-16 pb-20">
       <div className="max-w-[1920px] mx-auto">
-        <div className="mb-2">
+        <div className="mb-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-[10px] uppercase tracking-widest text-zinc-500 mb-4">
             HTTP_401: IDENTITY_REQUIRED
           </div>
           <div className="text-[10px] text-zinc-400 dark:text-zinc-600 uppercase tracking-widest mb-1">
-            Identity Token // Self-Sovereign Issuance
+            Identity Hub // KYC + Socials + Strands
           </div>
           <h1 className="text-3xl font-mono font-bold text-zinc-900 dark:text-white uppercase tracking-tight">
             DIGITAL DNA<span className="text-zinc-300 dark:text-zinc-700">.ID</span>
           </h1>
-          <p className="text-[10px] text-zinc-500 uppercase tracking-widest mt-2">
-            1B SUPPLY // 8 DECIMALS // 1 TOK/SEC // BSV21
-          </p>
         </div>
 
         {identity ? (
