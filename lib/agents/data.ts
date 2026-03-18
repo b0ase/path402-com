@@ -175,7 +175,7 @@ export const AGENTS: Agent[] = [
     priceSats: 100,
     link: 'https://cherryx.space',
     image: '/cherryx-hero.png',
-    video: '/cherryx-video.mp4',
+    video: '/videos/cherryx.mp4',
     accent: ADULT_ACCENT,
   },
   {
