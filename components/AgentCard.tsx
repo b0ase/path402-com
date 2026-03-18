@@ -111,16 +111,11 @@ export default function AgentCard({ agent, index }: { agent: Agent; index: numbe
 
         {/* Content */}
         <div className="p-6 space-y-4">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1">
-              <h3 className="text-lg font-black tracking-tight uppercase">{agent.name}</h3>
-              <span className={`inline-block mt-2 ${agent.accent.badgeBg} text-white px-2 py-0.5 text-[7px] font-bold font-mono uppercase tracking-widest`}>
-                {agent.tag}
-              </span>
-            </div>
-            <div className="text-right whitespace-nowrap">
-              <div className={`${agent.accent.text} font-black text-lg`}>{agent.price}</div>
-            </div>
+          <div>
+            <h3 className="text-lg font-black tracking-tight uppercase">{agent.name}</h3>
+            <span className={`inline-block mt-2 ${agent.accent.badgeBg} text-white px-2 py-0.5 text-[7px] font-bold font-mono uppercase tracking-widest`}>
+              {agent.tag}
+            </span>
           </div>
 
           <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed line-clamp-3">
