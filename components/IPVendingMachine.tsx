@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { getAgentsForTokenGroup } from '@/lib/agents/data';
 import { IP_LICENCE_TIERS, getTierForBalance } from '@/lib/licenceTiers';
+import { buyTokensAliceBond } from '@/lib/tokens/pricing';
 import type { TokenGroup } from '@/lib/agents/data';
 
 interface TokenData {
@@ -27,6 +28,7 @@ export default function IPVendingMachine({ tokenGroup, index }: VendingMachinePr
   const [isConnected, setIsConnected] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [tokensPerPenny, setTokensPerPenny] = useState<number>(0);
 
   const agents = getAgentsForTokenGroup(tokenGroup.tokenAddress);
   const currentTier = getTierForBalance(userBalance);
@@ -42,6 +44,10 @@ export default function IPVendingMachine({ tokenGroup, index }: VendingMachinePr
         if (!response.ok) throw new Error('Failed to fetch token data');
         const { token } = await response.json();
         setTokenData(token);
+
+        // Calculate tokens for $0.01 (1 penny in cents)
+        const result = buyTokensAliceBond(0.01, token.total_supply - token.treasury_balance);
+        setTokensPerPenny(result.tokensAwarded);
       } catch (err) {
         console.error('Error fetching token data:', err);
         setError('Failed to load token data');
@@ -289,7 +295,11 @@ export default function IPVendingMachine({ tokenGroup, index }: VendingMachinePr
               : 'bg-zinc-200 dark:bg-zinc-800 text-black dark:text-white hover:bg-zinc-300 dark:hover:bg-zinc-700'
           }`}
         >
-          {isConnected ? (userBalance > 0 ? 'Buy More' : 'Buy Licence — $0.01') : 'Connect HandCash'}
+          {isConnected
+            ? userBalance > 0
+              ? `Buy More — ${tokensPerPenny.toLocaleString()} tokens/$0.01`
+              : `Buy Licence — ${tokensPerPenny.toLocaleString()} tokens/$0.01`
+            : 'Connect HandCash'}
         </button>
       </div>
     </motion.div>
