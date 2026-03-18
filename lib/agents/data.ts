@@ -29,6 +29,7 @@ export interface Agent {
   priceSats: number;
   image?: string;
   video?: string;
+  videos?: string[]; // Multiple videos for carousel
   link?: string;
   accent: AccentClasses;
 }
