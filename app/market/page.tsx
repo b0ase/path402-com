@@ -1,12 +1,10 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { getChannels } from '@/lib/agents/data';
-import ChannelCard from '@/components/ChannelCard';
+import { AGENTS } from '@/lib/agents/data';
+import AgentCard from '@/components/AgentCard';
 
 export default function MarketPage() {
-  const channels = getChannels();
-
   return (
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white font-mono">
       <main className="w-full px-4 md:px-8 py-16 max-w-[1920px] mx-auto">
@@ -18,7 +16,7 @@ export default function MarketPage() {
             className="flex items-center gap-3 mb-4 text-zinc-500 text-xs tracking-widest uppercase"
           >
             <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-            Agent Channels
+            All Agents
           </motion.div>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -34,13 +32,13 @@ export default function MarketPage() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="text-zinc-500 max-w-lg"
           >
-            <b>Agent Channels.</b> Browse content networks and AI-driven characters propagated through the gossip protocol.
+            <b>Explore All Agents.</b> AI-driven characters, content creators, and experiences propagated through the gossip protocol.
           </motion.p>
         </header>
 
-        <section className="grid md:grid-cols-2 gap-8 max-w-4xl">
-          {channels.map((channel, i) => (
-            <ChannelCard key={channel.slug} channel={channel} index={i} />
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {AGENTS.map((agent, i) => (
+            <AgentCard key={agent.id} agent={agent} index={i} />
           ))}
         </section>
       </main>
