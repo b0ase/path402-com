@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { TOKEN_GROUPS } from '@/lib/agents/data';
 import IPVendingMachine from '@/components/IPVendingMachine';
+import VideoCarousel from '@/components/VideoCarousel';
 
 export default function MarketPage() {
   // Find NPG and FNEWS groups (in specific order)
@@ -57,6 +58,7 @@ export default function MarketPage() {
               </motion.div>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <IPVendingMachine key={npgxGroup.tokenAddress} tokenGroup={npgxGroup} index={0} />
+                <VideoCarousel />
               </div>
             </section>
           )}
