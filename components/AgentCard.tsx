@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { buyTokensAliceBond } from '@/lib/tokens/pricing';
+import { checkKycStatus, initiateKyc, type KycStatus } from '@/lib/kyc/status';
 import type { Agent } from '@/lib/agents/data';
 
 interface TokenData {
@@ -23,6 +24,9 @@ export default function AgentCard({ agent, index }: { agent: Agent; index: numbe
   const [isConnected, setIsConnected] = useState(false);
   const [tokenData, setTokenData] = useState<TokenData | null>(null);
   const [loading, setLoading] = useState(false);
+  const [userHandle, setUserHandle] = useState<string | null>(null);
+  const [kycStatus, setKycStatus] = useState<KycStatus>({ isVerified: false, status: 'unverified' });
+  const [kycInitiating, setKycInitiating] = useState(false);
   const href = agent.link || `/market/${agent.channel}/${agent.id}`;
 
   // Fetch token data when modal opens
@@ -81,11 +85,34 @@ export default function AgentCard({ agent, index }: { agent: Agent; index: numbe
     setEstimatedTokens(result.tokensAwarded);
   }, [spendUsd, tokenData]);
 
-  // Check if connected
+  // Check if connected and fetch KYC status
   useEffect(() => {
     const handle = localStorage.getItem('hc_handle');
     setIsConnected(!!handle);
-  }, []);
+    setUserHandle(handle);
+
+    if (handle && isOpen) {
+      checkKycStatus(handle).then(setKycStatus).catch(err => {
+        console.error('Failed to check KYC status:', err);
+      });
+    }
+  }, [isOpen]);
+
+  const handleKyc = async () => {
+    if (!userHandle) {
+      alert('Please connect HandCash first');
+      return;
+    }
+    setKycInitiating(true);
+    try {
+      const verificationUrl = await initiateKyc(userHandle);
+      window.location.href = verificationUrl;
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Failed to initiate KYC';
+      alert(msg);
+      setKycInitiating(false);
+    }
+  };
 
   const handleBuy = async () => {
     if (!isConnected) {
@@ -93,10 +120,23 @@ export default function AgentCard({ agent, index }: { agent: Agent; index: numbe
       window.location.href = `/api/auth/handcash`;
       return;
     }
-    if (spendUsd > MAX_SPEND_USD) {
-      alert(`Max $${MAX_SPEND_USD}. Contact support for larger amounts.`);
+
+    // Check KYC for high-value purchases
+    if (spendUsd > 10000 && !kycStatus.isVerified) {
+      const proceed = confirm(
+        `Purchases over $10,000 require KYC verification. Complete KYC now?`
+      );
+      if (proceed) {
+        handleKyc();
+      }
       return;
     }
+
+    if (spendUsd > MAX_SPEND_USD && !kycStatus.isVerified) {
+      alert(`Max $${MAX_SPEND_USD} without KYC verification.`);
+      return;
+    }
+
     if (estimatedTokens === 0) {
       alert('Loading token data... Please try again.');
       return;
@@ -268,6 +308,20 @@ export default function AgentCard({ agent, index }: { agent: Agent; index: numbe
                       </div>
                     </div>
                   </div>
+
+                  {/* KYC Status Badge */}
+                  {isConnected && spendUsd > 10000 && (
+                    <div className="rounded-lg p-3 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800">
+                      <p className="text-xs font-mono text-amber-900 dark:text-amber-100">
+                        ⚠ HIGH VALUE PURCHASE
+                      </p>
+                      {kycStatus.isVerified ? (
+                        <p className="text-xs text-green-600 dark:text-green-400 mt-1">✓ KYC Verified</p>
+                      ) : (
+                        <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">KYC verification required</p>
+                      )}
+                    </div>
+                  )}
 
                   {/* Buy Button */}
                   <button
