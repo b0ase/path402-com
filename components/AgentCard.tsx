@@ -151,8 +151,8 @@ export default function AgentCard({ agent, index }: { agent: Agent; index: numbe
               <div className="flex flex-col md:flex-row gap-8 p-8">
                 {/* Media Section */}
                 {(agent.image || agent.video) && (
-                  <div className="w-full md:w-96 flex-shrink-0 flex items-center justify-center">
-                    <div className="w-full border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-900 aspect-video">
+                  <div className="w-full md:w-auto md:min-w-96 flex-shrink-0 flex items-center justify-center md:h-[600px]">
+                    <div className="w-full md:max-w-96 border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-900">
                       {agent.video ? (
                         <video
                           src={agent.video}
