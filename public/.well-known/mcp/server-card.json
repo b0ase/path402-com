@@ -1,0 +1,27 @@
+{
+  "serverInfo": {
+    "name": "path402",
+    "version": "1.3.2",
+    "description": "AI agents discover, acquire, and re-serve tokenised web content via the $402 protocol"
+  },
+  "tools": [
+    { "name": "path402_discover", "description": "Probe a $address — get pricing, supply, revenue model, and nested paths" },
+    { "name": "path402_batch_discover", "description": "Discover multiple $addresses in one call" },
+    { "name": "path402_evaluate", "description": "Budget check — should the agent acquire this token? Returns recommendation + ROI estimate" },
+    { "name": "path402_economics", "description": "Deep financial analysis — breakeven, projections, scenarios for a $address" },
+    { "name": "path402_price_schedule", "description": "View price progression across supply levels for a token" },
+    { "name": "path402_acquire", "description": "Pay for and acquire a token — agent holds token and can serve content" },
+    { "name": "path402_wallet", "description": "View balance, holdings, net P&L, and serving revenue" },
+    { "name": "path402_set_budget", "description": "Configure agent spending parameters" },
+    { "name": "path402_serve", "description": "Distribute content you hold to other agents/users and earn revenue" },
+    { "name": "path402_servable", "description": "List all content you can serve (inventory check)" },
+    { "name": "path402_token_stats", "description": "On-chain token statistics for a $address" },
+    { "name": "path402_holders", "description": "List token holders for a $address" },
+    { "name": "path402_verify", "description": "Verify token ownership — check if an address holds a specific token" },
+    { "name": "path402_connect_wallet", "description": "Connect an external BSV wallet for on-chain operations" },
+    { "name": "path402_mine_status", "description": "Check Proof of Indexing mining status" },
+    { "name": "path402_x402", "description": "x402 agent chaining — orchestrate cross-chain payments (BSV, Base, Solana, ETH)" }
+  ],
+  "resources": [],
+  "prompts": []
+}
