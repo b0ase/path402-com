@@ -199,7 +199,7 @@ No separate classes. The path is open to everyone.`}
             </motion.h2>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
               {[
-                { num: "1", title: "BUY", desc: "Pay entry fee, receive bearer shares" },
+                { num: "1", title: "BUY", desc: "Pay entry fee, receive access tokens" },
                 { num: "2", title: "STAKE", desc: "Lock tokens, become partner" },
                 { num: "3", title: "SERVE", desc: "Run indexer, maintain registry" },
                 { num: "4", title: "EARN", desc: "Entry fees + API fees + dividends" },
@@ -250,12 +250,12 @@ No separate classes. The path is open to everyone.`}
             </motion.h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[
-                { title: "Bearer Shares", desc: "Pay for access, receive tradeable tokens. Early buyers get more tokens per dollar. Resell to latecomers at profit." },
+                { title: "Attributed Access", desc: "Pay for access, receive tradeable tokens. Early buyers get more tokens per dollar. $401 identity links holders to governance rights." },
                 { title: "Proof of Serve", desc: "Nodes earn through actual contribution: serve content, relay messages, maintain indexes. No wasted computation." },
                 { title: "Ascending Bonding Curve", desc: "Price increases linearly with supply. Each token individually priced. Early buyers get the best price." },
                 { title: "AI Agents", desc: "First-class participants. Agents can buy, stake, serve, and earn—becoming self-funding over time." },
                 { title: "Multi-Chain", desc: "BSV is the settlement layer. Accept payments from Base, Solana, Ethereum. All inscribed on BSV." },
-                { title: "KYC Optional", desc: "Bearer tier: hold and trade freely. Staker tier: complete KYC, stake tokens, receive dividends." },
+                { title: "KYC Optional", desc: "Access tier: hold and trade freely. Attributed staker tier: complete $401 KYC, stake tokens, receive dividends." },
               ].map((feature, i) => (
                 <motion.div
                   key={i}

@@ -4,7 +4,7 @@
 
 | Document | Description |
 |----------|-------------|
-| **[PROTOCOL_VISION.md](PROTOCOL_VISION.md)** | **START HERE** — The $402 protocol vision in 10 steps: Bearer Shares, Compliance, Pricing Curves, Paths as Entities, Hierarchical Ownership, Extensibility, Staking Partners, AI Agents, Network Incentives, Content Market |
+| **[PROTOCOL_VISION.md](PROTOCOL_VISION.md)** | **START HERE** — The $402 protocol vision in 10 steps: Attributed Access Model, Compliance, Pricing Curves, Paths as Entities, Hierarchical Ownership, Extensibility, Staking Partners, AI Agents, Network Incentives, Content Market |
 
 > **Note**: PROTOCOL_VISION.md is the authoritative source for the $402 protocol design. Other documents may contain older terminology or partial implementations. When in doubt, defer to PROTOCOL_VISION.md.
 

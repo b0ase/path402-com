@@ -11,7 +11,7 @@ The BSV ecosystem already defines core plumbing that Path402 can build on:
 
 Path402’s **EARN / PoW20** layer is additive and not defined by existing BRCs yet.
 
-## Step 1: The Bearer Share Model
+## Step 1: The Attributed Access Model
 
 ### The Blockchain as a Directory
 
@@ -38,19 +38,21 @@ Tokens issued for content access come in different flavours:
 |------|-------------|-------|
 | **Receipts** | Proof of payment | Boring but useful |
 | **Tickets** | Entry pass | Not much different from receipts |
-| **Bearer Shares** | Ownership stake in access rights | Very interesting and valuable |
+| **Access Tokens** | Ownership stake in access rights | Very interesting and valuable |
 
-**The $402 protocol focuses exclusively on the Bearer Share model.**
+**The $402 protocol focuses exclusively on the Access Token model.**
 
-### The Bearer Share Model
+> **Important:** $402 tokens are not bearer shares. Bearer shares — anonymous governance instruments — were globally prohibited (UK 2015, Panama 2015, FATF 2022) because they permit anonymous exercise of ownership power. $402 tokens are *attributed access instruments*: freely transferable, but linked to verified identity via the $401 protocol for any governance or revenue function. This is a nominee structure — the same principle behind CREST, ADRs, and institutional equity custody.
+
+### The Attributed Access Model
 
 **Core mechanics:**
 
-1. **User visits a website** - They know they will receive bearer shares
+1. **User visits a website** - They know they will receive tradeable access tokens
 2. **Early visitors get disproportionately more** - The pricing curve rewards early adopters
 3. **Users are prepared to pay** - Because the incentive is aligned
 4. **They receive new information** - Content they could not access before
-5. **Bearer shares act as entry tickets** - They can sell them to others
+5. **Access tokens act as entry tickets** - They can sell them to others
 
 **Why this works:**
 
@@ -70,7 +72,7 @@ OR stake tokens for protocol revenue share
 
 ### Value Proposition
 
-| Stakeholder | Old Model | Bearer Share Model |
+| Stakeholder | Old Model | $402 Access Token Model |
 |-------------|-----------|-------------------|
 | **Creator** | Sells access once | Sells access + creates secondary market |
 | **Early User** | Pays, gets access | Pays, gets access + tradeable asset |
@@ -82,7 +84,7 @@ OR stake tokens for protocol revenue share
 The $402 protocol specifies:
 1. How HTTP 402 responses signal priced content
 2. How `$addresses` map to URLs (`$domain.com/$path`)
-3. How pricing curves work (sqrt_decay for bearer share model)
+3. How pricing curves work (sqrt_decay for access token model)
 4. How tokens are issued and transferred
 5. How access is granted based on token holdings
 
@@ -101,7 +103,7 @@ Entry Fee Paid
      │
      ├──► Split among current shareholders (dividends)
      │
-     └──► New user receives bearer shares
+     └──► New user receives access tokens
               │
               └──► Entitled to proportion of future entry fees
 ```
@@ -114,14 +116,14 @@ A site cannot legally:
 - Offer securities
 - Pay dividends to anonymous holders
 
-**Therefore:** Every site using the bearer share model must implement compliance.
+**Therefore:** Every site using the access token model must implement compliance.
 
 ### The Staking Mechanism
 
 To receive dividends, token holders must **stake** their shares at the site.
 
 **Staking requirements:**
-1. Hold bearer shares (tokens)
+1. Hold access tokens
 2. Present KYC documents to the site or a KYC provider (e.g., Veriff)
 3. Pass identity verification
 4. Register on the site's **Registry of Members**
@@ -149,7 +151,7 @@ Every compliant site maintains a registry:
 1. User connects wallet (HandCash with $ prefix)
 2. User signs to prove identity
 3. User gains entry to gated content
-4. User receives bearer shares to their public address
+4. User receives access tokens to their public address
 
 **Staking for Dividends:**
 1. User requests to stake tokens
@@ -158,7 +160,7 @@ Every compliant site maintains a registry:
 4. Staked tokens earn proportional dividends
 
 **Withdrawal and Sale:**
-1. User can withdraw bearer tokens at any time
+1. User can withdraw tokens at any time
 2. User can sell tokens on open market
 3. **No notification to site required**
 4. Registry remains unchanged until new holder stakes
@@ -171,7 +173,7 @@ The Registry of Members only changes when:
 - That user provides **KYC**
 - The registry updates to reflect new ownership
 
-**Bearer tokens are bearer instruments.** The site doesn't track transfers. It only tracks who has staked and passed KYC.
+**Tokens transfer freely between wallets.** The site doesn't track transfers. It only tracks who has staked and passed KYC. Identity attribution happens at the point of staking, not at the point of transfer.
 
 ### Implementation Requirements
 
@@ -191,10 +193,10 @@ For a site to be $402 compliant with dividends:
 
 | Tier | KYC | Dividends | Can Trade |
 |------|-----|-----------|-----------|
-| **Tier 1: Bearer** | No | No | Yes |
-| **Tier 2: Staker** | Yes | Yes | Yes |
+| **Tier 1: Access Only** | No | No | Yes |
+| **Tier 2: Attributed Staker** | Yes | Yes | Yes |
 
-Anyone can hold and trade bearer shares. Only KYC'd stakers receive dividends.
+Anyone can hold and trade access tokens. Only KYC'd stakers receive dividends.
 
 ---
 
@@ -412,7 +414,7 @@ Each `$path` is:
 
 | Property | Description |
 |----------|-------------|
-| Token | A tradeable bearer share |
+| Token | A freely tradeable access instrument |
 | Inscription | Anchored on blockchain with unique ID |
 | Pricing curve | Determines cost of entry |
 | Registry | List of shareholders |
@@ -1105,7 +1107,7 @@ x402 without $402:
 
 x402 with $402:
 - Payment verification ✓
-- Bearer share model ✓
+- Attributed access model ✓
 - Hierarchical ownership ✓
 - Staking partnerships ✓
 - Self-sustaining flywheel ✓

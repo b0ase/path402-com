@@ -213,20 +213,26 @@ function WhitepaperContent() {
         </div>
       </section>
 
-      {/* Step 1: Bearer Share Model */}
+      {/* Step 1: Attributed Access Model */}
       <section className="py-16 px-6 border-b border-zinc-200 dark:border-zinc-900">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-sm font-bold text-zinc-900 dark:text-white mb-2 uppercase tracking-wide">Step 1</h2>
-          <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-6">Bearer Share Model</h3>
+          <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-6">Attributed Access Model</h3>
 
           <p className="text-zinc-400 leading-relaxed mb-6">
             Old micropayment model: pay a fixed price, get access, done. No reason to be early. No network effect.
           </p>
 
           <p className="text-zinc-400 leading-relaxed mb-6">
-            <strong className="text-zinc-900 dark:text-white">$402 model:</strong> Pay for access, receive <em className="text-zinc-900 dark:text-white">bearer shares</em>.
-            These shares are tradeable. Early buyers get more shares per dollar spent. They can resell to latecomers at profit.
+            <strong className="text-zinc-900 dark:text-white">$402 model:</strong> Pay for access, receive <em className="text-zinc-900 dark:text-white">tradeable access tokens</em>.
+            These tokens transfer freely. Early buyers get more tokens per dollar spent. They can resell to latecomers at profit.
           </p>
+
+          <div className="border border-blue-200 dark:border-blue-900/50 bg-blue-50 dark:bg-blue-950/20 p-4 mb-6">
+            <p className="text-blue-800 dark:text-blue-400 text-sm">
+              <strong>$402 tokens are not bearer shares.</strong> Bearer shares — anonymous governance instruments — were globally prohibited (UK 2015, Panama 2015, FATF 2022) because they permit anonymous exercise of ownership power. $402 tokens are <em>attributed access instruments</em>: freely transferable like any digital asset, but linked to verified identity via the <span className="font-mono">$401</span> protocol for any governance or revenue function. This is a nominee structure — the same principle behind CREST, ADRs, and institutional equity custody. Free transfer is preserved. Beneficial ownership transparency is enforced where it matters.
+            </p>
+          </div>
 
           <div className="overflow-x-auto mb-6">
             <table className="w-full text-sm">
@@ -275,7 +281,7 @@ function WhitepaperContent() {
           <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-6">Compliance and Dividends</h3>
 
           <p className="text-zinc-400 leading-relaxed mb-6">
-            Bearer shares are permissionless—anyone can hold and trade them. But serving revenue requires identity compliance via the $401 protocol.
+            Access tokens are permissionless — anyone can hold and trade them. But governance and revenue rights require identity attribution via the $401 protocol. This is the distinction that makes $402 a legitimate nominee structure rather than a prohibited bearer instrument.
           </p>
 
           <div className="overflow-x-auto mb-6">
@@ -290,7 +296,7 @@ function WhitepaperContent() {
               </thead>
               <tbody className="text-zinc-400">
                 <tr className="border-b border-zinc-800">
-                  <td className="py-3 text-zinc-900 dark:text-white font-bold">Tier 1: Bearer</td>
+                  <td className="py-3 text-zinc-900 dark:text-white font-bold">Tier 1: Access Only</td>
                   <td className="py-3">No</td>
                   <td className="py-3">No</td>
                   <td className="py-3 text-green-400">Yes</td>
@@ -309,7 +315,7 @@ function WhitepaperContent() {
             <strong className="text-zinc-900 dark:text-white">To receive serving revenue:</strong>
           </p>
           <ol className="space-y-2 text-zinc-400 mb-6 list-decimal list-inside">
-            <li>Hold bearer shares (tokens)</li>
+            <li>Hold access tokens</li>
             <li>Complete $401 identity verification (KYC)</li>
             <li>Stake tokens on the network</li>
             <li>Appear on the Registry of Members</li>
@@ -317,7 +323,7 @@ function WhitepaperContent() {
           </ol>
 
           <p className="text-zinc-400 leading-relaxed">
-            The registry only updates when a new holder stakes and completes KYC. Bearer tokens are bearer instruments—the site doesn't track transfers.
+            The registry only updates when a new holder stakes and completes KYC. Tokens transfer freely between wallets — the site doesn't track transfers. Identity attribution happens at the point of staking, not at the point of transfer.
           </p>
         </div>
       </section>
@@ -381,7 +387,7 @@ $charlie.com/$alice/$blog/$post-1   → Specific deliverable`}
           <ul className="space-y-2 text-zinc-400 mb-6">
             <li className="flex gap-3">
               <span className="text-blue-400">→</span>
-              <span>A <strong className="text-zinc-900 dark:text-white">token</strong> — tradeable bearer share</span>
+              <span>A <strong className="text-zinc-900 dark:text-white">token</strong> — freely tradeable access instrument</span>
             </li>
             <li className="flex gap-3">
               <span className="text-blue-400">→</span>
@@ -632,6 +638,7 @@ $402:       $google.com        → Domain IS the equity`}
           <p className="text-zinc-400 leading-relaxed mb-6">
             <strong className="text-zinc-900 dark:text-white">$402 sits on top of x402.</strong> We don't compete with x402 — we complete it.
             Coinbase built x402 for micropayments. $402 adds the economics that make it a platform for internet-native equity.
+            A key distinction: x402 has no identity layer — it verifies payment, not payer. $402 integrates the <span className="font-mono text-blue-400">$401</span> identity protocol, which is what makes governance and revenue attribution legally operable and distinguishes $402 tokens from anonymous payment instruments.
           </p>
 
           <h4 className="text-xs font-bold text-zinc-500 mb-3 uppercase tracking-widest">AI Agents as First-Class Participants</h4>

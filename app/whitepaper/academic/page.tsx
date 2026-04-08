@@ -80,7 +80,7 @@ export default function AcademicWhitepaper() {
             The result is a self-sustaining flywheel where buying, serving, and staking are the
             same activity at different stages. No separate classes. No central infrastructure.
             Just aligned incentives all the way down. The protocol leverages HTTP 402 "Payment
-            Required" (reserved since 1999 but never defined), BSV-21 tokens for bearer shares,
+            Required" (reserved since 1999 but never defined), BSV-21 tokens as attributed access instruments,
             and PoW20 for network incentives.
           </p>
         </section>
@@ -104,8 +104,8 @@ export default function AcademicWhitepaper() {
             <p className="mb-2">
               Old micropayment models fail because they create no network effect. Pay a fixed
               price, get access, done. No reason to be early. The $402 model changes this:
-              pay for access, receive bearer shares. These shares are tradeable. Early buyers
-              get more shares per dollar spent. They can resell to latecomers at profit.
+              pay for access, receive tradeable access tokens. These tokens transfer freely. Early buyers
+              get more tokens per dollar spent. They can resell to latecomers at profit.
             </p>
           </section>
 
@@ -128,23 +128,31 @@ export default function AcademicWhitepaper() {
             </p>
           </section>
 
-          {/* 3. Bearer Share Model */}
+          {/* 3. Attributed Access Model */}
           <section className="mb-4 break-inside-avoid-column">
-            <h2 className="font-bold text-sm mb-2">3. Bearer Share Model</h2>
+            <h2 className="font-bold text-sm mb-2">3. Attributed Access Model</h2>
             <p className="mb-2">
-              Bearer shares are permissionless—anyone can hold and trade them. But dividends
-              require compliance. Two tiers exist:
+              $402 tokens are not bearer shares — bearer shares (anonymous governance instruments)
+              were globally prohibited by FATF in 2022. $402 tokens are attributed access
+              instruments: freely transferable, but linked to verified identity via the $401
+              protocol for any governance or revenue function. This is a nominee structure,
+              identical in principle to CREST, ADRs, and institutional equity custody.
             </p>
             <p className="mb-2">
-              <strong>Tier 1 (Bearer):</strong> No KYC, no dividends, can trade freely.
+              Access tokens are permissionless — anyone can hold and trade them. But governance
+              and revenue rights require identity attribution via $401. Two tiers exist:
             </p>
             <p className="mb-2">
-              <strong>Tier 2 (Staker):</strong> KYC required, receives dividends, appears on
+              <strong>Tier 1 (Access Only):</strong> No KYC, no dividends, can trade freely.
+            </p>
+            <p className="mb-2">
+              <strong>Tier 2 (Attributed Staker):</strong> $401 KYC required, receives dividends, appears on
               Registry of Members, can still trade.
             </p>
             <p className="mb-2">
-              The registry only updates when a new holder stakes and completes KYC. Bearer
-              tokens are bearer instruments—the site doesn't track transfers.
+              The registry only updates when a new holder stakes and completes KYC. Tokens
+              transfer freely between wallets — the site doesn't track transfers. Identity
+              attribution happens at the point of staking, not at the point of transfer.
             </p>
           </section>
 

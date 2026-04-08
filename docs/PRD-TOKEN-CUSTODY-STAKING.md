@@ -10,7 +10,7 @@
 
 This document specifies the token custody and staking system for $402. The system enables users to mine, hold, stake, and withdraw BSV-21 PoW20 tokens while maintaining proper custody boundaries and regulatory compliance.
 
-**Core Principle:** Tokens are bearer instruments. $402 tokens are 100% mined (PoW20 Hash-to-Mint). Staking requires $401 identity verification (KYC) to earn serving revenue.
+**Core Principle:** Tokens are freely transferable access instruments, attributed to verified identity via $401 for governance and revenue. $402 tokens are 100% mined (PoW20 Hash-to-Mint). Staking requires $401 identity verification (KYC) to earn serving revenue.
 
 ---
 
@@ -117,7 +117,7 @@ CREATE TABLE user_wallets (
 3. System calculates tokens via sqrt_decay curve
 4. User confirms and pays via HandCash to treasury
 5. **On payment success:** System sends BSV-21 transfer to user's derived address
-6. User now holds bearer instruments they control
+6. User now holds tokens they control
 
 **Key Points:**
 - Tokens go ON-CHAIN to user's address, not database credits
@@ -358,7 +358,7 @@ GET /api/revenue/pending
 - Their derived private key (via signature)
 - Decision to stake/unstake
 - Decision to withdraw
-- Their tokens (bearer instruments)
+- Their tokens (self-custodied)
 
 **Attack Vectors Mitigated:**
 | Attack | Mitigation |

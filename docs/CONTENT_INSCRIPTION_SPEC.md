@@ -6,7 +6,7 @@
 
 ## Overview
 
-This document specifies how creators inscribe **access tokens** (leaves) onto the $402 tree. Each inscription creates a tradeable bearer share representing **access rights**, not necessarily the content itself. The content can be a live stream, a dynamic API, or an off-chain feed that changes over time.
+This document specifies how creators inscribe **access tokens** (leaves) onto the $402 tree. Each inscription creates a freely tradeable access instrument representing **access rights**, not necessarily the content itself. The content can be a live stream, a dynamic API, or an off-chain feed that changes over time.
 
 **Pointer-first principle:** inscriptions are **pointers + policy**, not content blobs. Embedding data on-chain is optional and only used when you explicitly want immutable content.
 

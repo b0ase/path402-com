@@ -17,7 +17,7 @@ When you acquire $402 tokens:
 3. **You can withdraw** anytime with your signature
 4. **We never hold** your private keys
 
-**Your tokens are bearer instruments.** Like cash in your wallet, whoever controls the private key controls the tokens.
+**Your tokens are self-custodied.** Like cash in your wallet, whoever controls the private key controls the tokens.
 
 ---
 
@@ -212,7 +212,7 @@ Your Share = (Your Staked Tokens / Total Staked Tokens) × Serving Revenue Pool
 - Your private key (via signature)
 - Decision to stake/unstake
 - Decision to withdraw
-- Your tokens (bearer instruments)
+- Your tokens (self-custodied)
 
 ### What If We Get Hacked?
 

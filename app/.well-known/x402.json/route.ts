@@ -108,7 +108,7 @@ export async function GET() {
       // Staking Tiers
       stakingTiers: {
         tier1: {
-          name: 'Bearer (Permissionless)',
+          name: 'Access Only (Permissionless)',
           requirements: ['Hold tokens'],
           benefits: ['Transfer freely', 'Trade on exchanges', 'Serve content'],
         },
