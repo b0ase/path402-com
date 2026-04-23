@@ -40,8 +40,10 @@ export default function AgentCard({ agent, index }: { agent: Agent; index: numbe
         if (agent.id === 'NPGX') tokenAddress = 'ip_npgx';
         else if (agent.id === 'CHERRYX') tokenAddress = 'ip_cherryx';
         else if (agent.id === 'ZERODICE') tokenAddress = 'ip_zerodice';
+        else if (agent.id === 'BMOVIES') tokenAddress = 'ip_bmovies';
         else if (agent.channel === 'fnews') tokenAddress = 'ip_fnews';
         else if (agent.channel === 'adult') tokenAddress = 'ip_npgx';
+        else if (agent.channel === 'bmovies') tokenAddress = 'ip_bmovies';
 
         const encodedAddress = encodeURIComponent(tokenAddress);
         const response = await fetch(`/api/tokens/${encodedAddress}`);

@@ -25,7 +25,19 @@ export default async function Image({ params }: { params: Promise<{ channel: str
 
   const agents = getAgentsByChannel(slug);
   const isFnews = slug === 'fnews';
-  const accentColor = isFnews ? '#dc2626' : '#3b82f6';
+  const isBmovies = slug === 'bmovies';
+  const accentColor = isFnews ? '#dc2626' : isBmovies ? '#d97706' : '#3b82f6';
+  const gridRgb = isFnews ? '220, 38, 38' : isBmovies ? '217, 119, 6' : '59, 130, 246';
+  const glowRgba = isFnews
+    ? 'rgba(220, 38, 38, 0.1)'
+    : isBmovies
+      ? 'rgba(217, 119, 6, 0.1)'
+      : 'rgba(59, 130, 246, 0.08)';
+  const nameShadowRgba = isFnews
+    ? 'rgba(220, 38, 38, 0.4)'
+    : isBmovies
+      ? 'rgba(217, 119, 6, 0.4)'
+      : 'rgba(59, 130, 246, 0.4)';
 
   return new ImageResponse(
     (
@@ -50,8 +62,8 @@ export default async function Image({ params }: { params: Promise<{ channel: str
             right: 0,
             bottom: 0,
             backgroundImage: `
-              linear-gradient(rgba(${isFnews ? '220, 38, 38' : '59, 130, 246'}, 0.04) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(${isFnews ? '220, 38, 38' : '59, 130, 246'}, 0.04) 1px, transparent 1px)
+              linear-gradient(rgba(${gridRgb}, 0.04) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(${gridRgb}, 0.04) 1px, transparent 1px)
             `,
             backgroundSize: '40px 40px',
             display: 'flex',
@@ -66,7 +78,7 @@ export default async function Image({ params }: { params: Promise<{ channel: str
             left: '5%',
             width: '600px',
             height: '400px',
-            background: `radial-gradient(ellipse at center, ${isFnews ? 'rgba(220, 38, 38, 0.1)' : 'rgba(59, 130, 246, 0.08)'} 0%, transparent 70%)`,
+            background: `radial-gradient(ellipse at center, ${glowRgba} 0%, transparent 70%)`,
             display: 'flex',
           }}
         />
@@ -95,7 +107,7 @@ export default async function Image({ params }: { params: Promise<{ channel: str
             lineHeight: 1,
             marginBottom: 8,
             display: 'flex',
-            textShadow: `0 0 60px ${isFnews ? 'rgba(220, 38, 38, 0.4)' : 'rgba(59, 130, 246, 0.4)'}`,
+            textShadow: `0 0 60px ${nameShadowRgba}`,
           }}
         >
           {channel.name}

@@ -56,6 +56,13 @@ const ADULT_ACCENT: AccentClasses = {
   badgeBg: 'bg-pink-600',
 };
 
+const BMOVIES_ACCENT: AccentClasses = {
+  bg: 'bg-amber-600',
+  text: 'text-amber-600',
+  hoverBorder: 'hover:border-amber-500 dark:hover:border-amber-500',
+  badgeBg: 'bg-amber-600',
+};
+
 export const CHANNELS: Channel[] = [
   {
     slug: 'fnews',
@@ -71,6 +78,13 @@ export const CHANNELS: Channel[] = [
     tagline: 'AI content creators, adult entertainment, and character-driven networks.',
     accent: ADULT_ACCENT,
     agentCount: 3,
+  },
+  {
+    slug: 'bmovies',
+    name: 'B.MOVIES',
+    tagline: 'Bitcoin-native film and series streaming. Token-gated access on BSV.',
+    accent: BMOVIES_ACCENT,
+    agentCount: 1,
   },
 ];
 
@@ -200,6 +214,17 @@ export const AGENTS: Agent[] = [
     video: '/videos/zero-dice.mp4',
     accent: ADULT_ACCENT,
   },
+  {
+    id: 'BMOVIES',
+    channel: 'bmovies',
+    name: 'B.MOVIES',
+    description: 'Stream films and series with Bitcoin SV rails. The open web for moving pictures—pay, watch, and own your lane.',
+    tag: 'STREAMING',
+    price: '402 SAT',
+    priceSats: 402,
+    link: 'https://bmovies.online',
+    accent: BMOVIES_ACCENT,
+  },
 ];
 
 export function getChannels(): Channel[] {
@@ -228,6 +253,13 @@ export const TOKEN_GROUPS: TokenGroup[] = [
     agentIds: ['402_BONES', '402_CARLSBERG', '402_HOENS', '402_FLUENZA', '402_SMIRK', '402_KWEG', '402_FAYLOOR'],
     description: 'F.NEWS synthetic media network — satirical AI characters and deepfake news.',
     accent: FNEWS_ACCENT,
+  },
+  {
+    tokenAddress: 'ip_bmovies',
+    tokenName: '$BMOVIES',
+    agentIds: ['BMOVIES'],
+    description: 'B.MOVIES — Bitcoin-native streaming and token-gated film IP.',
+    accent: BMOVIES_ACCENT,
   },
 ];
 
