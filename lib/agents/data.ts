@@ -223,6 +223,7 @@ export const AGENTS: Agent[] = [
     price: '402 SAT',
     priceSats: 402,
     link: 'https://bmovies.online',
+    video: 'https://b0ase.com/bmovies.mp4',
     accent: BMOVIES_ACCENT,
   },
 ];
