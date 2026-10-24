@@ -6,6 +6,7 @@ import {
   FEES,
   type VerifyRequest,
   type SupportedNetwork,
+  type PaymentRequirements,
 } from '@/lib/x402';
 
 /**
@@ -18,7 +19,7 @@ import {
  */
 export async function POST(request: NextRequest) {
   try {
-    const body: VerifyRequest & { inscribe?: boolean } = await request.json();
+    const body: VerifyRequest & { inscribe?: boolean; paymentRequirements?: PaymentRequirements } = await request.json();
 
     const { x402Version, scheme, network, payload, inscribe = true } = body;
     const txId = body.txId || payload?.txId || payload?.authorization?.txId;
@@ -68,7 +69,11 @@ export async function POST(request: NextRequest) {
       payload.txId = txId;
     }
 
-    const verification = await verifyPayment(network, payload);
+    if (body.paymentRequirements?.network && body.paymentRequirements.network !== network) {
+      return NextResponse.json({ valid: false, invalidReason: 'paymentRequirements.network does not match' }, { status: 400 });
+    }
+
+    const verification = await verifyPayment(network, payload, body.paymentRequirements);
 
     if (!verification.valid) {
       return NextResponse.json({
@@ -112,6 +117,9 @@ export async function POST(request: NextRequest) {
       valid: true,
       txId: verification.txId,
       amount: verification.amount,
+      payTo: verification.payTo ?? verification.recipient,
+      broadcast: verification.broadcast,
+      status: verification.status,
       sender: verification.sender,
       recipient: verification.recipient,
       inscriptionId,

@@ -43,9 +43,14 @@ export interface VerificationResult {
   valid: boolean;
   invalidReason?: string;
   txId?: string;
+  /** Verified amount paid to payTo, in the network's smallest unit (sats for BSV). */
   amount?: number;
   recipient?: string;
+  payTo?: string;
   sender?: string;
+  /** The network has accepted the tx (BSV: known to WhatsOnChain). */
+  broadcast?: boolean;
+  status?: 'mempool' | 'mined';
 }
 
 export interface InscriptionResult {
@@ -161,12 +166,13 @@ export async function checkNonce(network: SupportedNetwork, nonce: string): Prom
  */
 export async function verifyPayment(
   network: SupportedNetwork,
-  payload: VerifyRequest['payload']
+  payload: VerifyRequest['payload'],
+  requirements?: PaymentRequirements,
 ): Promise<VerificationResult> {
   try {
     switch (network) {
       case 'bsv':
-        return await verifyBSVPayment(payload);
+        return await verifyBSVPayment(payload, requirements);
       case 'base':
         return await verifyBasePayment(payload);
       case 'solana':
@@ -334,32 +340,65 @@ export async function getInscription(id: string): Promise<{
 
 // Network-specific verification functions
 
-async function verifyBSVPayment(payload: VerifyRequest['payload']): Promise<VerificationResult> {
+/** The resource server's own terms (x402 paymentRequirements), sent alongside the proof. */
+export interface PaymentRequirements {
+  scheme?: string;
+  network?: string;
+  maxAmountRequired?: string;
+  payTo?: string;
+  resource?: string;
+}
+
+/**
+ * BSV: the payee and minimum come from the resource server's paymentRequirements when given
+ * (the payer's authorization is only a claim), and the amount we report is what the tx's
+ * outputs actually pay — never the claimed value.
+ */
+export async function verifyBSVPayment(
+  payload: VerifyRequest['payload'],
+  requirements?: PaymentRequirements,
+  verifyTx: typeof verifyBsvPaymentTx = verifyBsvPaymentTx,
+): Promise<VerificationResult> {
   const txId = payload.txId || payload.authorization?.txId;
-  const expectedTo = payload.authorization?.to;
-  const expectedAmount = parseInt(payload.authorization?.value || '0');
+  const claimedTo = payload.authorization?.to;
+  const claimedAmount = Number.parseInt(payload.authorization?.value || '0', 10) || 0;
+  const reqTo = requirements?.payTo?.trim() || undefined;
+  const reqAmount = requirements?.maxAmountRequired !== undefined
+    ? Number.parseInt(requirements.maxAmountRequired, 10)
+    : undefined;
 
   if (X402_VERIFY_REQUIRE_TX && !txId) {
     return { valid: false, invalidReason: 'Missing txId for BSV verification' };
   }
-
-  if (!txId || !expectedTo || !expectedAmount) {
+  if (!txId || !/^[0-9a-f]{64}$/i.test(txId)) {
+    return { valid: false, invalidReason: 'Missing or malformed txId' };
+  }
+  if (reqTo && claimedTo && claimedTo !== reqTo) {
+    return { valid: false, invalidReason: 'Authorization payee does not match paymentRequirements.payTo' };
+  }
+  if (reqAmount !== undefined && (!Number.isSafeInteger(reqAmount) || reqAmount <= 0)) {
+    return { valid: false, invalidReason: 'Invalid paymentRequirements.maxAmountRequired' };
+  }
+  const payTo = reqTo || claimedTo;
+  const minSats = Math.max(reqAmount ?? 0, claimedAmount);
+  if (!payTo || minSats <= 0) {
     return { valid: false, invalidReason: 'Missing required payment fields' };
   }
 
-  const result = await verifyBsvPaymentTx({
-    txId,
-    expectedAddress: expectedTo,
-    minSats: expectedAmount,
-  });
+  const result = await verifyTx({ txId, expectedAddress: payTo, minSats });
 
   const verification: VerificationResult = {
     valid: result.valid,
     txId,
-    amount: expectedAmount,
-    recipient: expectedTo,
+    amount: result.paidSats,
+    recipient: payTo,
+    payTo,
     sender: payload.authorization?.from,
-    invalidReason: result.valid ? undefined : 'Payment not found on-chain',
+    broadcast: result.seen,
+    status: result.status,
+    invalidReason: result.valid
+      ? undefined
+      : !result.seen ? 'Payment not found on-chain' : 'Payment amount below required',
   };
 
   await recordVerification(networkSafe('bsv'), verification);

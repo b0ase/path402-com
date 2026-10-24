@@ -178,4 +178,31 @@ describe('/api/x402/verify', () => {
     expect(payload.valid).toBe(false);
     expect(payload.invalidReason).toBe('Missing origin txId for inscription');
   });
+
+  it('returns verified amount, payTo and broadcast status, and forwards paymentRequirements', async () => {
+    const { POST } = await import('@/app/api/x402/verify/route');
+    checkNonceMock.mockResolvedValue(true);
+    verifyPaymentMock.mockResolvedValue({
+      valid: true, txId: 'ab'.repeat(32), amount: 500, payTo: '1PAY', recipient: '1PAY',
+      broadcast: true, status: 'mempool',
+    });
+    const reqs = { scheme: 'exact', network: 'bsv', maxAmountRequired: '500', payTo: '1PAY', resource: 'r' };
+    const response = await POST(buildRequest({
+      x402Version: 1, scheme: 'exact', network: 'bsv', payload: basePayload,
+      txId: 'ab'.repeat(32), inscribe: false, paymentRequirements: reqs,
+    }));
+    const payload = await response.json();
+    expect(payload).toMatchObject({ valid: true, amount: 500, payTo: '1PAY', broadcast: true, status: 'mempool' });
+    expect(verifyPaymentMock).toHaveBeenLastCalledWith('bsv', expect.anything(), reqs);
+  });
+
+  it('rejects paymentRequirements for another network', async () => {
+    const { POST } = await import('@/app/api/x402/verify/route');
+    checkNonceMock.mockResolvedValue(true);
+    const response = await POST(buildRequest({
+      x402Version: 1, scheme: 'exact', network: 'bsv', payload: basePayload,
+      paymentRequirements: { network: 'base', payTo: '0xTO', maxAmountRequired: '1' },
+    }));
+    expect(response.status).toBe(400);
+  });
 });

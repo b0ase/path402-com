@@ -28,15 +28,21 @@ export async function fetchBsvTx(txId: string): Promise<BsvTx | null> {
   }
 }
 
-export async function verifyBsvPaymentTx(params: {
-  txId: string;
-  expectedAddress: string;
-  minSats: number;
-}): Promise<{ valid: boolean; paidSats: number }> {
+export type BsvTxStatus = 'mempool' | 'mined';
+
+/**
+ * Check a BSV payment from the tx's real outputs (not the payer's claim).
+ * A tx WhatsOnChain returns has been accepted by the network, so it is at least in the
+ * mempool; with confirmations it is mined. paidSats is the verified sum to expectedAddress.
+ */
+export async function verifyBsvPaymentTx(
+  params: { txId: string; expectedAddress: string; minSats: number },
+  fetchTx: (txId: string) => Promise<BsvTx | null> = fetchBsvTx,
+): Promise<{ valid: boolean; paidSats: number; seen: boolean; status?: BsvTxStatus }> {
   const { txId, expectedAddress, minSats } = params;
-  const tx = await fetchBsvTx(txId);
-  if (!tx || !tx.vout) {
-    return { valid: false, paidSats: 0 };
+  const tx = await fetchTx(txId);
+  if (!tx || !Array.isArray(tx.vout) || (tx.txid && tx.txid !== txId)) {
+    return { valid: false, paidSats: 0, seen: false };
   }
 
   let paidSats = 0;
@@ -47,5 +53,6 @@ export async function verifyBsvPaymentTx(params: {
     }
   }
 
-  return { valid: paidSats >= minSats, paidSats };
+  const status: BsvTxStatus = (tx.confirmations ?? 0) > 0 || (tx.blockheight ?? 0) > 0 ? 'mined' : 'mempool';
+  return { valid: minSats > 0 && paidSats >= minSats, paidSats, seen: true, status };
 }

@@ -75,7 +75,9 @@ export async function POST(request: NextRequest) {
       payload.txId = txId;
     }
 
-    const verification = await verifyPayment(network, payload);
+    const verification = await verifyPayment(network, payload, paymentRequirements
+      ? { payTo: paymentRequirements.recipient, maxAmountRequired: paymentRequirements.amount }
+      : undefined);
 
     if (!verification.valid) {
       return NextResponse.json({
