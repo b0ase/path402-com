@@ -11,11 +11,11 @@ ssh hetzner "sudo mkdir -p /opt/path402-indexer && sudo chown \$USER:\$USER /opt
 # Copy files
 scp index.js package.json path402-indexer.service hetzner:/opt/path402-indexer/
 
-# Create .env file with Supabase credentials
-ssh hetzner "cat > /opt/path402-indexer/.env << 'EOF'
-SUPABASE_URL=http://localhost:8000
-SUPABASE_SERVICE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
-EOF"
+# The .env on the server holds the Supabase credentials. It is created by hand once and never
+# written from this script, so no key is committed here:
+#   SUPABASE_URL=http://localhost:8000
+#   SUPABASE_SERVICE_KEY=<the server's service-role key>
+ssh hetzner "test -f /opt/path402-indexer/.env" || { echo "Create /opt/path402-indexer/.env on the server first (see above)."; exit 1; }
 
 # Install dependencies
 ssh hetzner "cd /opt/path402-indexer && npm install --production"
